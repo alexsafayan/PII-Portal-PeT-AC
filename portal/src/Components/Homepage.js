@@ -14,6 +14,33 @@ const initialResultsState = {
     surfaceweb_sources: []
 };
 
+
+const AdditionalCriteria = props => {
+    return (
+        <div className="row d-flex justify-content-center">
+        <div className="form-group col-lg-2">
+            <input style={{marginBottom: '10px'}} id="emailSearch" className="form-control" type="search" placeholder="Enter email" aria-label="Search" value={props.emailValue} onChange={props.handleEmailChange}/>
+            <input style={{marginBottom: '10px'}} id="nameSearch" className="form-control" type="search" placeholder="Enter full name" aria-label="Search" value={props.nameValue} onChange={props.handleNameChange}/>
+            <input style={{marginBottom: '10px'}} id="phoneSearc" className="form-control" type="search" placeholder="Enter phone number" aria-label="Search" value={props.phoneValue} onChange={props.handlePhoneChange}/>
+            <input style={{marginBottom: '10px'}} id="zipSearch" className="form-control" type="search" placeholder="Enter zip code" aria-label="Search" value={props.zipValue} onChange={props.handleZipChange}/>
+            <button className="btn btn-outline-dark btn-block">Search</button>
+        </div>
+        </div>
+    );
+}
+
+const DefaultCriteria = props => {
+    return (
+        <div className="container d-flex justify-content-center">
+            <form className="form-inline form-group row" onSubmit={props.handleSubmit}>
+                <input id="emailsearch" className="form-control" type="search" placeholder="Enter email address" aria-label="Search" value={props.emailValue} onChange={props.handleChange} />
+                <button className="btn btn-outline-dark" type="submit">Search</button>
+            </form>
+        </div>
+    );
+}
+
+
 class Homepage extends React.Component {
 
     
@@ -23,10 +50,18 @@ class Homepage extends React.Component {
         this.state = {
           showResults: false,
           results: "",
-          inputValue: ""
+          emailValue: "",
+          phoneValue: "",
+          nameValue: "",
+          zipValue: "",
+          showAdditionalCriteria: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleZipChange = this.handleZipChange.bind(this);
+        this.handlePhoneChange = this.handlePhoneChange.bind(this);
+        this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
         this.DisplayResults = React.createRef()
       }
 
@@ -35,7 +70,7 @@ class Homepage extends React.Component {
         this.DisplayResults.current.setState(initialResultsState)
         //query data base and surface web
         //display returned results
-        if(this.state.inputValue.length > 0) {
+        if(this.state.emailValue.length > 0) {
             this.DisplayResults.current.setState({
                 email: true,
                 address: true,
@@ -50,24 +85,49 @@ class Homepage extends React.Component {
         }
     }
 
-    handleChange(event) {
-        this.setState({inputValue: event.target.value});
+    handleEmailChange(event) {
+        this.setState({emailValue: event.target.value});
+        event.preventDefault();
+    }
+
+    handleNameChange(event) {
+        this.setState({nameValue: event.target.value});
+        event.preventDefault();
+    }
+
+    handleZipChange(event) {
+        this.setState({zipValue: event.target.value});
+        event.preventDefault();
+    }
+
+    handlePhoneChange(event) {
+        this.setState({phoneValue: event.target.value});
+        event.preventDefault();
+    }
+
+    handleShowAdditionalCriteria(event) {
+        this.setState({showAdditionalCriteria: !this.state.showAdditionalCriteria})
         event.preventDefault();
     }
 
     render() {
         return [
-            
+                
                 <div className="jumbotron text-center">
                     <h1>AZSecure Privacy Portal</h1>
                     <p>Search. Know. Act.</p>
                 </div>,
+                <div>
+                    {this.state.showAdditionalCriteria ? 
+                        <AdditionalCriteria nameValue={this.state.nameValue} zipValue={this.state.zipValue} phoneValue={this.state.phoneValue} emailValue={this.state.emailValue}
+                                            handleNameChange={this.handleNameChange} handleZipChange={this.handleZipChange} handlePhoneChange={this.handlePhoneChange} handleEmailChange={this.handleEmailChange}
+                        /> 
+                        : 
+                        <DefaultCriteria emailValue={this.state.emailValue} handleChange={this.handleEmailChange} handleSubmit={this.handleSubmit}/>
+                    }
+                </div>,
                 <div className="container d-flex justify-content-center">
-                    <form className="form-inline form-group row" onSubmit={this.handleSubmit}>
-                        <input id="emailsearch" className="form-control" type="search" placeholder="Enter email address" aria-label="Search" value={this.state.inputValue} onChange={this.handleChange} />
-                        <button className="btn btn-outline-dark" type="submit">Search</button>
-                    </form>
-
+                    <button className="btn btn-outline-dark" onClick={this.handleShowAdditionalCriteria}>Search by additional criteria</button>
                 </div>,
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
