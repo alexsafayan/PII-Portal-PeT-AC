@@ -1,6 +1,7 @@
 import React from 'react';
 import DisplayResults from './DisplayResults.js'
 import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
+import EmailDataService from "../services/email.service";
 
 const initialResultsState = {
     email: false,
@@ -23,7 +24,7 @@ const AdditionalCriteria = props => {
             <input style={{marginBottom: '10px'}} id="nameSearch" className="form-control" type="search" placeholder="Enter full name" aria-label="Search" value={props.nameValue} onChange={props.handleNameChange}/>
             <input style={{marginBottom: '10px'}} id="phoneSearc" className="form-control" type="search" placeholder="Enter phone number" aria-label="Search" value={props.phoneValue} onChange={props.handlePhoneChange}/>
             <input style={{marginBottom: '10px'}} id="zipSearch" className="form-control" type="search" placeholder="Enter zip code" aria-label="Search" value={props.zipValue} onChange={props.handleZipChange}/>
-            <button className="btn btn-outline-dark btn-block">Search</button>
+            <button className="btn btn-outline-dark btn-block" onClick={props.onClickSubmit}>Search</button>
         </div>
         </div>
     );
@@ -62,6 +63,7 @@ class Homepage extends React.Component {
         this.handleZipChange = this.handleZipChange.bind(this);
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
+        this.handleAdditionalCriteria = this.handleAdditionalCriteria.bind(this);
         this.DisplayResults = React.createRef()
       }
 
@@ -110,6 +112,30 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
+    handleAdditionalCriteria(event) {
+        
+        EmailDataService.getAll()
+        .then(response => {
+            //alert(response.data);
+            console.log(response.data[0]);
+            var responselength = response.data.length
+            var wehave = false;
+            for(var i = 0; i < responselength; i++) {
+                var item = response.data[i]
+                if(this.state.emailValue == item.email) {
+                    alert("we have your email in database under the name: "+item.name)
+                    wehave = true
+                }
+            }
+            if(!wehave) {
+                alert("we do not have your email in database")
+            }
+        }).catch(e => {
+            console.log(e);
+        });
+        event.preventDefault();
+    }
+
     render() {
         return [
                 
@@ -120,7 +146,8 @@ class Homepage extends React.Component {
                 <div>
                     {this.state.showAdditionalCriteria ? 
                         <AdditionalCriteria nameValue={this.state.nameValue} zipValue={this.state.zipValue} phoneValue={this.state.phoneValue} emailValue={this.state.emailValue}
-                                            handleNameChange={this.handleNameChange} handleZipChange={this.handleZipChange} handlePhoneChange={this.handlePhoneChange} handleEmailChange={this.handleEmailChange}
+                                            handleNameChange={this.handleNameChange} handleZipChange={this.handleZipChange} handlePhoneChange={this.handlePhoneChange} 
+                                            handleEmailChange={this.handleEmailChange} onClickSubmit={this.handleAdditionalCriteria}
                         /> 
                         : 
                         <DefaultCriteria emailValue={this.state.emailValue} handleChange={this.handleEmailChange} handleSubmit={this.handleSubmit}/>
