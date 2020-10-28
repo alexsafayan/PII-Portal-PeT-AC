@@ -22,6 +22,17 @@ def email_list(request):
         emails_serializer = EmailSerializer(emails, many=True)
         return JsonResponse(emails_serializer.data, safe=False)
         # 'safe=False' for objects serialization
+
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+        email = dic.get('email')
+        try: 
+            item = EmailModel.objects.get(email=email) 
+        except EmailModel.DoesNotExist: 
+            return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        email_serializer = EmailSerializer(item)
+        return JsonResponse(email_serializer.data)
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):
     # find email
@@ -29,7 +40,6 @@ def email_detail(request, email):
         item = EmailModel.objects.get(email=email) 
     except EmailModel.DoesNotExist: 
         return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_404_NOT_FOUND) 
- 
     # GET email
     if request.method == 'GET': 
         email_serializer = EmailSerializer(item) 

@@ -2,6 +2,7 @@ import React from 'react';
 import DisplayResults from './DisplayResults.js'
 import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
 import EmailDataService from "../services/email.service";
+import axios from "axios";
 
 const initialResultsState = {
     email: false,
@@ -63,8 +64,9 @@ class Homepage extends React.Component {
         this.handleZipChange = this.handleZipChange.bind(this);
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
-        this.handleAdditionalCriteria = this.handleAdditionalCriteria.bind(this);
-        this.DisplayResults = React.createRef()
+        this.handleAdditionalCriteriaSearchBad = this.handleAdditionalCriteriaSearchBad.bind(this);
+        this.queryMongoEmail = this.queryMongoEmail.bind(this);
+        this.DisplayResults = React.createRef();
       }
 
     handleSubmit(event) {
@@ -112,7 +114,7 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
-    handleAdditionalCriteria(event) {
+    handleAdditionalCriteriaSearchBad(event) {
         
         EmailDataService.getAll()
         .then(response => {
@@ -136,6 +138,21 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
+    queryMongoEmail(event) {
+        if(this.state.emailValue.length > 0){
+            EmailDataService.get(this.state.emailValue)
+            .then(response => {
+                console.log(response.data);
+                alert("we have your email in database under the name: "+response.data.name)
+            }).catch(e => {
+                console.log(e);
+                alert("we do not have your email stored in the database")
+            });
+
+            event.preventDefault();
+        }
+    }
+
     render() {
         return [
                 
@@ -147,10 +164,10 @@ class Homepage extends React.Component {
                     {this.state.showAdditionalCriteria ? 
                         <AdditionalCriteria nameValue={this.state.nameValue} zipValue={this.state.zipValue} phoneValue={this.state.phoneValue} emailValue={this.state.emailValue}
                                             handleNameChange={this.handleNameChange} handleZipChange={this.handleZipChange} handlePhoneChange={this.handlePhoneChange} 
-                                            handleEmailChange={this.handleEmailChange} onClickSubmit={this.handleAdditionalCriteria}
+                                            handleEmailChange={this.handleEmailChange} onClickSubmit={this.queryMongoEmail}
                         /> 
                         : 
-                        <DefaultCriteria emailValue={this.state.emailValue} handleChange={this.handleEmailChange} handleSubmit={this.handleSubmit}/>
+                        <DefaultCriteria emailValue={this.state.emailValue} handleChange={this.handleEmailChange} handleSubmit={this.queryMongoEmail}/>
                     }
                 </div>,
                 <div className="container d-flex justify-content-center">

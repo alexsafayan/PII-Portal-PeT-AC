@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'pii_db',
-        'HOST': '127.0.0.1',
+        'HOST': 'localhost',
         'PORT': 27017,
     }
 }
