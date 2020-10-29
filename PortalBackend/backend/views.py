@@ -28,7 +28,8 @@ def email_list(request):
         dic = eval(req)
         email = dic.get('email')
         try: 
-            item = EmailModel.objects.get(email=email) 
+            item = EmailModel.objects.filter(email=email)[0]
+            #print("\n\n\n\n\n\n\n\n\n"+str(item)+"\n\n\n\n\n\n\n\n\n\n")
         except EmailModel.DoesNotExist: 
             return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_404_NOT_FOUND) 
         email_serializer = EmailSerializer(item)

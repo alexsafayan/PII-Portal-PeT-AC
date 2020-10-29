@@ -8,6 +8,7 @@ class SubscribeModal extends React.Component  {
         super(props);
         this.state = {
             show: false,
+            didSubscribe: false,
             email: ""
         };
         this.handleShow = this.handleShow.bind(this);
@@ -23,7 +24,11 @@ class SubscribeModal extends React.Component  {
       event.preventDefault();
     }
     handleSubscribe(event) {
-      this.alertEmail();
+      this.setState(
+        {
+          didSubscribe: true
+        }
+      )
     }
     handleShow() {
         this.setState(
@@ -36,7 +41,9 @@ class SubscribeModal extends React.Component  {
     handleClose() {
         this.setState(
             {
-                show: false
+                show: false,
+                didSubscribe: false,
+                email: ""
             }
         )
     }
@@ -52,14 +59,26 @@ class SubscribeModal extends React.Component  {
           <Modal.Header closeButton>
             <Modal.Title>Email Notifications</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Get notified when your email is involved in a data breach.</Modal.Body>
+          <Modal.Body>
+            Get notified when your email is involved in a data breach. <p></p>
+            {this.state.didSubscribe ? 
+            <p>You will now be notified of future breaches!</p> : 
+            null}
+          </Modal.Body>
+          
           <Modal.Footer>
+          {this.state.didSubscribe ?
+          <Button onClick={this.handleClose} variant="dark">
+          Close
+          </Button>
+          :
           <form className="form-inline form-group" onSubmit={this.handleSubscribe}>
           <input id="emailSignup" className="form-control" placeholder="Email" value={this.state.email} onChange={this.handleEmailInput} aria-label="subscribeSignup"/>
-            <Button variant="dark" type="submit" onClick={this.handleClose}>
+            <Button variant="dark" type="submit">
               Subscribe
             </Button>
-          </form>
+          </form> 
+          }
           </Modal.Footer>
         </Modal>
         </>
