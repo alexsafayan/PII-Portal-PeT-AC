@@ -5,8 +5,11 @@ class EmailDataService {
     return http.get("/emails");
   }
 
-  get(id=id) {
-    return http.get(`/emails/${id}`);
+
+  get(email) {
+    return http.post('/emails', {
+      email: email
+    })
   }
 
 }
