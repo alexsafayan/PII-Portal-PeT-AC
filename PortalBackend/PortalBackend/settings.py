@@ -78,12 +78,26 @@ WSGI_APPLICATION = 'PortalBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'djongo',
+#        'NAME': 'pii_db',
+#        #'HOST': 'mongodb_container',
+#        'HOST': 'localhost',
+#        'PORT': 27017,
+#    }
+#}
+
 DATABASES = {
-    'default': {
+        'default': {
         'ENGINE': 'djongo',
         'NAME': 'pii_db',
-        'HOST': 'localhost',
-        'PORT': 27017,
+        #'HOST': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@....mongodb.net/test?retryWrites=true',
+        'HOST': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@cluster0.5u0xf.mongodb.net/pii_db?retryWrites=true&w=majority',
+        'USER': 'mike',
+        'PASSWORD': 'V7NU54Fpi2G4nJFd',
     }
 }
 
