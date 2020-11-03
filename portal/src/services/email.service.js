@@ -12,6 +12,14 @@ class EmailDataService {
     })
   }
 
+  subscribeEmail(email)
+  {
+    return http.post('/subscribe',
+    {
+      email:email
+    })
+  }
+
 }
 
 export default new EmailDataService();
