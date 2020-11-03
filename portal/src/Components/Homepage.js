@@ -156,10 +156,6 @@ class Homepage extends React.Component {
     render() {
         return [
                 
-                <div className="jumbotron text-center">
-                    <h1>AZSecure Privacy Portal</h1>
-                    <p>Search. Know. Act.</p>
-                </div>,
                 <div>
                     {this.state.showAdditionalCriteria ? 
                         <AdditionalCriteria nameValue={this.state.nameValue} zipValue={this.state.zipValue} phoneValue={this.state.phoneValue} emailValue={this.state.emailValue}

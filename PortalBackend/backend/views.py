@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
  
-from backend.models import EmailModel
+from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 
@@ -45,3 +45,17 @@ def email_detail(request, email):
     if request.method == 'GET': 
         email_serializer = EmailSerializer(item) 
         return JsonResponse(email_serializer.data)
+
+@api_view(['POST'])
+def email_subscribe(request):
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+        email = dic.get('email')
+        try: 
+            item = Subscription(email=email)
+            item.save()
+            #print("\n\n\n\n\n\n\n\n\n"+str(item)+"\n\n\n\n\n\n\n\n\n\n")
+        except: 
+            return JsonResponse({'message': 'There was an error'}, status=status.HTTP_404_NOT_FOUND) 
+        return JsonResponse({'message': 'Success'})

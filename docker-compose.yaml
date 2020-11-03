@@ -1,17 +1,21 @@
 version: "3.2"
 services:
-    mongodb_container:
-        image: mongo:latest
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: rootpassword
-        ports:
-            - 27017:27017
+#    mongodb_container:
+#        container_name: mongodb_container
+#        image: mongo:latest
+#        environment:
+#            MONGO_INITDB_ROOT_USERNAME: root
+#            MONGO_INITDB_ROOT_PASSWORD: rootpassword
+#        ports:
+#            - 27017:27017
+        #networks:
+        #- db-net
 
     portalbackend:
         restart: always
         container_name: code
-        command: bash -c "python manage.py migrate &&
+        command: bash -c "python manage.py makemigrations &&
+                        python manage.py migrate &&
                         python manage.py runserver 0.0.0.0:8000"
 #        env_file:
 #        - ./PortalBackend/PortalBackend/settings.py
@@ -20,8 +24,8 @@ services:
             dockerfile: Dockerfile
         ports:
         - "8000:8000"
-        depends_on:
-        - mongodb_container
+#        depends_on:
+#        - mongodb_container
         networks:
         - db-net
 

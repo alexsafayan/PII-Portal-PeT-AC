@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button} from 'react-bootstrap'
 import Modal from 'react-bootstrap/Modal';
-
+import EmailDataService from "../services/email.service";
 
 class SubscribeModal extends React.Component  {
     constructor(props) {
@@ -16,19 +16,29 @@ class SubscribeModal extends React.Component  {
         this.handleEmailInput = this.handleEmailInput.bind(this);
         this.handleSubscribe = this.handleSubscribe.bind(this);
     }
-    alertEmail() {
-      alert("Notifications will be sent to "+this.state.email+" if a breach occurs.")
-    }
+    // alertEmail() {
+    //   alert("Notifications will be sent to "+this.state.email+" if a breach occurs.")
+    // }
     handleEmailInput(event) {
       this.setState({email: event.target.value});
       event.preventDefault();
     }
     handleSubscribe(event) {
-      this.setState(
-        {
-          didSubscribe: true
-        }
-      )
+      if(this.state.email.length > 0){
+        EmailDataService.subscribeEmail(this.state.email)
+        .then(response => {
+          this.setState(
+            {
+              didSubscribe: true
+            }
+          )
+            console.log(response.data);
+        }).catch(e => {
+            console.log(e);
+        });
+        event.preventDefault();
+    }
+      
     }
     handleShow() {
         this.setState(
