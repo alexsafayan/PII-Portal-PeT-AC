@@ -102,6 +102,12 @@ class Search extends React.Component {
         //query for email
         console.log("in handle submit")
         if(this.state.nameValue == "Addie Jones" && this.state.zipValue == "15221"){
+            this.setState({
+                email: true,
+                line1: "Your name and zip are compromised!",
+                line2: "",
+                line3: ""
+            })
             console.log("addie jones bish")
             this.queryMongoName();
             // .then(response => {
@@ -149,26 +155,25 @@ class Search extends React.Component {
 
         */
         score+= (.6+.1833+.85+.1166)
-        // console.log("score: " + score)
-        // console.log(updated_state.email)
-        // console.log(updated_state.address)
-        // console.log(updated_state.password)
-        // console.log(updated_state.phoneNumber)
-        // console.log(updated_state.zip)
-        // console.log(updated_state.ssn)
-        // console.log(updated_state.birthday)
-        // console.log(updated_state.hometown)
-        // console.log(updated_state.currenttown)
-        // console.log(updated_state.jobdetails)
-        // console.log(updated_state.relationshipstatus)
-        // console.log(updated_state.interests)
-        // console.log(updated_state.political)
-        // console.log(updated_state.religious)
-        // console.log("and finally")
-        // console.log(false)
+        console.log("score: " + score)
+        console.log(updated_state.email)
+        console.log(updated_state.address)
+        console.log(updated_state.password)
+        console.log(updated_state.phoneNumber)
+        console.log(updated_state.zip)
+        console.log(updated_state.ssn)
+        console.log(updated_state.birthday)
+        console.log(updated_state.hometown)
+        console.log(updated_state.currenttown)
+        console.log(updated_state.jobdetails)
+        console.log(updated_state.relationshipstatus)
+        console.log(updated_state.interests)
+        console.log(updated_state.political)
+        console.log(updated_state.religious)
+        console.log("and finally")
+        console.log(false)
         this.DisplayResults.current.setState({
-            show: true,
-            score: score,
+            
             email: updated_state.email,
             address: updated_state.address,
             password: updated_state.password,
@@ -184,7 +189,9 @@ class Search extends React.Component {
             political: updated_state.political,
             religious: updated_state.religious,
             databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo']
+            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
+            show: true,
+            score: score
 
         })
         
@@ -314,16 +321,16 @@ class Search extends React.Component {
                     </p>
                 </Alert>
                 }</div>,
-                <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
-                </div>,
                  <div className="container d-flex justify-content-center">
                  <h1>{this.state.line1}</h1>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
-                    </div>
+                    </div>,
+                <div className="container d-flex justify-content-center">
+                    <DisplayResults ref={this.DisplayResults}/>
+                </div>
 
         ]
     }

@@ -25,21 +25,22 @@ class DisplayResults extends React.Component {
         political: this.props.political,
         religious: this.props.religious,
         databreach_sources: this.props.databreach_sources,
-        surfaceweb_sources: this.props.surfaceweb_sources
+        surfaceweb_sources: this.props.surfaceweb_sources,
+        attribute_values: {  
+            phonenumber: .6,
+            email: .1833,
+            address: .85,
+            birthday: .1166,
+            hometown: .15,
+            currenttown: .1166,
+            jobdetails: .2,
+            relationshipstatus: .4166,
+            interests: .3,
+            political: .6833,
+            religious: .5666
+        }
       };
-      const initialState = this.state
-        const attribute_values = {  phonenumber: .6,
-                                    email: .1833,
-                                    address: .85,
-                                    birthday: .1166,
-                                    hometown: .15,
-                                    currenttown: .1166,
-                                    jobdetails: .2,
-                                    relationshipstatus: .4166,
-                                    interests: .3,
-                                    political: .6833,
-                                    religious: .5666
-                                }
+      const initialState = this.state;
     }
 
     render() {
@@ -47,28 +48,28 @@ class DisplayResults extends React.Component {
             <div>
                 {this.state.score > 0 ? 
                     <p>
-                        <h1>Your data is compromised!</h1> 
+                        <h3>Your privacy rating is: {this.state.score}</h3> 
                         <Table striped bordered hover>
                         <thead>
                             <tr>
                             <th>Leaked Personal Attribute</th>
+                            <th>Associate Score</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {this.state.phonenumber ? <tr> <td>contact number</td> </tr>  : null}
-                        {this.state.email ? <tr> <td>email</td> </tr>  : null}
-                        {this.state.password ? <tr> <td>password</td> </tr>  : null}
-                        {this.state.address ? <tr> <td>address</td> </tr>  : null}
-                        {this.state.birthday ? <tr> <td>birthday</td> </tr>  : null}
-                        {this.state.hometown ? <tr> <td>hometown</td> </tr>  : null}
-                        {this.state.currenttown ? <tr> <td>current town</td> </tr>  : null}
-                        {this.state.hometown ? <tr> <td>home town</td> </tr>  : null}
-                        {this.state.jobdetails ? <tr> <td>job details</td> </tr>  : null}
+                        {this.state.phoneNumber ? <tr> <td>contact number</td> <td>{this.state.attribute_values.phonenumber}</td> </tr>  : null}
+                        {this.state.email ? <tr> <td>email</td> <td>{this.state.attribute_values.email}</td></tr>  : null}
+                        {this.state.password ? <tr> <td>password</td><td>{this.state.attribute_values.password}</td> </tr>  : null}
+                        {this.state.address ? <tr> <td>address</td><td>{this.state.attribute_values.address}</td> </tr>  : null}
+                        {this.state.birthday ? <tr> <td>birthday</td> <td>{this.state.attribute_values.birthday}</td></tr>  : null}
+                        {this.state.hometown ? <tr> <td>hometown</td><td>{this.state.attribute_values.hometown}</td> </tr>  : null}
+                        {this.state.currenttown ? <tr> <td>current town</td><td>{this.state.attribute_values.currenttown}</td> </tr>  : null}
+                        {this.state.jobdetails ? <tr> <td>job details</td> <td>{this.state.attribute_values.jobdetails}</td></tr>  : null}
 
-                        {this.state.relationshipstatus ? <tr>relationship status<td></td> </tr>  : null}
-                        {this.state.interests ? <tr> <td>interests</td> </tr>  : null}
-                        {this.state.political ? <tr> <td>political views</td> </tr>  : null}
-                        {this.state.religious ? <tr> <td>religious views</td> </tr>  : null}
+                        {this.state.relationshipstatus ? <tr><td>relationship status</td> <td>{this.state.attribute_values.relationshipstatus}</td></tr>  : null}
+                        {this.state.interests ? <tr> <td>interests</td> <td>{this.state.attribute_values.interests}</td></tr>  : null}
+                        {this.state.political ? <tr> <td>political views</td> <td>{this.state.attribute_values.political}</td></tr>  : null}
+                        {this.state.religious ? <tr> <td>religious views</td> <td>{this.state.attribute_values.religious}</td></tr>  : null}
                         </tbody>
                         </Table>
                     </p> 

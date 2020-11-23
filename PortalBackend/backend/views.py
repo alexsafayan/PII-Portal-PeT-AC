@@ -60,7 +60,7 @@ def email_list(request):
             name = dic.get('name').lower()
             other = dic.get('other')
             if 'addie' in name and 'jones' in name:
-                response = {"email": True, "address": True, "password": True, "phoneNumber": True, "zip": True, "ssn": False, "birthday": True, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+                response = {"email": True, "address": True, "password": False, "phoneNumber": True, "zip": True, "ssn": False, "birthday": True, "hometown": False, "currenttown": True, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
