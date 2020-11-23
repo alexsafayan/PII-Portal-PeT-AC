@@ -18,26 +18,22 @@ const initialResultsState = {
 };
 
 
-
-const DefaultCriteria = props => {
+const AdditionalCriteria = props => {
     return (
-        // <div className="container d-flex justify-content-center">
-        //     <form className="form-inline form-group row" onSubmit={props.handleSubmit}>
-        //         <input id="emailsearch" className="form-control" type="search" placeholder="Enter email address" aria-label="Search" value={props.emailValue} onChange={props.handleChange} />
-        //         <button className="btn btn-outline-dark" type="submit">Search</button>
-        //     </form>
-        // </div>
         <div className="row d-flex justify-content-center">
-            <div className="form-group col-lg-2">
-                <input style={{marginBottom: '10px'}} id="emailsearch" className="form-control" type="search" placeholder="Enter email address" aria-label="Search" value={props.emailValue} onChange={props.handleChange} />
-                <button className="btn btn-outline-dark btn-block" onClick={props.handleSubmit}>Search</button>
-            </div>
+        <div className="form-group col-lg-2">
+            <input style={{marginBottom: '10px'}} id="nameSearch" className="form-control" type="search" placeholder="Enter full name" aria-label="Search" value={props.nameValue} onChange={props.handleNameChange}/>
+            <input style={{marginBottom: '10px'}} id="phoneSearc" className="form-control" type="search" placeholder="Enter phone number" aria-label="Search" value={props.phoneValue} onChange={props.handlePhoneChange}/>
+            <input style={{marginBottom: '10px'}} id="zipSearch" className="form-control" type="search" placeholder="Enter zip code" aria-label="Search" value={props.zipValue} onChange={props.handleZipChange}/>
+            <button className="btn btn-outline-dark btn-block" onClick={props.onClickSubmit}>Search</button>
+        </div>
         </div>
     );
 }
 
 
-class Homepage extends React.Component {
+
+class Search extends React.Component {
 
     
 
@@ -66,9 +62,8 @@ class Homepage extends React.Component {
         this.queryMongoEmail = this.queryMongoEmail.bind(this);
         this.queryMongoName = this.queryMongoName.bind(this);
         this.queryMongoName2 = this.queryMongoName2.bind(this);
-        this.validateEmail = this.validateEmail.bind(this);
         this.DisplayResults = React.createRef();
-        
+
         var resultJson = {
             //score: score,
             email: false,
@@ -91,18 +86,24 @@ class Homepage extends React.Component {
       }
     
     handleSubmit(event) {
+
+        //reset state and results
         this.setState({
             errorMessage: "",
             line1: "",
             line2: "",
             line3: ""
         })
+        this.DisplayResults.current.setState({
+            show: false,
+            score: 0
+        })
+
         //query for email
         console.log("in handle submit")
-        if(this.validateEmail(this.state.emailValue)) {
-        //if(this.state.emailValue.length > 0){
-            console.log("email is valid")
-            this.queryMongoEmail();
+        if(this.state.nameValue == "Addie Jones" && this.state.zipValue == "15221"){
+            console.log("addie jones bish")
+            this.queryMongoName();
             // .then(response => {
             //     //send the returned json to handle submit
     
@@ -114,10 +115,14 @@ class Homepage extends React.Component {
             //this.callDisplay();
         }
         //query for name and zip/phone
-        else{
-            console.log("email is invalid")
+        else if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
+            console.log("else name and (other) length greater than 0")
+            this.queryMongoName2();
+        }
+        else {
+            console.log("invalid entry")
             this.setState({
-                errorMessage: "Please enter a valid email address."
+                errorMessage: "Please enter name and at least one other attribute."
             })
         }
         event.preventDefault();
@@ -217,22 +222,12 @@ class Homepage extends React.Component {
 
             
             console.log(response.data);
-            this.setState({
-                email: true,
-                line1: "Your email is compromised!",
-                line2: "",
-                line3: ""
-            })
-            //this.callDisplay();
+            
+            this.callDisplay();
             return true;
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
             console.log(e);
-            this.setState({
-                line1: "Your email is NOT compromised!",
-                line2: "",
-                line3: ""
-            })
             return false
             //alert("we do not have your email stored in the database")
         });
@@ -253,7 +248,7 @@ class Homepage extends React.Component {
             //console.log(response.data.email);
 
 
-            //this.callDisplay(response.data);
+            this.callDisplay(response.data);
             return true;
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
@@ -293,37 +288,31 @@ class Homepage extends React.Component {
 
     }
 
-    validateEmail(email) {
-        console.log("in validate email")
-        //const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var re = /\S+@\S+\.\S+/;
-        return re.test(String(email).toLowerCase());
-    }
+    
 
     render() {
         return [
                 
                 <div>
-                        <DefaultCriteria emailValue={this.state.emailValue} handleChange={this.handleEmailChange} handleSubmit={this.handleSubmit}/>
+                    <AdditionalCriteria nameValue={this.state.nameValue} zipValue={this.state.zipValue} phoneValue={this.state.phoneValue} emailValue={this.state.emailValue}
+                                        handleNameChange={this.handleNameChange} handleZipChange={this.handleZipChange} handlePhoneChange={this.handlePhoneChange} 
+                                        handleEmailChange={this.handleEmailChange} onClickSubmit={this.handleSubmit}
+                    /> 
                 </div>,
                 <div>
-                    {this.state.showAdditionalCriteria ? 
-                        null
-                        : 
                         <div className="container d-flex justify-content-center">
-                        <a href="/search"><button className="btn btn-outline-dark">Search by additional criteria</button></a></div>
-                    }
+                        <a href="/Home"><button className="btn btn-outline-dark">Search by email</button></a></div>
                 </div>,
                 
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length == 0 ? 
                     null
                     : 
-                <Alert variant="danger">
-                <p>
-                  {this.state.errorMessage}
-                </p>
-              </Alert>
+                    <Alert variant="danger">
+                    <p>
+                    {this.state.errorMessage}
+                    </p>
+                </Alert>
                 }</div>,
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
@@ -340,4 +329,4 @@ class Homepage extends React.Component {
     }
 }
 
-export default Homepage;
+export default Search;

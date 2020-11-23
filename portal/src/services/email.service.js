@@ -12,6 +12,13 @@ class EmailDataService {
     })
   }
 
+  getData(name, zip) {
+    return http.post('/name', {
+      name: name,
+      zip: zip
+    })
+  }
+
   getByName(name, other) {
     // const sampleRes = {
     //     email: true,

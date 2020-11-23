@@ -4,8 +4,10 @@ import React from 'react';
 export const About = props => {
     return (
       <div>
-        <h3>About View</h3>
-        <p> This is the about view of SPA</p>
+        <div className = "row d-flex justify-content-center">
+          <h3>About AZSecure PII Portal</h3>
+        </div>
+        <div className = "row d-flex justify-content-center"> This is the about view</div>
       </div>
     );
   };
