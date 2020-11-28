@@ -45,3 +45,16 @@ def calculate_score(attributes):
 
     score = round(score,1)
     return score
+
+def generate_boxplot(score):
+    key = "[1.75, 1.75]"
+    newKey = "["+str(score)+", "+str(score)+"]"
+    f = open("C:/Users/Michael/Desktop/PIIPortal/PII-Portal/portal/public/boxplot1.html", "r")
+    w = open("C:/Users/Michael/Desktop/PIIPortal/PII-Portal/portal/public/boxplotguy.html","w")
+
+    original = f.read()
+
+    new = original.replace(key,newKey)
+    w.write(new)
+    f.close()
+    w.close()

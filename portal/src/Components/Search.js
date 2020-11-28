@@ -331,7 +331,7 @@ class Search extends React.Component {
                  }</div>,
                 <div className="container d-flex justify-content-center">
                 {this.state.showplot ? 
-                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="40%"></iframe> 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="60%"></iframe> 
                     : null
                 }</div> 
 

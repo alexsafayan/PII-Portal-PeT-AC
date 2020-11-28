@@ -335,11 +335,7 @@ class Homepage extends React.Component {
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
-                    </div>,
-                    <div className="container d-flex justify-content-center">
-                    {this.state.showplot ? 
-                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="40%"></iframe>
-                    : null }</div> 
+                    </div>
                     
 
         ]

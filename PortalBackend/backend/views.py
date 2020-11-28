@@ -12,7 +12,7 @@ from backend.TwitterCollector import TwitterCollector
 from backend.InstagramCollector import InstagramCollector
 from backend.ThatThemCollector import ThatThemCollector
 from backend.FlickrCollector import FlickrCollector
-from backend.CalculateScore import calculate_score
+from backend.CalculateScore import calculate_score, generate_boxplot
 
 import json
 import time
@@ -67,6 +67,7 @@ def email_list(request):
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
             score = calculate_score(response)
+            #generate_boxplot(score)
             response["score"] = score
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
 @api_view(['GET', 'PUT', 'DELETE'])
