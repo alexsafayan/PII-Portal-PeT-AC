@@ -67,8 +67,9 @@ def email_list(request):
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
             score = calculate_score(response)
-            #generate_boxplot(score)
+            plot = generate_boxplot(score)
             response["score"] = score
+            response["plot"] = plot
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):

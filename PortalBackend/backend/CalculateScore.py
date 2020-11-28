@@ -6,6 +6,7 @@ def calculate_score(attributes):
     "Hometown": 0.15, "Current Town": 0.1166, "Job Details": 0.2, "Relationship Status": 0.4166, 
     "Interests": 0.3, "Religious Views": 0.5666, "Political Views": 0.6833}
 
+        #example response
     response = {"email": True, "address": True, "password": False, "phoneNumber": True, "zip": True, 
     "ssn": False, "birthday": True, "hometown": False, "currenttown": True, "jobdetails": False, 
     "relationshipstatus": False, "interests": False, "political": False, "religious": False, "score": score}
@@ -49,12 +50,13 @@ def calculate_score(attributes):
 def generate_boxplot(score):
     key = "[1.75, 1.75]"
     newKey = "["+str(score)+", "+str(score)+"]"
-    f = open("C:/Users/Michael/Desktop/PIIPortal/PII-Portal/portal/public/boxplot1.html", "r")
-    w = open("C:/Users/Michael/Desktop/PIIPortal/PII-Portal/portal/public/boxplotguy.html","w")
+    f = open("backend/Boxplots/boxplot1.html", "r")
+    #w = open("backend/Boxplots/boxplotguy.html","w")
 
     original = f.read()
 
     new = original.replace(key,newKey)
-    w.write(new)
+    #w.write(new)
     f.close()
-    w.close()
+    #w.close()
+    return new

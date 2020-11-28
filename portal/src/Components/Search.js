@@ -52,6 +52,7 @@ class Search extends React.Component {
           line2: "",
           line3: "",
           showplot: false,
+          plot: "",
           score: 0
         };
         this.callDisplay = this.callDisplay.bind(this);
@@ -164,7 +165,7 @@ class Search extends React.Component {
         console.log(updated_state.religious)
         console.log("and finally")
         console.log(false)
-        this.setState({score: score});
+        this.setState({score: score, plot: updated_state.plot});
         this.DisplayResults.current.setState({
             
             email: updated_state.email,
@@ -331,7 +332,7 @@ class Search extends React.Component {
                  }</div>,
                 <div className="container d-flex justify-content-center">
                 {this.state.showplot ? 
-                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="60%"></iframe> 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
                     : null
                 }</div> 
 
