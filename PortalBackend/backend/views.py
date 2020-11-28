@@ -12,6 +12,7 @@ from backend.TwitterCollector import TwitterCollector
 from backend.InstagramCollector import InstagramCollector
 from backend.ThatThemCollector import ThatThemCollector
 from backend.FlickrCollector import FlickrCollector
+from backend.CalculateScore import calculate_score
 
 import json
 import time
@@ -59,10 +60,14 @@ def email_list(request):
         elif 'name' in dic:
             name = dic.get('name').lower()
             other = dic.get('other')
+            
             if 'addie' in name and 'jones' in name:
                 response = {"email": True, "address": True, "password": False, "phoneNumber": True, "zip": True, "ssn": False, "birthday": True, "hometown": False, "currenttown": True, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+                
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+            score = calculate_score(response)
+            response["score"] = score
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):

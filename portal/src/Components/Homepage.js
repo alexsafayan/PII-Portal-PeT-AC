@@ -54,7 +54,8 @@ class Homepage extends React.Component {
           showAdditionalCriteria: false,
           line1: "",
           line2: "",
-          line3: ""
+          line3: "",
+          showplot: true
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -311,7 +312,7 @@ class Homepage extends React.Component {
                         null
                         : 
                         <div className="container d-flex justify-content-center">
-                        <a href="/search"><button className="btn btn-outline-dark">Search by additional criteria</button></a></div>
+                        <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
                     }
                 </div>,
                 
@@ -334,7 +335,12 @@ class Homepage extends React.Component {
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
-                    </div>
+                    </div>,
+                    <div className="container d-flex justify-content-center">
+                    {this.state.showplot ? 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="40%"></iframe>
+                    : null }</div> 
+                    
 
         ]
     }

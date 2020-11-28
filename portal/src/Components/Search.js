@@ -50,7 +50,9 @@ class Search extends React.Component {
           showAdditionalCriteria: false,
           line1: "",
           line2: "",
-          line3: ""
+          line3: "",
+          showplot: false,
+          score: 0
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -92,7 +94,10 @@ class Search extends React.Component {
             errorMessage: "",
             line1: "",
             line2: "",
-            line3: ""
+            line3: "",
+            showplot: false,
+            showResults: false
+
         })
         this.DisplayResults.current.setState({
             show: false,
@@ -103,6 +108,7 @@ class Search extends React.Component {
         console.log("in handle submit")
         if(this.state.nameValue == "Addie Jones" && this.state.zipValue == "15221"){
             this.setState({
+                showResults: true,
                 email: true,
                 line1: "Your name and zip are compromised!",
                 line2: "",
@@ -140,21 +146,7 @@ class Search extends React.Component {
         //query data base and surface web
         //display returned results
         var score = 0;
-        /*  
-            phonenumber: .6,
-            email: .1833,
-            address: .85,
-            birthday: .1166,
-            hometown: .15,
-            currenttown: .1166,
-            jobdetails: .2,
-            relationshipstatus: .4166,
-            interests: .3,
-            political: .6833,
-            religious: .5666
-
-        */
-        score+= (.6+.1833+.85+.1166)
+        score+= (updated_state.score)
         console.log("score: " + score)
         console.log(updated_state.email)
         console.log(updated_state.address)
@@ -172,6 +164,7 @@ class Search extends React.Component {
         console.log(updated_state.religious)
         console.log("and finally")
         console.log(false)
+        this.setState({score: score});
         this.DisplayResults.current.setState({
             
             email: updated_state.email,
@@ -330,7 +323,17 @@ class Search extends React.Component {
                     </div>,
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
-                </div>
+                </div>,
+                 <div className="container d-flex justify-content-center">
+                 {this.state.showResults ? 
+                     <button className="btn btn-primary" onClick= {() => this.setState({showplot:true,showResults:false})}> See how your score compares </button> 
+                     : null
+                 }</div>,
+                <div className="container d-flex justify-content-center">
+                {this.state.showplot ? 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" src="./boxplot1.html" height="525" width="40%"></iframe> 
+                    : null
+                }</div> 
 
         ]
     }

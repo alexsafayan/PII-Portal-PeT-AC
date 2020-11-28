@@ -48,12 +48,12 @@ class DisplayResults extends React.Component {
             <div>
                 {this.state.score > 0 ? 
                     <p>
-                        <h3>Your privacy rating is: {this.state.score}</h3> 
+                        <h3>Your privacy exposure rating is: {this.state.score}</h3> 
                         <Table striped bordered hover>
                         <thead>
                             <tr>
                             <th>Leaked Personal Attribute</th>
-                            <th>Associate Score</th>
+                            <th>Associated Score</th>
                             </tr>
                         </thead>
                         <tbody>
