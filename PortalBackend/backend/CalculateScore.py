@@ -1,5 +1,6 @@
 
 #accepts a json object of attributes to calculate and return privacy score
+#use calc_score, not this function
 def calculate_score(attributes):
     score = 0
     sc = {"Contact Number": 0.6, "E-mail": 0.1833, "Address": 0.85, "Birthdate": 0.1166, 
@@ -9,7 +10,7 @@ def calculate_score(attributes):
         #example response
     response = {"email": True, "address": True, "password": False, "phoneNumber": True, "zip": True, 
     "ssn": False, "birthday": True, "hometown": False, "currenttown": True, "jobdetails": False, 
-    "relationshipstatus": False, "interests": False, "political": False, "religious": False, "score": score}
+    "relationshipstatus": False, "interests": False, "political": False, "religious": False}
 
     try:
 
@@ -47,6 +48,8 @@ def calculate_score(attributes):
     score = round(score,1)
     return score
 
+
+
 def generate_boxplot(score):
     key = "[1.75, 1.75]"
     newKey = "["+str(score)+", "+str(score)+"]"
@@ -60,3 +63,40 @@ def generate_boxplot(score):
     f.close()
     #w.close()
     return new
+
+#use this guy
+def calc_score(attributes):
+    score = 0
+    sc = {"phoneNumber": 0.6, "email": 0.1833, "address": 0.85, "birthdate": 0.1166, 
+    "hometown": 0.15, "currentTown": 0.1166, "jobDetails": 0.2, "relationshipStatus": 0.4166, 
+    "interests": 0.3, "religiousViews": 0.5666, "politicalViews": 0.6833}
+
+    try:
+
+        if(attributes["email"] != 'none'):
+            score+= sc["email"]
+        if(attributes["address"] != 'none'):
+                score+= sc["address"]
+        if(attributes["phoneNumber"] != 'none'):
+                score+= sc["phoneNumber"]
+        if(attributes["birthday"] != 'none'):
+                score+= sc["birthday"]
+        if(attributes["hometown"] != 'none'):
+                score+= sc["hometown"]
+        if(attributes["currentTown"] != 'none'):
+                score+= sc["currentTown"]
+        if(attributes["jobDetails"] != 'none'):
+                score+= sc["jobDetails"]
+        if(attributes["relationshipStatus"] != 'none'):
+                score+= sc["relationshipStatus"]
+        if(attributes["interests"] != 'none'):
+                score+= sc["interests"]
+        if(attributes["politicalViews"] != 'none'):
+                score+= sc["politicalViews"]
+        if(attributes["religiousViews"] != 'none'):
+                score+= sc["religiousViews"]
+    except Exception as e:
+        print(e)
+
+    score = round(score,1)
+    return score

@@ -127,6 +127,17 @@ class Search extends React.Component {
             // });
             //this.callDisplay();
         }
+        else if(this.state.nameValue == "Nicholas Deluca") {
+            console.log("nick deluca bish")
+            this.queryMongoName3();
+            this.setState({
+                showResults: true,
+                email: true,
+                line1: "Your name and zip are compromised!",
+                line2: "",
+                line3: ""
+            })
+        }
         //query for name and zip/phone
         else if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
             console.log("else name and (other) length greater than 0")
@@ -287,6 +298,31 @@ class Search extends React.Component {
             //event.preventDefault();
         }
 
+    }
+
+    queryMongoName3(event) {
+        var other = this.state.phoneValue;
+        if (this.state.zipValue.length > 0) {
+            other = this.state.zipValue;
+        }
+        EmailDataService.getByName(this.state.nameValue, other)
+        .then(response => {
+            //send the returned json to handle submit
+            console.log(response.data);
+            // response email:
+            //console.log(response.data.email);
+
+
+            this.callDisplay(response.data);
+            return true;
+            //alert("we have your email in database under the name: "+response.data.name)
+        }).catch(e => {
+            console.log(e);
+            return false
+            //alert("we do not have your email stored in the database")
+        });
+
+        //event.preventDefault();
     }
 
     
