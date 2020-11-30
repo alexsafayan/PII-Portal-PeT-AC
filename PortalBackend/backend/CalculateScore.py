@@ -72,29 +72,72 @@ def calc_score(attributes):
     "interests": 0.3, "religiousViews": 0.5666, "politicalViews": 0.6833}
 
     try:
-
-        if(attributes["email"] != 'none'):
+        if(not 'none' in str(attributes["email"]).lower()):
             score+= sc["email"]
-        if(attributes["address"] != 'none'):
+            #print("adding score for email")
+            attributes["email"] = True
+        else:
+                attributes["email"] = False
+        if(not 'none' in str(attributes["address"]).lower()):
                 score+= sc["address"]
-        if(attributes["phoneNumber"] != 'none'):
+             #   print("adding score for address")
+                attributes["address"] = True
+        else:
+                attributes["address"] = False
+        if(not 'none' in str(attributes["phoneNum"]).lower()):
                 score+= sc["phoneNumber"]
-        if(attributes["birthday"] != 'none'):
-                score+= sc["birthday"]
-        if(attributes["hometown"] != 'none'):
+              #  print("adding score for phoneNumber")
+                attributes["phoneNumber"] = True
+        else:
+                attributes["phoneNumber"] = False
+        if(not 'none' in str(attributes["birthday"]).lower()):
+                score+= sc["birthdate"]
+               # print("adding score for birthday")
+                attributes["birthday"] = True
+        else:
+                attributes["birthday"] = False
+        if(not 'none' in str(attributes["hometown"]).lower()):
                 score+= sc["hometown"]
-        if(attributes["currentTown"] != 'none'):
+                #print("adding score for hometown")
+                attributes["hometown"] = True
+        else:
+                attributes["hometown"] = False
+        if(not 'none' in str(attributes["currentTown"]).lower()):
                 score+= sc["currentTown"]
-        if(attributes["jobDetails"] != 'none'):
+                #print("adding score for currentTown")
+                attributes["currentTown"] = True
+        else:
+                attributes["currentTown"] = False
+        if(not 'none' in str(attributes["jobDetails"]).lower()):
                 score+= sc["jobDetails"]
-        if(attributes["relationshipStatus"] != 'none'):
+                #print("adding score for jobDetails")
+                attributes["jobDetails"] = True
+        else:
+                attributes["jobDetails"] = False
+        if(not 'none' in str(attributes["relationshipStatus"]).lower()):
                 score+= sc["relationshipStatus"]
-        if(attributes["interests"] != 'none'):
+                #print("adding score for relationshipStatus")
+                attributes["relationshipStatus"] = True
+        else:
+                attributes["relationshipStatus"] = False
+        if(not 'none' in str(attributes["interests"]).lower()):
                 score+= sc["interests"]
-        if(attributes["politicalViews"] != 'none'):
+                #print("adding score for interests")
+                attributes["interests"] = True
+        else:
+                attributes["interests"] = False
+        if(not 'none' in str(attributes["politicalViews"]).lower()):
                 score+= sc["politicalViews"]
-        if(attributes["religiousViews"] != 'none'):
+                #print("adding score for politicalViews")
+                attributes["politicalViews"] = True
+        else:
+                attributes["politicalViews"] = False
+        if(not 'none' in str(attributes["religiousViews"]).lower()):
                 score+= sc["religiousViews"]
+                #print("adding score for religiousViews")
+                attributes["religiousViews"] = True
+        else:
+                attributes["religiousViews"] = False
     except Exception as e:
         print(e)
 

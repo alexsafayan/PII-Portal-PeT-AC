@@ -18,7 +18,7 @@ class dark_net_data(models.Model):
     gender = models.CharField(max_length=255, default='none')
     relationshipStatus = models.CharField(max_length=255, default='none')
     address = models.CharField(max_length=255, default='none')
-    phoneNumber = models.CharField(max_length=255, default='none')
+    phoneNum = models.CharField(max_length=255, default='none')
     hometown = models.CharField(max_length=255, default='none')
     jobDetails = models.CharField(max_length=255, default='none')
     interests = models.CharField(max_length=255, default='none')

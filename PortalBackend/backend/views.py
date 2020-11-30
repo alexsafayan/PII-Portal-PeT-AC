@@ -181,16 +181,16 @@ def name_detail2(request):
             print("it took this long --- " + str(elapsed_time))
 
 
-        except dark_net_data.DoesNotExist: 
+        except Exception as e: 
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_404_NOT_FOUND) 
         name_serializer = NameSerializer(item)
-        print("name_serializer below")
-        print(name_serializer.data)
+        #print("name_serializer below")
+        #print(name_serializer.data)
         response = {}
         response.update(name_serializer.data)
         print("response is ")
         print(response)
-        print("calculating score using response")
+        #print("calculating score using response")
         score = calc_score(response)
         print("score : " + str(score))
         plot = generate_boxplot(score)

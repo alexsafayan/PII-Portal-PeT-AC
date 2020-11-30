@@ -24,7 +24,7 @@ class NameSerializer(serializers.ModelSerializer):
                   'gender',
                   'relationshipStatus',
                   'address',
-                  'phoneNumber',
+                  'phoneNum',
                   'hometown',
                   'jobDetails',
                   'interests',
