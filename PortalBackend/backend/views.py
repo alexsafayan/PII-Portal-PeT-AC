@@ -4,14 +4,15 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
  
-from backend.models import EmailModel, Subscription
-from backend.serializers import EmailSerializer
+from backend.models import EmailModel, Subscription, dark_net_data
+from backend.serializers import EmailSerializer, NameSerializer
 from rest_framework.decorators import api_view
 
 from backend.TwitterCollector import TwitterCollector
 from backend.InstagramCollector import InstagramCollector
 from backend.ThatThemCollector import ThatThemCollector
 from backend.FlickrCollector import FlickrCollector
+from backend.CalculateScore import calc_score, generate_boxplot
 
 import json
 import time
@@ -59,10 +60,16 @@ def email_list(request):
         elif 'name' in dic:
             name = dic.get('name').lower()
             other = dic.get('other')
+            
             if 'addie' in name and 'jones' in name:
-                response = {"email": True, "address": True, "password": True, "phoneNumber": True, "zip": True, "ssn": False, "birthday": True, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+                response = {"email": True, "address": True, "password": False, "phoneNumber": True, "zip": True, "ssn": False, "birthday": True, "hometown": False, "currenttown": True, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+                
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
+            score = calculate_score(response)
+            plot = generate_boxplot(score)
+            response["score"] = score
+            response["plot"] = plot
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):
@@ -139,3 +146,55 @@ def name_detail(request):
         print("email_serializer below")
         print(email_serializer.data)
         return JsonResponse(email_serializer.data)
+
+@api_view(['GET', 'POST', 'DELETE'])
+def name_detail2(request):
+    
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+        # print(dic)
+        name = dic.get('name')
+        zip = dic.get('zip')
+        # print(zip)
+        try: 
+            namesplit = name.split(' ')
+            re1 = r'%'
+            for each in namesplit:
+                re1+=each
+                re1+='%'
+            print("re1 below")
+            print(re1)
+            #re1 = '%'+name+'%'
+            re2 = '%'+str(zip)+'%'
+            item = dark_net_data.objects.filter(name__contains=namesplit[0], address__contains=zip)[0]
+            #item = dark_net_data.objects.raw('Select name, birthday, currentTown, address, gender, relationshipStatus, phoneNum, email, hometown, jobDetails, interests, religiousViews, politicalViews from backend_dark_net_data where name like \''+re1+'\' and address like \''+re2+'\'')[0]
+            #item = dark_net_data.objects.raw('SELECT * FROM backend_dark_net_data')[0]
+            # print("item below")
+            # print(item)
+            # print()
+            # item_2 = EmailModel.objects.get(zip=zip)
+
+            start_time = time.time()
+
+            elapsed_time = time.time() - start_time
+            print("it took this long --- " + str(elapsed_time))
+
+
+        except Exception as e: 
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        name_serializer = NameSerializer(item)
+        #print("name_serializer below")
+        #print(name_serializer.data)
+        response = {}
+        response.update(name_serializer.data)
+        print("response is ")
+        print(response)
+        #print("calculating score using response")
+        score = calc_score(response)
+        print("score : " + str(score))
+        plot = generate_boxplot(score)
+        response["score"] = score
+        response["plot"] = plot
+        return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
+        #return JsonResponse(name_serializer.data)

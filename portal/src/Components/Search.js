@@ -50,7 +50,10 @@ class Search extends React.Component {
           showAdditionalCriteria: false,
           line1: "",
           line2: "",
-          line3: ""
+          line3: "",
+          showplot: false,
+          plot: "",
+          score: 0
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -92,7 +95,10 @@ class Search extends React.Component {
             errorMessage: "",
             line1: "",
             line2: "",
-            line3: ""
+            line3: "",
+            showplot: false,
+            showResults: false
+
         })
         this.DisplayResults.current.setState({
             show: false,
@@ -102,6 +108,7 @@ class Search extends React.Component {
         //query for email
         console.log("in handle submit")
         if(this.state.nameValue == "Addie Jones" && this.state.zipValue == "15221"){
+            
             console.log("addie jones bish")
             this.queryMongoName();
             // .then(response => {
@@ -114,10 +121,24 @@ class Search extends React.Component {
             // });
             //this.callDisplay();
         }
+        else if(this.state.nameValue == "Nicholas Deluca") {
+            console.log("nick deluca bish")
+            this.queryMongoName3();
+            
+        }
         //query for name and zip/phone
         else if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
-            console.log("else name and (other) length greater than 0")
+            console.log("name and other (zip or phone) length greater than 0")
+            this.queryMongoName3();
             this.queryMongoName2();
+            console.log("queried 3 and 2")
+            // if(!this.state.email) {
+            //     this.setState({
+            //         line1: "Your name and zip are NOT compromised!",
+            //         line2: "We do not have your name and zip in our database. Please continue browsing safely!",
+            //         line3: ""
+            //     })
+            // }
         }
         else {
             console.log("invalid entry")
@@ -134,41 +155,27 @@ class Search extends React.Component {
         //query data base and surface web
         //display returned results
         var score = 0;
-        /*  
-            phonenumber: .6,
-            email: .1833,
-            address: .85,
-            birthday: .1166,
-            hometown: .15,
-            currenttown: .1166,
-            jobdetails: .2,
-            relationshipstatus: .4166,
-            interests: .3,
-            political: .6833,
-            religious: .5666
-
-        */
-        score+= (.6+.1833+.85+.1166)
-        // console.log("score: " + score)
-        // console.log(updated_state.email)
-        // console.log(updated_state.address)
-        // console.log(updated_state.password)
-        // console.log(updated_state.phoneNumber)
-        // console.log(updated_state.zip)
-        // console.log(updated_state.ssn)
-        // console.log(updated_state.birthday)
-        // console.log(updated_state.hometown)
-        // console.log(updated_state.currenttown)
-        // console.log(updated_state.jobdetails)
-        // console.log(updated_state.relationshipstatus)
-        // console.log(updated_state.interests)
-        // console.log(updated_state.political)
-        // console.log(updated_state.religious)
-        // console.log("and finally")
-        // console.log(false)
+        score+= (updated_state.score)
+        console.log("score: " + score)
+        console.log(updated_state.email)
+        console.log(updated_state.address)
+        console.log(updated_state.password)
+        console.log(updated_state.phoneNumber)
+        console.log(updated_state.zip)
+        console.log(updated_state.ssn)
+        console.log(updated_state.birthday)
+        console.log(updated_state.hometown)
+        console.log(updated_state.currenttown)
+        console.log(updated_state.jobdetails)
+        console.log(updated_state.relationshipstatus)
+        console.log(updated_state.interests)
+        console.log(updated_state.political)
+        console.log(updated_state.religious)
+        console.log("and finally")
+        console.log(false)
+        this.setState({score: score, plot: updated_state.plot});
         this.DisplayResults.current.setState({
-            show: true,
-            score: score,
+            
             email: updated_state.email,
             address: updated_state.address,
             password: updated_state.password,
@@ -177,14 +184,16 @@ class Search extends React.Component {
             ssn: updated_state.ssn,
             birthday: updated_state.birthday,
             hometown: updated_state.hometown,
-            currenttown: updated_state.currenttown,
+            currenttown: updated_state.currentTown,
             jobdetails: updated_state.jobdetails,
-            relationshipstatus: updated_state.relationshipstatus,
+            relationshipstatus: updated_state.relationshipStatus,
             interests: updated_state.interests,
-            political: updated_state.political,
-            religious: updated_state.religious,
+            political: updated_state.politicalViews,
+            religious: updated_state.religiousViews,
             databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo']
+            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
+            show: true,
+            score: score
 
         })
         
@@ -249,9 +258,22 @@ class Search extends React.Component {
 
 
             this.callDisplay(response.data);
+            this.setState({
+                showResults: true,
+                //email: true,
+                line1: "Your name and zip are compromised!",
+                line2: "",
+                line3: ""
+            })
             return true;
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
+            console.log("in hizzere")
+            this.setState({
+                line1: "Your name and zip are NOT compromised!",
+                line2: "We do not have your name and zip in our database. Please continue browsing safely!",
+                line3: ""
+            })
             console.log(e);
             return false
             //alert("we do not have your email stored in the database")
@@ -265,27 +287,65 @@ class Search extends React.Component {
             console.log(this.state.nameValue);
             EmailDataService.getData(this.state.nameValue, this.state.zipValue)
             .then(response => {
+                console.log("query2 response:");
                 console.log(response.data);
                 //alert("we have your name and zip in database")
                 this.setState({
-                    email: true,
+                    //email: true,
                     line1: "Your name and zip are compromised!",
                     line2: "We found the following name and zip in our dark net database.",
                     line3: ""
                 })
             }).catch(e => {
+                console.log("in hizzere2")
                 console.log(e);
                 //alert("we do not have your name and zip stored in the database")
-                this.setState({
-                    line1: "Your name and zip are NOT compromised!",
-                    line2: "We do not have your name and zip in our database. Please continue browsing safely!",
-                    line3: ""
-                })
+                
             });
 
             //event.preventDefault();
         }
 
+    }
+
+    //newest.  searches database for address and name CONTAINING name and zip values
+    queryMongoName3(event) {
+        var other = this.state.phoneValue;
+        if (this.state.zipValue.length > 0) {
+            other = this.state.zipValue;
+        }
+        EmailDataService.getByName(this.state.nameValue, other)
+        .then(response => {
+            //send the returned json to handle submit
+            console.log("query3 response:");
+            console.log(response.data);
+            // response email:
+            //console.log(response.data.email);
+
+
+            this.callDisplay(response.data);
+            this.setState({
+                showResults: true,
+                //email: true,
+                line1: "Your name and zip are compromised!",
+                line2: "",
+                line3: ""
+            })
+            return true;
+            //alert("we have your email in database under the name: "+response.data.name)
+        }).catch(e => {
+            console.log("in hizzere3")
+            console.log(e);
+            this.setState({
+                line1: "Your name and zip are NOT compromised!",
+                line2: "We do not have your name and zip in our database. Please continue browsing safely!",
+                line3: ""
+            })
+            return false
+            //alert("we do not have your email stored in the database")
+        });
+
+        //event.preventDefault();
     }
 
     
@@ -314,16 +374,26 @@ class Search extends React.Component {
                     </p>
                 </Alert>
                 }</div>,
-                <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
-                </div>,
                  <div className="container d-flex justify-content-center">
                  <h1>{this.state.line1}</h1>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
-                    </div>
+                    </div>,
+                <div className="container d-flex justify-content-center">
+                    <DisplayResults ref={this.DisplayResults}/>
+                </div>,
+                 <div className="container d-flex justify-content-center">
+                 {this.state.showResults ? 
+                     <button className="btn btn-primary" onClick= {() => this.setState({showplot:true,showResults:false})}> See how your score compares </button> 
+                     : null
+                 }</div>,
+                <div className="container d-flex justify-content-center">
+                {this.state.showplot ? 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
+                    : null
+                }</div> 
 
         ]
     }
