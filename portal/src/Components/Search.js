@@ -132,13 +132,6 @@ class Search extends React.Component {
             this.queryMongoName3();
             this.queryMongoName2();
             console.log("queried 3 and 2")
-            // if(!this.state.email) {
-            //     this.setState({
-            //         line1: "Your name and zip are NOT compromised!",
-            //         line2: "We do not have your name and zip in our database. Please continue browsing safely!",
-            //         line3: ""
-            //     })
-            // }
         }
         else {
             console.log("invalid entry")
@@ -381,9 +374,6 @@ class Search extends React.Component {
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
                     </div>,
-                <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
-                </div>,
                  <div className="container d-flex justify-content-center">
                  {this.state.showResults ? 
                      <button className="btn btn-primary" onClick= {() => this.setState({showplot:true,showResults:false})}> See how your score compares </button> 
@@ -393,7 +383,10 @@ class Search extends React.Component {
                 {this.state.showplot ? 
                     <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
                     : null
-                }</div> 
+                }</div>,
+                <div className="container d-flex justify-content-center">
+                    <DisplayResults ref={this.DisplayResults}/>
+                </div>
 
         ]
     }
