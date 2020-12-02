@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from backend.models import EmailModel, dark_net_data
+from backend.models import EmailModel
  
  
 class EmailSerializer(serializers.ModelSerializer):
@@ -10,23 +10,14 @@ class EmailSerializer(serializers.ModelSerializer):
                   'email',
                   'name',
                   'zip',
-                  'phoneNumber')
-
-class NameSerializer(serializers.ModelSerializer):
- 
-    class Meta:
-        model = dark_net_data
-        fields = ('id',
-                  'email',
-                  'name',
-                  'birthday',
-                  'currentTown',
-                  'gender',
-                  'relationshipStatus',
-                  'address',
                   'phoneNum',
+                  'address',
+                  'ssn',
+                  'birthday',
                   'hometown',
+                  'currentTown',
                   'jobDetails',
+                  'relationshipStatus',
                   'interests',
                   'politicalViews',
                   'religiousViews')

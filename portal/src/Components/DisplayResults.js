@@ -74,7 +74,8 @@ class DisplayResults extends React.Component {
                         </Table>
                     </p> 
                     : 
-                    this.state.show ? <h1>Your data is safe!</h1> :  null
+                    // this.state.show ? <h1>Your data is safe!</h1> :  null
+                    null
                 }
             </div>
         )

@@ -88,6 +88,7 @@ def calc_score(attributes):
                 score+= sc["phoneNumber"]
               #  print("adding score for phoneNumber")
                 attributes["phoneNumber"] = True
+                attributes["phoneNum"] = True
         else:
                 attributes["phoneNumber"] = False
         if(not 'none' in str(attributes["birthday"]).lower()):
@@ -96,12 +97,14 @@ def calc_score(attributes):
                 attributes["birthday"] = True
         else:
                 attributes["birthday"] = False
-        if(not 'none' in str(attributes["hometown"]).lower()):
+        if(not 'none' in str(attributes["hometown"]).lower() or not 'none' in str(attributes["zip"]).lower()):
                 score+= sc["hometown"]
                 #print("adding score for hometown")
                 attributes["hometown"] = True
+                attributes["zip"] = True
         else:
                 attributes["hometown"] = False
+                attributes["zip"] = False
         if(not 'none' in str(attributes["currentTown"]).lower()):
                 score+= sc["currentTown"]
                 #print("adding score for currentTown")

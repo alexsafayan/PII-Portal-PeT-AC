@@ -55,7 +55,9 @@ class Homepage extends React.Component {
           line1: "",
           line2: "",
           line3: "",
-          showplot: true
+          showplot: false,
+          plot: "",
+          score: 0
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -69,26 +71,6 @@ class Homepage extends React.Component {
         this.queryMongoName2 = this.queryMongoName2.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.DisplayResults = React.createRef();
-        
-        var resultJson = {
-            //score: score,
-            email: false,
-            address: false,
-            password: false,
-            phoneNumber: false,
-            zip: false,
-            ssn: false,
-            birthday: false,
-            hometown: false,
-            currenttown: false,
-            jobdetails: false,
-            relationshipstatus: false,
-            interests: false,
-            political: false,
-            religious: false,
-            databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
-        } 
       }
     
     handleSubmit(event) {
@@ -96,7 +78,11 @@ class Homepage extends React.Component {
             errorMessage: "",
             line1: "",
             line2: "",
-            line3: ""
+            line3: "",
+            showplot: false,
+            plot: "",
+            showResults: false,
+            score: 0
         })
         //query for email
         console.log("in handle submit")
@@ -130,41 +116,27 @@ class Homepage extends React.Component {
         //query data base and surface web
         //display returned results
         var score = 0;
-        /*  
-            phonenumber: .6,
-            email: .1833,
-            address: .85,
-            birthday: .1166,
-            hometown: .15,
-            currenttown: .1166,
-            jobdetails: .2,
-            relationshipstatus: .4166,
-            interests: .3,
-            political: .6833,
-            religious: .5666
-
-        */
-        score+= (.6+.1833+.85+.1166)
-        // console.log("score: " + score)
-        // console.log(updated_state.email)
-        // console.log(updated_state.address)
-        // console.log(updated_state.password)
-        // console.log(updated_state.phoneNumber)
-        // console.log(updated_state.zip)
-        // console.log(updated_state.ssn)
-        // console.log(updated_state.birthday)
-        // console.log(updated_state.hometown)
-        // console.log(updated_state.currenttown)
-        // console.log(updated_state.jobdetails)
-        // console.log(updated_state.relationshipstatus)
-        // console.log(updated_state.interests)
-        // console.log(updated_state.political)
-        // console.log(updated_state.religious)
-        // console.log("and finally")
-        // console.log(false)
+        score+= (updated_state.score)
+        console.log("score: " + score)
+        console.log(updated_state.email)
+        console.log(updated_state.address)
+        console.log(updated_state.password)
+        console.log(updated_state.phoneNumber)
+        console.log(updated_state.zip)
+        console.log(updated_state.ssn)
+        console.log(updated_state.birthday)
+        console.log(updated_state.hometown)
+        console.log(updated_state.currenttown)
+        console.log(updated_state.jobdetails)
+        console.log(updated_state.relationshipstatus)
+        console.log(updated_state.interests)
+        console.log(updated_state.political)
+        console.log(updated_state.religious)
+        console.log("and finally")
+        console.log(false)
+        this.setState({score: score, plot: updated_state.plot});
         this.DisplayResults.current.setState({
-            show: true,
-            score: score,
+            
             email: updated_state.email,
             address: updated_state.address,
             password: updated_state.password,
@@ -173,14 +145,16 @@ class Homepage extends React.Component {
             ssn: updated_state.ssn,
             birthday: updated_state.birthday,
             hometown: updated_state.hometown,
-            currenttown: updated_state.currenttown,
+            currenttown: updated_state.currentTown,
             jobdetails: updated_state.jobdetails,
-            relationshipstatus: updated_state.relationshipstatus,
+            relationshipstatus: updated_state.relationshipStatus,
             interests: updated_state.interests,
-            political: updated_state.political,
-            religious: updated_state.religious,
+            political: updated_state.politicalViews,
+            religious: updated_state.religiousViews,
             databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo']
+            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
+            show: true,
+            score: score
 
         })
         
@@ -216,16 +190,27 @@ class Homepage extends React.Component {
         .then(response => {
             //send the returned json to handle submit
 
-            
+            console.log("email response")
+            console.log(response);
+            console.log("email response data")
             console.log(response.data);
-            this.setState({
-                email: true,
-                line1: "Your email is compromised!",
-                line2: "",
-                line3: ""
-            })
-            //this.callDisplay();
-            return true;
+            if(response.status == 202) {
+                this.setState({
+                    showResults: true,
+                    line1: "Your email is compromised!",
+                    line2: "",
+                    line3: ""
+                })
+                this.callDisplay(response.data);
+                return true;
+            } else if(response.status == 204) {
+                this.setState({
+                    line1: "Your email is NOT compromised!",
+                    line2: "",
+                    line3: ""
+                })
+                return false
+            }
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
             console.log(e);
@@ -326,16 +311,26 @@ class Homepage extends React.Component {
                 </p>
               </Alert>
                 }</div>,
-                <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
-                </div>,
                  <div className="container d-flex justify-content-center">
                  <h1>{this.state.line1}</h1>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
-                    </div>
+                    </div>,
+                <div className="container d-flex justify-content-center">
+                    <DisplayResults ref={this.DisplayResults}/>
+                </div>,
+                 <div className="container d-flex justify-content-center">
+                 {this.state.showResults ? 
+                     <button className="btn btn-primary" onClick= {() => this.setState({showplot:true,showResults:false})}> See how your score compares </button> 
+                     : null
+                 }</div>,
+                <div className="container d-flex justify-content-center">
+                {this.state.showplot ? 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
+                    : null
+                }</div> 
                     
 
         ]

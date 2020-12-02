@@ -4,8 +4,8 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
  
-from backend.models import EmailModel, Subscription, dark_net_data
-from backend.serializers import EmailSerializer, NameSerializer
+from backend.models import EmailModel, Subscription
+from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 
 from backend.TwitterCollector import TwitterCollector
@@ -16,6 +16,7 @@ from backend.CalculateScore import calc_score, generate_boxplot
 
 import json
 import time
+import requests
 
 
 # Create your views here.
@@ -50,13 +51,32 @@ def email_list(request):
         if 'email' in dic:
 
             email = dic.get('email')
+            print("email is : " +str(email))
             try: 
                 item = EmailModel.objects.filter(email=email)[0]
-                #print("\n\n\n\n\n\n\n\n\n"+str(item)+"\n\n\n\n\n\n\n\n\n\n")
-            except EmailModel.DoesNotExist: 
-                return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+                spider_url = 'https://thatsthem.com/email/' + email
+                scrapyrt_url = 'http://localhost:9080/crawl.json?spider_name=mydomain&url='
+                final_url = scrapyrt_url + spider_url
+                print(final_url)
+                results = requests.get(url=final_url)
+                #print(results.json()['items'][0])
+                response = results.json()['items'][0]
+                print(response)
+                response["email"] = email
+                score = calc_score(response)
+                print("score : " + str(score))
+                plot = generate_boxplot(score)
+                response["score"] = score
+                response["plot"] = plot
+            except Exception as e: 
+                print(str(e))
+                return JsonResponse({'error_message': str(e)}, status=status.HTTP_204_NO_CONTENT)
+                 
             email_serializer = EmailSerializer(item)
-            return JsonResponse(email_serializer.data)
+            #return JsonResponse(email_serializer.data)
+            return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
+
+
         elif 'name' in dic:
             name = dic.get('name').lower()
             other = dic.get('other')
@@ -66,10 +86,11 @@ def email_list(request):
                 
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
-            score = calculate_score(response)
+            score = calc_score(response)
             plot = generate_boxplot(score)
             response["score"] = score
             response["plot"] = plot
+            
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):
@@ -77,7 +98,7 @@ def email_detail(request, email):
     try: 
         item = EmailModel.objects.get(email=email) 
     except EmailModel.DoesNotExist: 
-        return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_204_NO_CONTENT) 
     # GET email
     if request.method == 'GET': 
         email_serializer = EmailSerializer(item) 
@@ -94,7 +115,7 @@ def email_subscribe(request):
             item.save()
             #print("\n\n\n\n\n\n\n\n\n"+str(item)+"\n\n\n\n\n\n\n\n\n\n")
         except: 
-            return JsonResponse({'message': 'There was an error'}, status=status.HTTP_404_NOT_FOUND) 
+            return JsonResponse({'message': 'There was an error'}, status=status.HTTP_204_NO_CONTENT) 
         return JsonResponse({'message': 'Success'})
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -141,7 +162,7 @@ def name_detail(request):
             
 
         except EmailModel.DoesNotExist: 
-            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
         email_serializer = EmailSerializer(item)
         print("email_serializer below")
         print(email_serializer.data)
@@ -167,7 +188,7 @@ def name_detail2(request):
             print(re1)
             #re1 = '%'+name+'%'
             re2 = '%'+str(zip)+'%'
-            item = dark_net_data.objects.filter(name__contains=namesplit[0], address__contains=zip)[0]
+            item = EmailModel.objects.filter(name__contains=namesplit[0], address__contains=zip)[0]
             #item = dark_net_data.objects.raw('Select name, birthday, currentTown, address, gender, relationshipStatus, phoneNum, email, hometown, jobDetails, interests, religiousViews, politicalViews from backend_dark_net_data where name like \''+re1+'\' and address like \''+re2+'\'')[0]
             #item = dark_net_data.objects.raw('SELECT * FROM backend_dark_net_data')[0]
             # print("item below")
@@ -182,8 +203,9 @@ def name_detail2(request):
 
 
         except Exception as e: 
-            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-        name_serializer = NameSerializer(item)
+            print("error!!!: "+str(e))
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+        name_serializer = EmailSerializer(item)
         #print("name_serializer below")
         #print(name_serializer.data)
         response = {}

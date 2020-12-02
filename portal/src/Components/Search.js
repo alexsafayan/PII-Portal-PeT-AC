@@ -130,7 +130,7 @@ class Search extends React.Component {
         else if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
             console.log("name and other (zip or phone) length greater than 0")
             this.queryMongoName3();
-            this.queryMongoName2();
+            //this.queryMongoName2();
             console.log("queried 3 and 2")
             // if(!this.state.email) {
             //     this.setState({
@@ -322,16 +322,25 @@ class Search extends React.Component {
             // response email:
             //console.log(response.data.email);
 
-
-            this.callDisplay(response.data);
-            this.setState({
-                showResults: true,
-                //email: true,
-                line1: "Your name and zip are compromised!",
-                line2: "",
-                line3: ""
-            })
-            return true;
+            if(response.status == 202) {
+                this.callDisplay(response.data);
+                this.setState({
+                    showResults: true,
+                    //email: true,
+                    line1: "Your name and zip are compromised!",
+                    line2: "",
+                    line3: ""
+                })
+                return true;
+            }
+            else if (response.status == 204) {
+                this.setState({
+                    line1: "Your name and zip are NOT compromised! Please continue browsing safely!",
+                    line2: "",
+                    line3: ""
+                })
+                return false
+            }
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
             console.log("in hizzere3")
@@ -375,7 +384,7 @@ class Search extends React.Component {
                 </Alert>
                 }</div>,
                  <div className="container d-flex justify-content-center">
-                 <h1>{this.state.line1}</h1>
+                 <h2>{this.state.line1}</h2>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
