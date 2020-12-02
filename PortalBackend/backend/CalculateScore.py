@@ -53,7 +53,7 @@ def calculate_score(attributes):
 def generate_boxplot(score):
     key = "[1.75, 1.75]"
     newKey = "["+str(score)+", "+str(score)+"]"
-    f = open("backend/Boxplots/boxplot1.html", "r")
+    f = open("backend/Boxplots/boxplotnew.html", "r")
     #w = open("backend/Boxplots/boxplotguy.html","w")
 
     original = f.read()
