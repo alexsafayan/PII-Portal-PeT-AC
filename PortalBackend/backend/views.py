@@ -69,6 +69,7 @@ def email_list(request):
                 plot = generate_boxplot(score, response["agebucket"])
                 response["score"] = score
                 response["plot"] = plot
+                response["platform"] = "that's them"
             except Exception as e: 
                 print(str(e))
                 return JsonResponse({'error_message': str(e)}, status=status.HTTP_204_NO_CONTENT)
@@ -190,7 +191,7 @@ def name_detail2(request):
             print(re1)
             #re1 = '%'+name+'%'
             re2 = '%'+str(zip)+'%'
-            item = EmailModel.objects.filter(name__contains=namesplit[0], address__contains=zip)[0]
+            item = EmailModel.objects.filter(name__contains=namesplit[0], zip__contains=zip)[0]
             #item = dark_net_data.objects.raw('Select name, birthday, currentTown, address, gender, relationshipStatus, phoneNum, email, hometown, jobDetails, interests, religiousViews, politicalViews from backend_dark_net_data where name like \''+re1+'\' and address like \''+re2+'\'')[0]
             #item = dark_net_data.objects.raw('SELECT * FROM backend_dark_net_data')[0]
             # print("item below")
@@ -220,5 +221,6 @@ def name_detail2(request):
         plot = generate_boxplot(score, response["agebucket"])
         response["score"] = score
         response["plot"] = plot
+        response["platform"] = response["platform"].replace("_",", ")
         return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
         #return JsonResponse(name_serializer.data)

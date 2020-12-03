@@ -24,7 +24,7 @@ class DisplayResults extends React.Component {
         interests: this.props.interests,
         political: this.props.political,
         religious: this.props.religious,
-        databreach_sources: this.props.databreach_sources,
+        sources: this.props.sources,
         surfaceweb_sources: this.props.surfaceweb_sources,
         attribute_values: {  
             phonenumber: .6,
@@ -47,32 +47,32 @@ class DisplayResults extends React.Component {
         return (
             <div>
                 {this.state.score > 0 ? 
-                    <p>
+                    <div>
                         <h3>Your privacy exposure rating is: {this.state.score}</h3> 
                         <Table striped bordered hover>
                         <thead>
                             <tr>
                             <th>Leaked Personal Attribute</th>
                             <th>Associated Score</th>
+                            <th>Source Platform</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {this.state.phoneNumber ? <tr> <td>contact number</td> <td>{this.state.attribute_values.phonenumber}</td> </tr>  : null}
-                        {this.state.email ? <tr> <td>email</td> <td>{this.state.attribute_values.email}</td></tr>  : null}
-                        {this.state.password ? <tr> <td>password</td><td>{this.state.attribute_values.password}</td> </tr>  : null}
-                        {this.state.address ? <tr> <td>address</td><td>{this.state.attribute_values.address}</td> </tr>  : null}
-                        {this.state.birthday ? <tr> <td>birthday</td> <td>{this.state.attribute_values.birthday}</td></tr>  : null}
-                        {this.state.hometown ? <tr> <td>hometown</td><td>{this.state.attribute_values.hometown}</td> </tr>  : null}
-                        {this.state.currenttown ? <tr> <td>current town</td><td>{this.state.attribute_values.currenttown}</td> </tr>  : null}
-                        {this.state.jobdetails ? <tr> <td>job details</td> <td>{this.state.attribute_values.jobdetails}</td></tr>  : null}
-
-                        {this.state.relationshipstatus ? <tr><td>relationship status</td> <td>{this.state.attribute_values.relationshipstatus}</td></tr>  : null}
-                        {this.state.interests ? <tr> <td>interests</td> <td>{this.state.attribute_values.interests}</td></tr>  : null}
-                        {this.state.political ? <tr> <td>political views</td> <td>{this.state.attribute_values.political}</td></tr>  : null}
-                        {this.state.religious ? <tr> <td>religious views</td> <td>{this.state.attribute_values.religious}</td></tr>  : null}
+                        {this.state.phoneNumber ? <tr><td>contact number</td><td>{this.state.attribute_values.phonenumber}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.email ? <tr><td>email</td><td>{this.state.attribute_values.email}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.password ? <tr><td>password</td><td>{this.state.attribute_values.password}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.address ? <tr><td>address</td><td>{this.state.attribute_values.address}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.birthday ? <tr><td>birthday</td><td>{this.state.attribute_values.birthday}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.hometown ? <tr><td>hometown</td><td>{this.state.attribute_values.hometown}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.currenttown ? <tr><td>current town</td><td>{this.state.attribute_values.currenttown}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.jobdetails ? <tr><td>job details</td><td>{this.state.attribute_values.jobdetails}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.relationshipstatus ? <tr><td>relationship status</td><td>{this.state.attribute_values.relationshipstatus}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.interests ? <tr><td>interests</td><td>{this.state.attribute_values.interests}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.political ? <tr><td>political views</td><td>{this.state.attribute_values.political}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.religious ? <tr><td>religious views</td><td>{this.state.attribute_values.religious}</td><td>{this.state.sources}</td></tr> : null}
                         </tbody>
                         </Table>
-                    </p> 
+                    </div> 
                     : 
                     // this.state.show ? <h1>Your data is safe!</h1> :  null
                     null

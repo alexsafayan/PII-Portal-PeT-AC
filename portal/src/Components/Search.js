@@ -4,6 +4,7 @@ import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
 import EmailDataService from "../services/email.service";
 import axios from "axios";
 import Alert from 'react-bootstrap/Alert'
+import Table from 'react-bootstrap/Table'
 
 const initialResultsState = {
     email: false,
@@ -190,7 +191,7 @@ class Search extends React.Component {
             interests: updated_state.interests,
             political: updated_state.politicalViews,
             religious: updated_state.religiousViews,
-            databreach_sources: [],
+            sources: updated_state.platform,
             surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
             show: true,
             score: score
@@ -392,6 +393,7 @@ class Search extends React.Component {
                     </div>,
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
+                    
                 </div>,
                  <div className="container d-flex justify-content-center">
                  {this.state.showResults ? 
@@ -400,7 +402,7 @@ class Search extends React.Component {
                  }</div>,
                 <div className="container d-flex justify-content-center">
                 {this.state.showplot ? 
-                    <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" srcDoc={this.state.plot} height="525" width="60%"></iframe> 
                     : null
                 }</div> 
 

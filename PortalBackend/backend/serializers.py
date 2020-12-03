@@ -20,5 +20,6 @@ class EmailSerializer(serializers.ModelSerializer):
                   'relationshipStatus',
                   'interests',
                   'politicalViews',
-                  'religiousViews')
+                  'religiousViews',
+                  'platform')
     
