@@ -65,7 +65,8 @@ def email_list(request):
                 response["email"] = email
                 score = calc_score(response)
                 print("score : " + str(score))
-                plot = generate_boxplot(score)
+                #plot = generate_boxplot(score)
+                plot = generate_boxplot(score, response["agebucket"])
                 response["score"] = score
                 response["plot"] = plot
             except Exception as e: 
@@ -87,7 +88,8 @@ def email_list(request):
             else:
                 response = {"email": False, "address": False, "password": False, "phoneNumber": False, "zip": False, "ssn": False, "birthday": False, "hometown": False, "currenttown": False, "jobdetails": False, "relationshipstatus": False, "interests": False, "political": False, "religious": False}
             score = calc_score(response)
-            plot = generate_boxplot(score)
+            #plot = generate_boxplot(score)
+            plot = generate_boxplot(score, response["agebucket"])
             response["score"] = score
             response["plot"] = plot
             
@@ -215,7 +217,7 @@ def name_detail2(request):
         #print("calculating score using response")
         score = calc_score(response)
         print("score : " + str(score))
-        plot = generate_boxplot(score)
+        plot = generate_boxplot(score, response["agebucket"])
         response["score"] = score
         response["plot"] = plot
         return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
