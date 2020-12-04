@@ -7,14 +7,16 @@ def generate_boxplot(score, bucket):
         key = "[4.33, 4.33]"
         newKey = "["+str(score)+", "+str(score)+"]"
         boxplot = "boxplotnew.html"
-        if(bucket == "18-30"):
-                boxplot = "boxplot18.html"
-        elif(bucket == "31-45"):
-                boxplot = "boxplot31.html"
-        elif(bucket == "46-64"):
-                boxplot = "boxplot46.html"
-        elif(bucket == "65+"):
-                boxplot = "boxplot65.html"
+        if(bucket == "genz"):
+                boxplot = "boxplotgenz.html"
+        elif(bucket == "millenial"):
+                boxplot = "boxplotmillenial.html"
+        elif(bucket == "genx"):
+                boxplot = "boxplotgenx.html"
+        elif(bucket == "boomer"):
+                boxplot = "boxplotboomer.html"
+        elif(bucket == "silent"):
+                boxplot = "boxplotsilent.html"
 
         f = open("backend/Boxplots/"+boxplot, "r")
         #f = open("backend/Boxplots/boxplotnew.html", "r")
@@ -41,6 +43,7 @@ def calc_score(attributes):
 
     try:
         attributes["agebucket"] = "none"
+        attributes["medianscore"] = "tot"
         if(not 'none' in str(attributes["email"]).lower()):
             score+= sc["email"]
             #print("adding score for email")
@@ -75,14 +78,21 @@ def calc_score(attributes):
                         #this bday is anage
                         print("this bday is an age")
                         age = int(bday)
-                if(age > 17 and age < 31):
-                        attributes["agebucket"] = "18-30"
-                elif(age > 30 and age < 46):
-                        attributes["agebucket"] = "31-45"
-                elif(age > 45 and age < 65):
-                        attributes["agebucket"] = "46-64"
-                elif(age > 65):
-                        attributes["agebucket"] = "65+"
+                if(age > 7 and age < 24):
+                        attributes["agebucket"] = "genz"
+                        attributes["medianscore"] = 1.9
+                elif(age > 23 and age < 40):
+                        attributes["agebucket"] = "millenial"
+                        attributes["medianscore"] = 2.4
+                elif(age > 39 and age < 56):
+                        attributes["agebucket"] = "genx"
+                        attributes["medianscore"] = 3.3
+                elif(age > 55 and age < 75):
+                        attributes["agebucket"] = "boomer"
+                        attributes["medianscore"] = 3.6
+                elif(age > 74):
+                        attributes["agebucket"] = "silent"
+                        attributes["medianscore"] = 3.6
 
         else:
                 attributes["birthday"] = False

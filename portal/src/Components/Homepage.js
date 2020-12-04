@@ -152,6 +152,7 @@ class Homepage extends React.Component {
             political: updated_state.politicalViews,
             religious: updated_state.religiousViews,
             sources: updated_state.platform,
+            medianscore: updated_state.medianscore,
             surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
             show: true,
             score: score
@@ -205,7 +206,7 @@ class Homepage extends React.Component {
                 return true;
             } else if(response.status == 204) {
                 this.setState({
-                    line1: "Your email is NOT compromised!",
+                    line1: "We do not have any record of your email being compromised.",
                     line2: "",
                     line3: ""
                 })
@@ -215,7 +216,7 @@ class Homepage extends React.Component {
         }).catch(e => {
             console.log(e);
             this.setState({
-                line1: "Your email is NOT compromised!",
+                line1: "We do not have any record of your email being compromised.",
                 line2: "",
                 line3: ""
             })

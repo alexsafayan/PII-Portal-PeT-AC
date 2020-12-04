@@ -26,18 +26,19 @@ class DisplayResults extends React.Component {
         religious: this.props.religious,
         sources: this.props.sources,
         surfaceweb_sources: this.props.surfaceweb_sources,
+        medianscore: this.props.medianscore,
         attribute_values: {  
-            phonenumber: .6,
-            email: .1833,
-            address: .85,
-            birthday: .1166,
-            hometown: .15,
-            currenttown: .1166,
-            jobdetails: .2,
-            relationshipstatus: .4166,
-            interests: .3,
-            political: .6833,
-            religious: .5666
+            phonenumber: 1.434,
+            email: .438,
+            address: 2.032,
+            birthday: .279,
+            hometown: .359,
+            currenttown: .279,
+            jobdetails: .478,
+            relationshipstatus: .996,
+            interests: .717,
+            political: 1.355,
+            religious: 1.633
         }
       };
       const initialState = this.state;
@@ -48,30 +49,32 @@ class DisplayResults extends React.Component {
             <div>
                 {this.state.score > 0 ? 
                     <div>
-                        <h3>Your privacy exposure rating is: {this.state.score}</h3> 
+                        <h3>Your privacy exposure rating is: {this.state.score}</h3>
+                        {this.state.medianscore=="tot" ? <h3>The median score is 3.6 </h3> : <h3>The median for score your generation is {this.state.medianscore}</h3> }
                         <Table striped bordered hover>
                         <thead>
                             <tr>
                             <th>Leaked Personal Attribute</th>
                             <th>Associated Score</th>
-                            <th>Source Platform</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {this.state.phoneNumber ? <tr><td>contact number</td><td>{this.state.attribute_values.phonenumber}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.email ? <tr><td>email</td><td>{this.state.attribute_values.email}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.password ? <tr><td>password</td><td>{this.state.attribute_values.password}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.address ? <tr><td>address</td><td>{this.state.attribute_values.address}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.birthday ? <tr><td>birthday</td><td>{this.state.attribute_values.birthday}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.hometown ? <tr><td>hometown</td><td>{this.state.attribute_values.hometown}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.currenttown ? <tr><td>current town</td><td>{this.state.attribute_values.currenttown}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.jobdetails ? <tr><td>job details</td><td>{this.state.attribute_values.jobdetails}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.relationshipstatus ? <tr><td>relationship status</td><td>{this.state.attribute_values.relationshipstatus}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.interests ? <tr><td>interests</td><td>{this.state.attribute_values.interests}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.political ? <tr><td>political views</td><td>{this.state.attribute_values.political}</td><td>{this.state.sources}</td></tr> : null}
-                        {this.state.religious ? <tr><td>religious views</td><td>{this.state.attribute_values.religious}</td><td>{this.state.sources}</td></tr> : null}
+                        {this.state.phoneNumber ? <tr><td>contact number</td><td>{this.state.attribute_values.phonenumber}</td></tr> : null}
+                        {this.state.email ? <tr><td>email</td><td>{this.state.attribute_values.email}</td></tr> : null}
+                        {this.state.password ? <tr><td>password</td><td>{this.state.attribute_values.password}</td></tr> : null}
+                        {this.state.address ? <tr><td>address</td><td>{this.state.attribute_values.address}</td></tr> : null}
+                        {this.state.birthday ? <tr><td>birthday</td><td>{this.state.attribute_values.birthday}</td></tr> : null}
+                        {this.state.hometown ? <tr><td>hometown</td><td>{this.state.attribute_values.hometown}</td></tr> : null}
+                        {this.state.currenttown ? <tr><td>current town</td><td>{this.state.attribute_values.currenttown}</td></tr> : null}
+                        {this.state.jobdetails ? <tr><td>job details</td><td>{this.state.attribute_values.jobdetails}</td></tr> : null}
+                        {this.state.relationshipstatus ? <tr><td>relationship status</td><td>{this.state.attribute_values.relationshipstatus}</td></tr> : null}
+                        {this.state.interests ? <tr><td>interests</td><td>{this.state.attribute_values.interests}</td></tr> : null}
+                        {this.state.political ? <tr><td>political views</td><td>{this.state.attribute_values.political}</td></tr> : null}
+                        {this.state.religious ? <tr><td>religious views</td><td>{this.state.attribute_values.religious}</td></tr> : null}
                         </tbody>
                         </Table>
+                        <h5>Data was leaked from the following sources:</h5>
+                        <p>{this.state.sources}</p>
                     </div> 
                     : 
                     // this.state.show ? <h1>Your data is safe!</h1> :  null

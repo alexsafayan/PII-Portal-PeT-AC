@@ -192,6 +192,7 @@ class Search extends React.Component {
             political: updated_state.politicalViews,
             religious: updated_state.religiousViews,
             sources: updated_state.platform,
+            medianscore: updated_state.medianscore,
             surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
             show: true,
             score: score
