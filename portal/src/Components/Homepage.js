@@ -84,6 +84,11 @@ class Homepage extends React.Component {
             showResults: false,
             score: 0
         })
+        this.DisplayResults.current.setState({
+            show: false,
+            score: 0
+        })
+
         //query for email
         console.log("in handle submit")
         if(this.validateEmail(this.state.emailValue)) {
@@ -313,7 +318,7 @@ class Homepage extends React.Component {
               </Alert>
                 }</div>,
                  <div className="container d-flex justify-content-center">
-                 <h1>{this.state.line1}</h1>
+                 <h3>{this.state.line1}</h3>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>

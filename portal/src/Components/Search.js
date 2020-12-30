@@ -311,6 +311,7 @@ class Search extends React.Component {
     }
 
     //newest.  searches database for address and name CONTAINING name and zip values
+    // this is what we currently use
     queryMongoName3(event) {
         var other = this.state.phoneValue;
         if (this.state.zipValue.length > 0) {
@@ -337,7 +338,7 @@ class Search extends React.Component {
             }
             else if (response.status == 204) {
                 this.setState({
-                    line1: "Your name and zip are NOT compromised! Please continue browsing safely!",
+                    line1: "We do not have your name and zip in our database. Please continue browsing safely!",
                     line2: "",
                     line3: ""
                 })
@@ -386,7 +387,7 @@ class Search extends React.Component {
                 </Alert>
                 }</div>,
                  <div className="container d-flex justify-content-center">
-                 <h2>{this.state.line1}</h2>
+                 <h3>{this.state.line1}</h3>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>

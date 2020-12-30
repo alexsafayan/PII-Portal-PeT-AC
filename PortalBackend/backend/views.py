@@ -189,15 +189,21 @@ def name_detail2(request):
                 re1+='%'
             print("re1 below")
             print(re1)
-            #re1 = '%'+name+'%'
+
             re2 = '%'+str(zip)+'%'
-            item = EmailModel.objects.filter(name__contains=namesplit[0], zip__contains=zip)[0]
-            #item = dark_net_data.objects.raw('Select name, birthday, currentTown, address, gender, relationshipStatus, phoneNum, email, hometown, jobDetails, interests, religiousViews, politicalViews from backend_dark_net_data where name like \''+re1+'\' and address like \''+re2+'\'')[0]
-            #item = dark_net_data.objects.raw('SELECT * FROM backend_dark_net_data')[0]
-            # print("item below")
-            # print(item)
-            # print()
-            # item_2 = EmailModel.objects.get(zip=zip)
+            print(namesplit[0].strip())
+
+            #item = EmailModel.objects.filter(name__startswith=namesplit[0].strip(), zip__contains=zip)[0]
+
+            #return all entries with matching first name and zip
+            item = None
+            items = EmailModel.objects.filter(name__startswith=namesplit[0].strip(), zip__contains=zip)
+            lname = namesplit[-1].lower()
+            for i in items:
+                ilname = i.name.split(' ')[-1].lower()
+                if lname == ilname:
+                    item = i
+                    break
 
             start_time = time.time()
 
@@ -208,6 +214,9 @@ def name_detail2(request):
         except Exception as e: 
             print("error!!!: "+str(e))
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+
+        if item == None:
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT)
         name_serializer = EmailSerializer(item)
         #print("name_serializer below")
         #print(name_serializer.data)

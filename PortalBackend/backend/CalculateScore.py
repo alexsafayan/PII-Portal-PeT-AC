@@ -70,7 +70,12 @@ def calc_score(attributes):
                 attributes["birthday"] = True
                 
                 age = -1
-                if(len(bday)) == 4:
+                if("-" in bday):
+                        splitt = bday.split("-")
+                        age1 = int(splitt[0])
+                        age2 = int(splitt[1])
+                        age = int(round((age1+age2)/2, 0))
+                elif(len(bday)) == 4:
                         #this bday is a year
                         print("this bday is a year")
                         age = 2020 - int(bday)
