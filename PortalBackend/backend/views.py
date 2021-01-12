@@ -93,8 +93,24 @@ def email_list(request):
             plot = generate_boxplot(score, response["agebucket"])
             response["score"] = score
             response["plot"] = plot
-            
+           
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
+        elif 'val' in dic:
+            print("in this bitch")
+            val = dic.get('val')
+            response = {}
+            if val == 'val1':
+                print('val1 in this bich')
+                response['score'] = 3.6
+                plot = generate_boxplot(3.6, 'millenial')
+                response['plot'] = plot
+            else:
+                print('val2 in this biznoth')
+                response['score'] = 5.4
+                plot = generate_boxplot(5.4, 'boomer')
+                response['plot'] = plot
+            return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
+                
 @api_view(['GET', 'PUT', 'DELETE'])
 def email_detail(request, email):
     # find email

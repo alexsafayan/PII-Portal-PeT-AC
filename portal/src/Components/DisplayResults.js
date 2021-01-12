@@ -48,9 +48,9 @@ class DisplayResults extends React.Component {
         return (
             <div>
                 {this.state.score > 0 ? 
-                    <div>
-                        <h3>Your privacy exposure rating is: {this.state.score}</h3>
-                        {this.state.medianscore=="tot" ? <h3>The median score is 3.6 </h3> : <h3>The median for score your generation is {this.state.medianscore}</h3> }
+                    <div className="text-center">
+                        <h6>The following table displays the attributes we are able to discover about you through data breaches and surface web searches.</h6>
+                        <h6>The scores represent how potentially damaging each piece of information can be if it gets in the wrong hands.</h6>
                         <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -73,6 +73,9 @@ class DisplayResults extends React.Component {
                         {this.state.religious ? <tr><td>religious views</td><td>{this.state.attribute_values.religious}</td></tr> : null}
                         </tbody>
                         </Table>
+                        <h3>Your privacy exposure rating is: {this.state.score}/10.0</h3>
+                        {this.state.medianscore=="tot" ? <h3>The median score is 3.6 </h3> : <h3>The median score for your generation is {this.state.medianscore}</h3> }
+                        
                         <h5>Data was leaked from the following sources:</h5>
                         <p>{this.state.sources}</p>
                     </div> 

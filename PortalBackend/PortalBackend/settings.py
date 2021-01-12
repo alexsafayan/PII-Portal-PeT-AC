@@ -80,40 +80,30 @@ WSGI_APPLICATION = 'PortalBackend.wsgi.application'
 
 
 
-DATABASES = {
-   'default': {
-       'ENGINE': 'djongo',
-       'NAME': 'pii_db',
-       #'HOST': 'mongodb_container',
-       'HOST': 'localhost',
-       'PORT': 27017,
-   }
-}
-
-#DATABASES = {
-#        'default': {
+# DATABASES = {
+#    'default': {
 #        'ENGINE': 'djongo',
 #        'NAME': 'pii_db',
-#        #'HOST': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@....mongodb.net/test?retryWrites=true',
-#        'HOST': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@cluster0.5u0xf.mongodb.net/pii_db?retryWrites=true&w=majority',
-#        'USER': 'mike',
-#        'PASSWORD': 'V7NU54Fpi2G4nJFd',
+#        #'HOST': 'mongodb_container',
+#        'HOST': 'localhost',
+#        'PORT': 27017,
 #    }
-#}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'pii_db',
-#         'CLIENT': {
-#             'host': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@cluster0.5u0xf.mongodb.net/pii_db?retryWrites=true&w=majority',
-#             'username': 'mike',
-#             'password': 'V7NU54Fpi2G4nJFd',
-# #            'authSource': 'admin',
-# #            'authMechanism': 'SCRAM-SHA-1',
-#         }
-#     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'pii_db',
+        'CLIENT': {
+            'host': 'mongodb+srv://mike:V7NU54Fpi2G4nJFd@cluster0.5u0xf.mongodb.net/pii_db?retryWrites=true&w=majority',
+            'username': 'mike',
+            'password': 'V7NU54Fpi2G4nJFd',
+#            'authSource': 'admin',
+#            'authMechanism': 'SCRAM-SHA-1',
+        }
+    }
+}
 
 
 # Password validation
