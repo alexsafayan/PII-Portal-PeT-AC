@@ -21,5 +21,6 @@ class EmailSerializer(serializers.ModelSerializer):
                   'interests',
                   'politicalViews',
                   'religiousViews',
-                  'platform')
+                  'platform',
+                  'dateCollected')
     

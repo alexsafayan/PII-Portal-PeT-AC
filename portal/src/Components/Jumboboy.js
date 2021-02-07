@@ -6,7 +6,7 @@ class Jumboboy extends React.Component {
       return (
         <div className="jumbotron text-center">
                     <h1>AZSecure Privacy Portal</h1>
-                    <p>Check if your personal information have been compromised in a data breach</p>
+                    <p>Check if your personal information has been compromised in a data breach</p>
         </div>
       )
     }

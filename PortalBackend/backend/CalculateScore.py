@@ -59,7 +59,7 @@ def calc_score(attributes):
         if(not 'none' in str(attributes["phoneNum"]).lower()):
                 score+= sc["phoneNumber"]
               #  print("adding score for phoneNumber")
-                attributes["phoneNumber"] = True
+                attributes["phoneNumber"] = attributes["phoneNum"].split('-')[0]+'-***-****'
                 attributes["phoneNum"] = True
         else:
                 attributes["phoneNumber"] = False
@@ -83,20 +83,21 @@ def calc_score(attributes):
                         #this bday is anage
                         print("this bday is an age")
                         age = int(bday)
+                attributes["age"] = age
                 if(age > 7 and age < 24):
-                        attributes["agebucket"] = "genz"
+                        attributes["agebucket"] = "generation z"
                         attributes["medianscore"] = 1.9
                 elif(age > 23 and age < 40):
-                        attributes["agebucket"] = "millenial"
+                        attributes["agebucket"] = "the milennial generation"
                         attributes["medianscore"] = 2.4
                 elif(age > 39 and age < 56):
-                        attributes["agebucket"] = "genx"
+                        attributes["agebucket"] = "generation x"
                         attributes["medianscore"] = 3.3
                 elif(age > 55 and age < 75):
-                        attributes["agebucket"] = "boomer"
+                        attributes["agebucket"] = "the baby boomer generation"
                         attributes["medianscore"] = 3.6
                 elif(age > 74):
-                        attributes["agebucket"] = "silent"
+                        attributes["agebucket"] = "the silent generation"
                         attributes["medianscore"] = 3.6
 
         else:
@@ -105,7 +106,8 @@ def calc_score(attributes):
                 score+= sc["hometown"]
                 #print("adding score for hometown")
                 attributes["hometown"] = True
-                attributes["zip"] = True
+                if(not 'none' in str(attributes["zip"]).lower()):
+                        attributes["zip"] = attributes["zip"][0:2]+'***'
         else:
                 attributes["hometown"] = False
                 attributes["zip"] = False
@@ -150,3 +152,35 @@ def calc_score(attributes):
 
     score = round(score,1)
     return score
+
+
+def combine(crawlerResponse, dbResponse):
+        comboResponse = {}
+        sources = {}
+        
+        for key, value in dbResponse.items():
+                try:
+                        found = False
+                        sources[key] = []
+                        if(not 'none' in str(value).lower()):
+                                sources[key].append(dbResponse["platform"])
+                                comboResponse[key] = value
+                                found = True
+                        if(not 'none' in str(crawlerResponse[key])):
+                                sources[key].append(crawlerResponse["platform"])
+                                if(not key in comboResponse):
+                                        comboResponse[key] = crawlerResponse[key]
+                                found = True
+                        if(not found):
+                                comboResponse[key] = 'none'
+                except Exception as e:
+                        #print("exception occurred when trying key: "+str(key))
+                        print("exception: "+str(e))
+
+        for key, value in sources.items():
+                curr = ""
+                for each in value:
+                        curr+=each+', '
+                sources[key] = curr[0:-2]
+
+        return comboResponse, sources
