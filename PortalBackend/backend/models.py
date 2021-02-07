@@ -18,6 +18,7 @@ class EmailModel(models.Model):
     politicalViews = models.CharField(max_length=255, default = 'none')
     religiousViews = models.CharField(max_length=255, default = 'none')
     platform = models.CharField(max_length=255, default = 'none')
+    dateCollected = models.CharField(max_length=255, default = 'none')
 
 class Subscription(models.Model):
     email = models.CharField(max_length=255)
