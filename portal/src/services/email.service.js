@@ -12,6 +12,12 @@ class EmailDataService {
     })
   }
 
+  dummyGet(val) {
+    return http.post('/emails', {
+      val: val
+    })
+  }
+
   getData(name, zip) {
     return http.post('/name', {
       name: name,

@@ -4,6 +4,7 @@ import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
 import EmailDataService from "../services/email.service";
 import axios from "axios";
 import Alert from 'react-bootstrap/Alert'
+import Table from 'react-bootstrap/Table'
 
 const initialResultsState = {
     email: false,
@@ -23,7 +24,7 @@ const AdditionalCriteria = props => {
         <div className="row d-flex justify-content-center">
         <div className="form-group col-lg-2">
             <input style={{marginBottom: '10px'}} id="nameSearch" className="form-control" type="search" placeholder="Enter full name" aria-label="Search" value={props.nameValue} onChange={props.handleNameChange}/>
-            <input style={{marginBottom: '10px'}} id="phoneSearc" className="form-control" type="search" placeholder="Enter phone number" aria-label="Search" value={props.phoneValue} onChange={props.handlePhoneChange}/>
+{/*            <input style={{marginBottom: '10px'}} id="phoneSearc" className="form-control" type="search" placeholder="Enter phone number" aria-label="Search" value={props.phoneValue} onChange={props.handlePhoneChange}/> */}
             <input style={{marginBottom: '10px'}} id="zipSearch" className="form-control" type="search" placeholder="Enter zip code" aria-label="Search" value={props.zipValue} onChange={props.handleZipChange}/>
             <button className="btn btn-outline-dark btn-block" onClick={props.onClickSubmit}>Search</button>
         </div>
@@ -130,7 +131,7 @@ class Search extends React.Component {
         else if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
             console.log("name and other (zip or phone) length greater than 0")
             this.queryMongoName3();
-            this.queryMongoName2();
+            //this.queryMongoName2();
             console.log("queried 3 and 2")
             // if(!this.state.email) {
             //     this.setState({
@@ -190,7 +191,8 @@ class Search extends React.Component {
             interests: updated_state.interests,
             political: updated_state.politicalViews,
             religious: updated_state.religiousViews,
-            databreach_sources: [],
+            sources: updated_state.platform,
+            medianscore: updated_state.medianscore,
             surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
             show: true,
             score: score
@@ -309,6 +311,7 @@ class Search extends React.Component {
     }
 
     //newest.  searches database for address and name CONTAINING name and zip values
+    // this is what we currently use
     queryMongoName3(event) {
         var other = this.state.phoneValue;
         if (this.state.zipValue.length > 0) {
@@ -322,16 +325,25 @@ class Search extends React.Component {
             // response email:
             //console.log(response.data.email);
 
-
-            this.callDisplay(response.data);
-            this.setState({
-                showResults: true,
-                //email: true,
-                line1: "Your name and zip are compromised!",
-                line2: "",
-                line3: ""
-            })
-            return true;
+            if(response.status == 202) {
+                this.callDisplay(response.data);
+                this.setState({
+                    showResults: true,
+                    //email: true,
+                    line1: "Your name and zip are compromised!",
+                    line2: "",
+                    line3: ""
+                })
+                return true;
+            }
+            else if (response.status == 204) {
+                this.setState({
+                    line1: "We do not have your name and zip in our database. Please continue browsing safely!",
+                    line2: "",
+                    line3: ""
+                })
+                return false
+            }
             //alert("we have your email in database under the name: "+response.data.name)
         }).catch(e => {
             console.log("in hizzere3")
@@ -375,7 +387,7 @@ class Search extends React.Component {
                 </Alert>
                 }</div>,
                  <div className="container d-flex justify-content-center">
-                 <h1>{this.state.line1}</h1>
+                 <h3>{this.state.line1}</h3>
                     </div>,
                     <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
@@ -383,6 +395,7 @@ class Search extends React.Component {
                     </div>,
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
+                    
                 </div>,
                  <div className="container d-flex justify-content-center">
                  {this.state.showResults ? 
@@ -391,7 +404,7 @@ class Search extends React.Component {
                  }</div>,
                 <div className="container d-flex justify-content-center">
                 {this.state.showplot ? 
-                    <iframe id="igraph" scrolling="no" seamless="seamless" srcdoc={this.state.plot} height="525" width="60%"></iframe> 
+                    <iframe id="igraph" scrolling="no" seamless="seamless" srcDoc={this.state.plot} height="525" width="60%"></iframe> 
                     : null
                 }</div> 
 

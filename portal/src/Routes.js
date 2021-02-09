@@ -1,9 +1,8 @@
 import React from 'react';
-//import { Home } from './views/Home';
 import { About } from './views/About/about';
-//import { NavBar } from './components/NavBar';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Homepage from './Components/Homepage.js'
+import Testing from './Components/Testing.js'
 import Search from './Components/Search.js'
 
 export const Routes = () => {
@@ -11,6 +10,7 @@ export const Routes = () => {
     <div>
       <Switch>
         <Route exact path="/Home" component={Homepage} />
+        <Route exact path="/Tests" component={Testing} />
         <Route exact path="/">
           <Redirect to="/Home" />
         </Route>
