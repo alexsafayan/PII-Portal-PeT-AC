@@ -8,10 +8,7 @@ from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 
-from backend.TwitterCollector import TwitterCollector
-from backend.InstagramCollector import InstagramCollector
-from backend.ThatThemCollector import ThatThemCollector
-from backend.FlickrCollector import FlickrCollector
+
 from backend.CalculateScore import calc_score, combine
 
 import json
@@ -133,41 +130,35 @@ def name_detail(request):
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
-        # print(dic)
+
         name = dic.get('name')
         zip = dic.get('zip')
-        # print(zip)
+
         try: 
             item = EmailModel.objects.get(name=name, zip=zip)
-            # print("item below")
-            # print(item)
-            # print()
-            # item_2 = EmailModel.objects.get(zip=zip)
+
 
             start_time = time.time()
 
-            tc = TwitterCollector()
-            tc_result = tc.crawl(inputDict={"fullname": name, "zip": zip})
+            data = {"name": name, "zip": zip}
+            response = requests.post("http://127.0.0.1:5000/users", data)
+            res = response.json()
+            print(res)
+            # print(res['info'])
+           
+            all_vals = []
+            for values in res['info']:
+                if type(values) != dict:
+                    continue
+                else:
+                    all_vals.append(values)
+                    print(values)
 
-            # ic = InstagramCollector()
-            # ic_result = ic.crawl(inputDict={"fullname": name, "zip": zip})
+            print(all_vals)
 
-            # thatsthem = ThatThemCollector(executablePath= r"C:\Users\ajula\Desktop\AI Lab On-Site\geckodriver.exe")
-            # thatsthem_result = thatsthem.crawl(inputDict={"fullname": name, "zip": zip})
-
-            # flickr = FlickrCollector(executablePath= r"C:\Users\ajula\Desktop\AI Lab On-Site\geckodriver.exe")
-            # flickr_result = flickr.crawl(inputDict={"fullname": name, "zip": zip})
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-
-            print(tc_result)
-            # print()
-            # print(ic_result)
-            # print()
-            # print(thatsthem_result)
-            # print()
-            # print(flickr_result)
             
 
         except EmailModel.DoesNotExist: 
