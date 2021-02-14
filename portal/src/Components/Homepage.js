@@ -46,6 +46,7 @@ class Homepage extends React.Component {
           selectedValue: "",
           entities: [],
           sources: [],
+          datesCollected: [],
           score: 0
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -88,23 +89,29 @@ class Homepage extends React.Component {
             .then(response => {
                 var entities = []
                 var sources = []
+                var dates = []
                 // need a for each loop here to push all returned entities
-                entities.push(response.data.entities[0])
-                sources.push(response.data.sources[0])
-                entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                    ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                    ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                sources.push(response.data.sources[0])
-                console.log("entities, sources: ")
-                console.log(entities)
-                console.log(sources)
+                
                 
                 if(response.status === 202) {
+                    entities.push(response.data.entities[0])
+                    sources.push(response.data.sources[0])
+                    dates.push(response.data.dates[0])
+                    entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
+                        ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
+                        ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
+                    sources.push(response.data.sources[0])
+                    dates.push(response.data.dates[0])
+                    console.log("entities, sources: ")
+                    console.log(entities)
+                    console.log(sources)
+                    console.log(dates)
                     this.setState({
                         showEntities: true,
                         showLoader: false,
                         entities: entities,
                         sources: sources,
+                        datesCollected: dates
                     })
                     return true;
                 } else if(response.status === 204) {
@@ -174,12 +181,12 @@ class Homepage extends React.Component {
             entityInd: this.state.selectedValue,
             showEntities: false
         })
-        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue])
+        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
         //event.preventDefault();
     }
 
-    callDisplay(entity, sources) {
-        this.DisplayResults.current.setState({entity: null, sources:null})
+    callDisplay(entity, sources, datesCollected) {
+        this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
         //display returned results
         console.log("in calldisplay")
         console.log(entity)
@@ -187,6 +194,7 @@ class Homepage extends React.Component {
         this.DisplayResults.current.setState({
             entity: entity,
             sources: sources,
+            datesCollected: datesCollected,
             score: entity.score
         })
         if(entity.percentile<.16){
