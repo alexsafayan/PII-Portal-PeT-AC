@@ -40,6 +40,7 @@ def email_list(request):
         dic = eval(req)
         entities = []
         sourceList = []
+        datesCollected = []
         if 'email' in dic:
 
             email = dic.get('email')
@@ -66,7 +67,7 @@ def email_list(request):
 
 
                 #in the case the entites are the same, combine them:
-                comboResponse, sources = combine(crawlerResponse,dbResponse)
+                comboResponse, sources, dateCollected = combine(crawlerResponse,dbResponse)
 
 
                 #then calc score:
@@ -82,7 +83,8 @@ def email_list(request):
             comboResponse["percentile"] = .75
             entities.append(comboResponse)
             sourceList.append(sources)
-            return JsonResponse({"entities":entities, "sources": sourceList},status=status.HTTP_202_ACCEPTED)
+            datesCollected.append(dateCollected)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
 
         elif 'val' in dic:

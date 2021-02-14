@@ -1,4 +1,4 @@
-
+from datetime import datetime
 
 
 
@@ -157,6 +157,8 @@ def calc_score(attributes):
 def combine(crawlerResponse, dbResponse):
         comboResponse = {}
         sources = {}
+        dateCollected = {}
+        currDate = datetime.today().strftime('%Y-%m-%d')
         
         for key, value in dbResponse.items():
                 try:
@@ -164,12 +166,14 @@ def combine(crawlerResponse, dbResponse):
                         sources[key] = []
                         if(not 'none' in str(value).lower()):
                                 sources[key].append(dbResponse["platform"])
+                                dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
                                 comboResponse[key] = value
                                 found = True
                         if(not 'none' in str(crawlerResponse[key])):
                                 sources[key].append(crawlerResponse["platform"])
                                 if(not key in comboResponse):
                                         comboResponse[key] = crawlerResponse[key]
+                                        dateCollected[key] = currDate
                                 found = True
                         if(not found):
                                 comboResponse[key] = 'none'
@@ -183,4 +187,4 @@ def combine(crawlerResponse, dbResponse):
                         curr+=each+', '
                 sources[key] = curr[0:-2]
 
-        return comboResponse, sources
+        return comboResponse, sources, dateCollected
