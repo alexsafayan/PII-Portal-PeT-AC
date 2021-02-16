@@ -47,23 +47,23 @@ class Navigation extends React.Component {
 
                     <ul className="navbar-nav ml-auto w-100">
                         <NavItem path="/" name="Home" />
-                        <li className="nav-item" onClick={this.subscribe} style={{cursor:'pointer'}}>
-                            <a className="nav-link">
-                                Subscribe For Notifications
-                            </a>
-                        </li>
+                        <NavItem path="/search" name="Search By Name" />
                     </ul>
                     
 
                     <ul className="nav navbar-nav ml-auto w-100 justify-content-end">
                         <SubscribeModal ref={this.Modal}/>
                         <NavDropdown name="Take Action">
-                            <a className="dropdown-item" href="/">Sign up for notifications</a>
+                            <a className="dropdown-item" onClick={this.subscribe} style={{cursor:'pointer'}}>Sign up for notifications</a>
                             <a className="dropdown-item" href="/">Another action</a>
                             <div className="dropdown-divider"></div>
                             <a className="dropdown-item" href="/">Something else here</a>
                         </NavDropdown>
-                        
+                        {/* <li className="nav-item" onClick={this.subscribe} style={{cursor:'pointer'}}>
+                            <a className="nav-link">
+                                Subscribe For Notifications
+                            </a>
+                        </li> */}
                         <NavItem path="/about" name="About" />
                         <NavItem path="/faq" name="FAQ" />
                     </ul>

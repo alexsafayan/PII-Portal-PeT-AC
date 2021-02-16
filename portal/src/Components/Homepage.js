@@ -41,6 +41,7 @@ class Homepage extends React.Component {
           showLowScore: false,
           showSearchByName: true,
           showSearch: true,
+          showSearchAgain: false,
           showLoader: false,
           entityInd: -1,
           selectedValue: "",
@@ -119,7 +120,8 @@ class Homepage extends React.Component {
                         showLoader: false,
                         line1: "We do not have any record of your email being compromised.",
                         line2: "",
-                        line3: ""
+                        line3: "",
+                        showSearchAgain: true
                     })
                     return false
                 }
@@ -129,7 +131,8 @@ class Homepage extends React.Component {
                     showLoader: false,
                     line1: "We do not have any record of your email being compromised.",
                     line2: "",
-                    line3: ""
+                    line3: "",
+                    showSearchAgain: true
                 })
                 return false
             });
@@ -237,14 +240,14 @@ class Homepage extends React.Component {
                     {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
                 </div>,
 
-                <div>
-                    {this.state.showSearchByName ? 
-                        <div className="container d-flex justify-content-center">
-                            <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
-                        : 
-                        null
-                    }
-                </div>,
+                // <div>
+                //     {this.state.showSearchByName ? 
+                //         <div className="container d-flex justify-content-center">
+                //             <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
+                //         : 
+                //         null
+                //     }
+                // </div>,
 
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length === 0 ? null
@@ -326,8 +329,10 @@ class Homepage extends React.Component {
                     : null}
                 </div>,
 
-                <div>
-                    {this.state.showSearch ? null : null}
+                <div className="container d-flex justify-content-center">
+                    {this.state.showSearchAgain ? <a href="/Home"><button className="btn btn-outline-dark">Search Again</button></a> 
+                    : null
+                    }
                 </div>
                     
 

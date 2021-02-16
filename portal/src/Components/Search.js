@@ -42,6 +42,7 @@ class Search extends React.Component {
         this.state = {
           showResults: false,
           showSearch: true,
+          showSearchAgain: false,
           results: "",
           emailValue: "",
           phoneValue: "",
@@ -65,6 +66,7 @@ class Search extends React.Component {
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
         this.queryMongoName = this.queryMongoName.bind(this);
+        this.chooseEntity = this.chooseEntity.bind(this);
         this.DisplayResults = React.createRef();
 
         var resultJson = {
@@ -103,7 +105,6 @@ class Search extends React.Component {
             score: 0
         });
         if(this.state.nameValue.length > 0 && (this.state.zipValue.length > 0 || this.state.phoneValue.length > 0)){
-            //this.queryMongoName();
             this.setState({
                 showSearch: false,
                 showLoader: true,
@@ -123,14 +124,6 @@ class Search extends React.Component {
                         sources.push(response.data.sources[i])
                         dates.push(response.data.dates[i])
                     }
-                    // entities.push(response.data.entities[0])
-                    // sources.push(response.data.sources[0])
-                    // dates.push(response.data.dates[0])
-                    // entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                    //     ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                    //     ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                    // sources.push(response.data.sources[0])
-                    // dates.push(response.data.dates[0])
                     console.log("entities, sources: ")
                     console.log(entities)
                     console.log(sources)
@@ -148,7 +141,8 @@ class Search extends React.Component {
                         showLoader: false,
                         line1: "We do not have any record of your information being compromised.",
                         line2: "",
-                        line3: ""
+                        line3: "",
+                        showSearchAgain: true
                     })
                     return false
                 }
@@ -180,12 +174,12 @@ class Search extends React.Component {
             datesCollected: datesCollected,
             score: entity.score
         })
-        if(entity.percentile<.16){
+        if(entity.score<1.6){
             this.setState({
                 showMediumScore: true
             })
         }
-        else if(entity.percentile>.84){
+        else if(entity.score>8.4){
             this.setState({
                 showHighScore: true
             })
@@ -197,56 +191,6 @@ class Search extends React.Component {
         }
     }
 
-    callDisplayb(updated_state) {
-        //event.preventDefault();
-        this.DisplayResults.current.setState(initialResultsState)
-        //query data base and surface web
-        //display returned results
-        var score = 0;
-        score+= (updated_state.score)
-        console.log("score: " + score)
-        console.log(updated_state.email)
-        console.log(updated_state.address)
-        console.log(updated_state.password)
-        console.log(updated_state.phoneNumber)
-        console.log(updated_state.zip)
-        console.log(updated_state.ssn)
-        console.log(updated_state.birthday)
-        console.log(updated_state.hometown)
-        console.log(updated_state.currenttown)
-        console.log(updated_state.jobdetails)
-        console.log(updated_state.relationshipstatus)
-        console.log(updated_state.interests)
-        console.log(updated_state.political)
-        console.log(updated_state.religious)
-        console.log("and finally")
-        console.log(false)
-        this.setState({score: score, plot: updated_state.plot});
-        this.DisplayResults.current.setState({
-            
-            email: updated_state.email,
-            address: updated_state.address,
-            password: updated_state.password,
-            phoneNumber: updated_state.phoneNumber,
-            zip: updated_state.zip,
-            ssn: updated_state.ssn,
-            birthday: updated_state.birthday,
-            hometown: updated_state.hometown,
-            currenttown: updated_state.currentTown,
-            jobdetails: updated_state.jobdetails,
-            relationshipstatus: updated_state.relationshipStatus,
-            interests: updated_state.interests,
-            political: updated_state.politicalViews,
-            religious: updated_state.religiousViews,
-            sources: updated_state.platform,
-            medianscore: updated_state.medianscore,
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
-            show: true,
-            score: score
-
-        })
-        
-    }
 
     handleEmailChange(event) {
         this.setState({emailValue: event.target.value});
@@ -338,7 +282,19 @@ class Search extends React.Component {
         });
     }
     
-    chooseEntity(event) {
+    chooseEntity(id, event) {
+        event.preventDefault();
+        console.log("selected value: "+id)
+        this.setState({
+            selectedValue: id,
+            entityInd: id,
+            showEntities: false
+        })
+        this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
+        
+    }
+
+    chooseEntity0(event) {
         console.log("selected value: "+this.state.selectedValue)
         this.setState({
             entityInd: this.state.selectedValue,
@@ -347,6 +303,7 @@ class Search extends React.Component {
         this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
         //event.preventDefault();
     }
+
     //searches database for address and name CONTAINING name and zip values
     queryMongoName3(event) {
         var other = this.state.phoneValue;
@@ -396,8 +353,6 @@ class Search extends React.Component {
         //event.preventDefault();
     }
 
-    
-
     render() {
         return [
                 <div>
@@ -414,14 +369,14 @@ class Search extends React.Component {
                     {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
                 </div>,
 
-                <div>
-                    {this.state.showSearchByEmail ? 
-                        <div className="container d-flex justify-content-center">
-                            <a href="/search"><button className="btn btn-outline-dark">Search by email</button></a></div>
-                        : 
-                        null
-                    }
-                </div>,
+                // <div>
+                //     {this.state.showSearchByEmail ? 
+                //         <div className="container d-flex justify-content-center">
+                //             <a href="/search"><button className="btn btn-outline-dark">Search by email</button></a></div>
+                //         : 
+                //         null
+                //     }
+                // </div>,
 
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length == 0 ? null
@@ -431,19 +386,6 @@ class Search extends React.Component {
                             {this.state.errorMessage}
                         </p>
                     </Alert>}
-                </div>,
-
-                <div className="container d-flex flex-row p2 justify-content-center">
-                    {this.state.showEntities ? 
-                        <div onChange={this.setSelection.bind(this)}>
-                        We found {this.state.entities.length} potential matches:<div></div>
-                        {this.state.entities.map((value, index) => {
-                            return <div><input type="radio" value={index} key={index} name="entity"/> Name: {value.name}, Age: {value.age}, Phone Number: {value.phoneNumber}</div>
-                        })}
-                        <button onClick= {this.chooseEntity.bind(this)} className="btn btn-outline-dark">Select</button>
-                        </div>
-                        : null
-                    }
                 </div>,
                 
                 <div style={{cursor:'pointer'}} className="container">
@@ -486,7 +428,7 @@ class Search extends React.Component {
                             <GaugeChart 
                                 id="gauge-chart2" 
                                 nrOfLevels={3} 
-                                percent={this.state.entities[this.state.entityInd].percentile}
+                                percent={this.state.entities[this.state.entityInd].score / 10}
                                 textColor={"#000000"} 
                                 arcsLength={[0.159, 0.682, 0.159]}
                                 style={{width:'100%'}}
@@ -502,6 +444,34 @@ class Search extends React.Component {
 
                 <div className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
+                </div>,
+                <div className="container">
+                {this.state.showEntities ? 
+                    <div>
+                    <h1 className="text-center">We found {this.state.entities.length} potential matches:</h1>
+                    <div className="row">
+                    {this.state.entities.map((value, index) => {
+                        return <div className="col-4" style={{paddingBottom: "10px"}}>
+                            <div className="card" style={{paddingBottom: "10px"}}>
+                                <div className="card-body" style={{paddingBottom: "10px"}}>
+                                <h5 className="card-title">{value.name}</h5>
+                                <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p>
+                                <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a>
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                    </div>
+                    </div>
+                    : null
+                }
+                </div>,
+
+                <div className="container d-flex justify-content-center">
+                    {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                    : null
+                    }
                 </div>
 
         ]

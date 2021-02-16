@@ -33,8 +33,8 @@ def generate_boxplot(score, bucket):
 #use this guy
 def calc_score(attributes):
     score = 0 
-    print("\ncalculating score of:")
-    print(attributes)
+#     print("\ncalculating score of:")
+#     print(attributes)
     sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
     "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
     "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
@@ -79,25 +79,38 @@ def calc_score(attributes):
                         attributes["phoneNumber"] = numberPrefix+'-***-****'
                         attributes["phoneNum"] = True
                 else:
-                        attributes["phoneNumber"] = False
+                        attributes["phoneNum"] = False
+                        attributes["phoneNumber"] = "unknown"
         else:
-                attributes["phoneNumber"] = False
+                attributes["phoneNum"] = False
+                attributes["phoneNumber"] = "unknown"
         if(not 'none' in str(attributes["birthday"]).lower()):
                 score+= sc["birthdate"]
                # print("adding score for birthday")
                 bday = str(attributes["birthday"])
                 attributes["birthday"] = True
-                
+                today = datetime.today()
+                curryear = today.year
                 age = -1
                 if("-" in bday):
                         splitt = bday.split("-")
                         age1 = int(splitt[0])
                         age2 = int(splitt[1])
                         age = int(round((age1+age2)/2, 0))
+                elif('/' in bday):
+                        print("this bday is complete")
+                        splitt = bday.split("/")
+                        mn = splitt[0]
+                        day = splitt[1]
+                        year = splitt[2]
+                        print("birthyear is: "+str(year))
+                        attributes["birthyear"] = year
+                        age = curryear - int(year)
                 elif(len(bday)) == 4:
                         #this bday is a year
+                        attributes["birthyear"] = bday
                         print("this bday is a year")
-                        age = 2020 - int(bday)
+                        age = curryear - int(bday)
                 elif(len(bday) < 4 and len(bday) > 0):
                         #this bday is anage
                         print("this bday is an age")
@@ -190,11 +203,11 @@ def combine(crawlerResponse, dbResponse):
                                 comboResponse[key] = value
                                 found = True
                         
-                        if(not 'none' in str(crawlerResponse[key])):
+                        if(not 'none' in str(crawlerResponse[key]).lower()):
                                 sources[key].append(crawlerResponse["platform"])
-                                if(not key in comboResponse):
-                                        comboResponse[key] = crawlerResponse[key]
-                                        dateCollected[key] = currDate
+                                # if(not key in comboResponse):
+                                comboResponse[key] = crawlerResponse[key]
+                                dateCollected[key] = currDate
                                 found = True
                         if(not found):
                                 comboResponse[key] = 'none'

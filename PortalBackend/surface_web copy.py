@@ -14,7 +14,7 @@ parser_put.add_argument("name", type=str, required=True, help="need full name da
 parser_put.add_argument("zip", type=str, required=True, help="need zip data")
 ua = UserAgent()
 
-us_statesO = {
+us_states = {
     'Alabama': 'AL',
     'Alaska': 'AK',
     'American Samoa': 'AS',
@@ -73,66 +73,6 @@ us_statesO = {
     'Wyoming': 'WY'
 }
 
-us_states = {
-    'AL': 'Alabama',
-    'AK': 'Alaska',
-    'AS': 'American Samoa',
-    'AZ': 'Arizona',
-    'AR': 'Arkansas',
-    'CA': 'California',
-    'CO': 'Colorado',
-    'CT': 'Connecticut',
-    'DE': 'Delaware',
-    'DC': 'District of Columbia',
-    'FL': 'Florida',
-    'GA': 'Georgia',
-    'GU': 'Guam',
-    'HI': 'Hawaii',
-    'ID': 'Idaho',
-    'IL': 'Illinois',
-    'IN': 'Indiana',
-    'IA': 'Iowa',
-    'KS': 'Kansas',
-    'KY': 'Kentucky',
-    'LA': 'Louisiana',
-    'ME': 'Maine',
-    'MD': 'Maryland',
-    'MA': 'Massachusetts',
-    'MI': 'Michigan',
-    'MN': 'Minnesota',
-    'MS': 'Mississippi',
-    'MO': 'Missouri',
-    'MT': 'Montana',
-    'NE': 'Nebraska',
-    'NV': 'Nevada',
-    'NH': 'New Hampshire',
-    'NJ': 'New Jersey',
-    'NM': 'New Mexico',
-    'NY': 'New York',
-    'NC': 'North Carolina',
-    'ND': 'North Dakota',
-    'MP': 'Northern Mariana Islands',
-    'OH': 'Ohio',
-    'OK': 'Oklahoma',
-    'OR': 'Oregon',
-    'PA': 'Pennsylvania',
-    'PR': 'Puerto Rico',
-    'RI': 'Rhode Island',
-    'SC': 'South Carolina',
-    'SD': 'South Dakota',
-    'TN': 'Tennessee',
-    'TX': 'Texas',
-    'UT': 'Utah',
-    'VT': 'Vermont',
-    'VI': 'Virgin Islands',
-    'VA': 'Virginia',
-    'WA': 'Washington',
-    'WV': 'West Virginia',
-    'WI': 'Wisconsin',
-    'WY': 'Wyoming',
-}
-
-
 
 def initial_hearder():
     header = ua.random
@@ -143,26 +83,35 @@ def initial_hearder():
 def distribution(name, zip):
     result_list = []
     zip_info = zipcodes.matching(str(zip))[0]
-    st = zip_info["state"]
-    city = zip_info["city"]
-    state = us_states[st]
+    state = zip_info["state"]
+    state_name = ''
+    for state_full, state_short in us_states.items():
+        if state_short == state:
+            state_name = state_full
     try:
-        peekyoures = peekyou(name, state, city)
+        myliferes = mylife(name, state)
+        # print("myliferes : ")
+        # print(myliferes)
+        result_list += myliferes
+    except:
+        print("error on mylife")
+    try:
+        peekyoures = peekyou(name, state_name)
         # print("peekyoures : ")
         # print(peekyoures)
         result_list += peekyoures
-    except Exception as e:
+    except:
         print("error on peekyou")
     try:
-        spokeores = spokeo(name, st, city)
+        spokeores = spokeo(name, state_name)
         # print("spokeores : ")
         # print(spokeores)
         result_list += spokeores
-    except Exception as e:
+    except:
         print("error on spokeo")
     try:
-        zabares = zabasearch(name, st, city)
-        anywhores = anywho(name, st, city)
+        zabares = zabasearch(name, state)
+        anywhores = anywho(name, state)
         # print("zabares : ")
         # print(zabares)
         # print("anywhores : ")
@@ -175,13 +124,12 @@ def distribution(name, zip):
     return result_list
 
 
-def anywho(name, state, city):
+def anywho(name, state):
     result_list = []
     header = initial_hearder()
     try:
-        
         for i in range(1, 2000):
-            url = 'https://www.anywho.com/people/{0}/{1}+{2}/?page={3}'.format(name.replace(" ", "+"), city.replace(" ", "+"), state,i)
+            url = 'https://www.anywho.com/people/{0}/{1}/?page={2}'.format(name.replace(" ", "+"), state, i)
             try:
                 response = requests.get(url, headers=header, timeout=(10, 10))
                 soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
@@ -237,10 +185,10 @@ def save_info_anywho(soup):
         return
 
 
-def zabasearch(name, state, city):
+def zabasearch(name, state):
     header = initial_hearder()
     result_list = []
-    url = 'https://www.zabasearch.com/people/{0}/{1}+{2}/'.format(name.replace(" ", "+"), city.replace(" ", "+"), state)
+    url = 'https://www.zabasearch.com/people/{0}/{1}/'.format(name.replace(" ", "+"), state)
     try:
         response = requests.get(url, headers=header, timeout=(10, 10))
         soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
@@ -306,12 +254,12 @@ def save_info_zabasearch(soup):
         return extractedValues
 
 
-def spokeo(name, state, city):
+def spokeo(name, state):
     result_list = []
     links_list = []
 
     spokeo_url = 'https://www.spokeo.com'
-    url = 'https://www.spokeo.com/{0}/{1}/{2}'.format(name.replace(" ", "-"), state, city)
+    url = 'https://www.spokeo.com/{0}/{1}'.format(name.replace(" ", "-"), state.replace(" ", "-"))
     header = initial_hearder()
 
     try:
@@ -428,10 +376,10 @@ def spokeo_fetchLinks(soup, url):
         return
 
 
-def peekyou(name, state, city):
+def peekyou(name, state):
     result_list = []
     url_temp = "https://www.peekyou.com/{}/".format(name.replace(" ", "_"))
-    url = "https://www.peekyou.com/usa/{0}/{1}/{2}".format(state.replace(" ", "_"), city.replace(" ", "_"), name.replace(" ", "_"))
+    url = "https://www.peekyou.com/usa/{1}/{0}".format(name.replace(" ", "_"), state.replace(" ", "_"))
     header = initial_hearder()
     soups = []
     try:
@@ -455,11 +403,12 @@ def peekyou(name, state, city):
             for page in soups:
                 result_list.append(save_info_peekyou(page))
             return result_list
-        except Exception as err:
-            print("error here : "+str(err))
+        except:
+            pass
 
     except Exception as err:
         print(str(err))
+        pass
 
 
 def peekyou_fetch(url, soup, header):

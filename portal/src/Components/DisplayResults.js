@@ -42,7 +42,7 @@ class DisplayResults extends React.Component {
                         {this.state.entity.currentTown ? <tr><td>current town</td><td>identity theft</td><td>low</td><td>{this.state.sources.currentTown}</td><td>{this.state.datesCollected.currentTown}</td></tr> : null}
                         {this.state.entity.jobDetails ? <tr><td>job details</td><td>identity theft</td><td>low</td><td>{this.state.sources.jobDetails}</td><td>{this.state.datesCollected.phonejobDetailsNum}</td></tr> : null}
                         {this.state.entity.relationshipStatus ? <tr><td>relationship status</td><td>spam</td><td>high</td><td>{this.state.sources.relationshipStatus}</td><td>{this.state.datesCollected.relationshipStatus}</td></tr> : null}
-                        {this.state.entity.interests ? <tr><td>interests</td><td></td>phishing<td>low</td><td>{this.state.sources.interests}</td><td>{this.state.datesCollected.interests}</td></tr> : null}
+                        {this.state.entity.interests ? <tr><td>interests</td><td>phishing</td><td>low</td><td>{this.state.sources.interests}</td><td>{this.state.datesCollected.interests}</td></tr> : null}
                         {this.state.entity.politicalViews ? <tr><td>political views</td><td>discrimination</td><td> high</td><td>{this.state.sources.politicalViews}</td><td>{this.state.datesCollected.politicalViews}</td></tr> : null}
                         {this.state.entity.religiousViews ? <tr><td>religious views</td><td>discrimination</td><td> high</td><td>{this.state.sources.religiousViews}</td><td>{this.state.datesCollected.religiousViews}</td></tr> : null}
                         </tbody>
