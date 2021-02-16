@@ -32,7 +32,9 @@ def generate_boxplot(score, bucket):
 
 #use this guy
 def calc_score(attributes):
-    score = 0
+    score = 0 
+    print("\ncalculating score of:")
+    print(attributes)
     sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
     "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
     "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
@@ -59,8 +61,25 @@ def calc_score(attributes):
         if(not 'none' in str(attributes["phoneNum"]).lower()):
                 score+= sc["phoneNumber"]
               #  print("adding score for phoneNumber")
-                attributes["phoneNumber"] = attributes["phoneNum"].split('-')[0]+'-***-****'
-                attributes["phoneNum"] = True
+                pn = ''
+                if(isinstance(attributes["phoneNum"],list)):
+                        print("phone numbers are a list")
+                        pn = attributes["phoneNum"][0]
+                else:
+                        print("phone numbers are NOT a list")
+                        pn = attributes["phoneNum"]
+                numberPrefix = ''
+                for character in pn:
+                        if character.isdigit():
+                                numberPrefix += character
+                                if(len(numberPrefix)>=3):
+                                        break
+                if(len(numberPrefix)==3):
+                        #attributes["phoneNumber"] = pn.split('-')[0]+'-***-****'
+                        attributes["phoneNumber"] = numberPrefix+'-***-****'
+                        attributes["phoneNum"] = True
+                else:
+                        attributes["phoneNumber"] = False
         else:
                 attributes["phoneNumber"] = False
         if(not 'none' in str(attributes["birthday"]).lower()):
@@ -151,11 +170,12 @@ def calc_score(attributes):
         print(e)
 
     score = round(score,1)
+    print("score is: "+str(score))
     return score
 
 
 def combine(crawlerResponse, dbResponse):
-        comboResponse = {}
+        comboResponse = {"email": "none"}
         sources = {}
         dateCollected = {}
         currDate = datetime.today().strftime('%Y-%m-%d')
@@ -169,6 +189,7 @@ def combine(crawlerResponse, dbResponse):
                                 dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
                                 comboResponse[key] = value
                                 found = True
+                        
                         if(not 'none' in str(crawlerResponse[key])):
                                 sources[key].append(crawlerResponse["platform"])
                                 if(not key in comboResponse):
@@ -179,12 +200,13 @@ def combine(crawlerResponse, dbResponse):
                                 comboResponse[key] = 'none'
                 except Exception as e:
                         #print("exception occurred when trying key: "+str(key))
-                        print("exception: "+str(e))
+                        #print("exception: "+str(e))
+                        pass
 
         for key, value in sources.items():
                 curr = ""
                 for each in value:
                         curr+=each+', '
                 sources[key] = curr[0:-2]
-
+        comboResponse['name'] = crawlerResponse['name']
         return comboResponse, sources, dateCollected

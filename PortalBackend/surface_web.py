@@ -88,10 +88,39 @@ def distribution(name, zip):
     for state_full, state_short in us_states.items():
         if state_short == state:
             state_name = state_full
-    result_list += mylife(name, state)
-    result_list += peekyou(name, state_name)
-    result_list += spokeo(name, state_name)
-    result_list += zabasearch(name, state) + anywho(name, state)
+    try:
+        myliferes = mylife(name, state)
+        # print("myliferes : ")
+        # print(myliferes)
+        result_list += myliferes
+    except:
+        print("error on mylife")
+    try:
+        peekyoures = peekyou(name, state_name)
+        # print("peekyoures : ")
+        # print(peekyoures)
+        result_list += peekyoures
+    except:
+        print("error on peekyou")
+    try:
+        spokeores = spokeo(name, state_name)
+        # print("spokeores : ")
+        # print(spokeores)
+        result_list += spokeores
+    except:
+        print("error on spokeo")
+    try:
+        zabares = zabasearch(name, state)
+        anywhores = anywho(name, state)
+        # print("zabares : ")
+        # print(zabares)
+        # print("anywhores : ")
+        # print(anywhores)
+        result_list += zabares + anywhores
+    except:
+        print("error on zaba")
+    # print("result_list : ")
+    # print(result_list)
     return result_list
 
 
@@ -107,7 +136,8 @@ def anywho(name, state):
                 title = soup.find('title')
                 if "None" in str(title):
                     break
-                result_list += save_info_anywho(soup)
+                info = save_info_anywho(soup)
+                result_list.append(info)
             except Exception as err:
                 header = initial_hearder()
                 print(str(err))
@@ -118,11 +148,11 @@ def anywho(name, state):
 
 def save_info_anywho(soup):
     result_list = []
-    extractedValues = {'Name': 'None', 'Platform': 'Anywho', 'BirthDate': 'None', 'city': 'None', 'Gender': '',
-                       'state': 'None', 'address': 'None', 'PhoneNumber': 'None', 'Relatives': 'None',
-                       'Email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'PoliticalView': '',
-                       'Ethnicity': 'None', 'Religious': 'None', 'MaritalStatus': '', 'AnnualIncome': 'None',
-                       'NetWorth': ''}
+    extractedValues = {'name': 'None', 'platform': 'Anywho', 'birthday': 'None', 'currentTown': 'None', 'gender': 'none',
+                       'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
+                       'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
+                       'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
 
     try:
         cards_list = soup.findAll('div', {'class': "person-info"})
@@ -135,9 +165,9 @@ def save_info_anywho(soup):
                     address, "").replace(phone, "").strip()
                 if "Age" in text:
                     extractedValues['Age'] = text.replace(", Age ", "")
-                extractedValues['Name'] = name
+                extractedValues['name'] = name
                 extractedValues['address'] = address
-                extractedValues['PhoneNumber'] = phone
+                extractedValues['phoneNum'] = phone
                 try:
                     city_state = address.split(", ")
                     city = city_state[1]
@@ -162,7 +192,7 @@ def zabasearch(name, state):
     try:
         response = requests.get(url, headers=header, timeout=(10, 10))
         soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
-        result_list += save_info_zabasearch(soup)
+        result_list.append(save_info_zabasearch(soup))
         try:
             pages = len(soup.find('div', {'id': "pagination"}).findAll('a', {'class': "a-pag"})) - 1
             for page in range(2, pages + 1):
@@ -170,7 +200,7 @@ def zabasearch(name, state):
                 try:
                     following_response = requests.get(following_url, headers=header, timeout=(10, 10))
                     following_soup = BeautifulSoup(following_response.text, 'lxml', from_encoding='utf8')
-                    result_list += save_info_zabasearch(following_soup)
+                    result_list.append(save_info_zabasearch(following_soup))
                 except Exception as err:
                     print(str(err))
         except Exception as err:
@@ -182,22 +212,22 @@ def zabasearch(name, state):
 
 
 def save_info_zabasearch(soup):
-    extractedValues = {'Name': 'None', 'Platform': 'Zabasearch', 'BirthDate': 'None', 'city': 'None', 'Gender': '',
-                       'state': 'None', 'address': 'None', 'PhoneNumber': 'None', 'Relatives': 'None',
-                       'Email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'PoliticalView': '',
-                       'Ethnicity': 'None', 'Religious': 'None', 'MaritalStatus': '', 'AnnualIncome': 'None',
-                       'NetWorth': ''}
+    extractedValues = {'name': 'None', 'platform': 'Zabasearch', 'birthday': 'None', 'currentTown': 'None', 'gender': 'none',
+                       'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
+                       'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
+                       'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
 
     ppl_list = soup.findAll('div', {'class': "person-info"})
     for ppl in ppl_list:
         ppl_info = json.loads("".join(ppl.find("script", {"type": "application/ld+json"}).contents))
         try:
-            extractedValues['Name'] = ppl_info['name']
+            extractedValues['name'] = ppl_info['name']
         except:
             pass
 
         try:
-            extractedValues['city'] = ppl_info['address']['addressLocality']
+            extractedValues['currentTown'] = ppl_info['address']['addressLocality']
         except:
             pass
 
@@ -212,12 +242,12 @@ def save_info_zabasearch(soup):
             pass
 
         try:
-            extractedValues['BirthDate'] = ppl_info['birthDate']
+            extractedValues['birthday'] = ppl_info['birthDate']
         except:
             pass
 
         try:
-            extractedValues['PhoneNumber'] = ppl_info['telephone'].replace(" ", '')
+            extractedValues['phoneNum'] = ppl_info['telephone'].replace(" ", '')
         except:
             pass
         print(extractedValues)
@@ -262,15 +292,15 @@ def spokeo(name, state):
 
 
 def save_info_spokeo(soup):
-    extractedValues = {'Name': 'None', 'Platform': 'Spokeo', 'Age': 'None', 'BirthDate': 'None'
-        , 'city': 'None', 'Gender': '', 'state': 'None', 'address': 'None', 'PhoneNumber': 'None', 'Relatives': 'None',
-                       'Email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'PoliticalView': '', 'Ethnicity': 'None'
-        , 'Religious': 'None', 'MaritalStatus': '', 'AnnualIncome': 'None', 'NetWorth': '', 'Summary': 'None'}
+    extractedValues = {'name': 'None', 'platform': 'Spokeo', 'Age': 'None', 'birthday': 'None'
+        , 'city': 'None', 'gender': 'none', 'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
+                       'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none', 'Ethnicity': 'None'
+        , 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None', 'NetWorth': 'none', 'Summary': 'None', 'hometown': 'none', 'interests': 'none'}
     try:
         name_age = soup.find('h1', {'class': "css-l57yqd e10s3cm55"}).text
         if ", Age " in name_age:
             name_ageList = name_age.split("g, Age ")
-            extractedValues['Name'] = name_ageList[0]
+            extractedValues['name'] = name_ageList[0]
             extractedValues['Age'] = name_ageList[1]
         else:
             extractedValues['Name'] = name_age
@@ -291,8 +321,8 @@ def save_info_spokeo(soup):
                 text = text.replace(" ", "")
                 text = text[:-4] + "***"
                 phones.append(text)
-        extractedValues['Email'] = emails
-        extractedValues['PhoneNumber'] = phones
+        extractedValues['email'] = emails
+        extractedValues['phoneNum'] = phones
     except:
         pass
 
@@ -403,24 +433,24 @@ def peekyou_fetch(url, soup, header):
 
 
 def save_info_peekyou(soup):
-    extractedValues = {'Name': 'None', 'Platform': 'PeekYou', 'Age': 'None', 'BirthDate': 'None'
-        , 'city': 'None', 'Gender': '', 'state': 'None', 'address': 'None', 'PhoneNumber': 'None', 'Relatives': 'None',
-                       'Email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'PoliticalView': '', 'Ethnicity': 'None'
-        , 'Religious': 'None', 'MaritalStatus': '', 'AnnualIncome': 'None', 'NetWorth': '', 'Summary': 'None'}
+    extractedValues = {'name': 'None', 'platform': 'PeekYou', 'Age': 'None', 'birthday': 'None'
+        , 'city': 'None', 'gender': 'none', 'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
+                       'email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'politicalViews': 'none', 'Ethnicity': 'None'
+        , 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None', 'NetWorth': 'none', 'Summary': 'None', 'hometown': 'none', 'interests': 'none'}
 
     try:
         profile = soup.find('div', {'class': "profileColumn vcard_new"})
         try:
-            extractedValues['Name'] = profile.find('div', {'id': "nameProfCont"}).find('a').text
+            extractedValues['name'] = profile.find('div', {'id': "nameProfCont"}).find('a').text
         except:
             return
 
         try:
             genderAgeSection = profile.find('div', {'id': "genderAgeSection"}).text.replace("\n", "").strip(" ")
             if "Male" in genderAgeSection:
-                extractedValues['Gender'] = "Male"
+                extractedValues['gender'] = "Male"
             elif "Female" in genderAgeSection:
-                extractedValues['Gender'] = "Female"
+                extractedValues['gender'] = "Female"
 
             age = str(re.sub("\D", "", genderAgeSection))
             extractedValues['Age'] = age
@@ -497,12 +527,11 @@ def save_info_mylife(soup, state):
         result_list = []
         header = initial_hearder()
         for link in url_list:
-            extractedValues = {'Name': 'None', 'Platform': 'Mylife', 'Age': 'None', 'BirthDate': 'None'
-                , 'city': 'None', 'Gender': '', 'state': 'None', 'address': 'None', 'PhoneNumber': 'None',
-                               'Relatives': 'None',
-                               'Email': 'None', 'JobTitle': 'None', 'Alias': 'None', 'PoliticalView': '',
-                               'Ethnicity': 'None'
-                , 'Religious': 'None', 'MaritalStatus': '', 'AnnualIncome': 'None', 'NetWorth': '', 'Summary': 'None'}
+            extractedValues = {'name': 'None', 'platform': 'Mylife', 'age': 'None', 'birthday': 'None', 
+                                'currentTown': 'None', 'gender': 'none', 'state': 'None', 'address': 'None', 'phoneNum': 'None',
+                               'Relatives': 'None', 'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
+                               'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None', 'NetWorth': 'none', 
+                               'Summary': 'None', 'hometown': 'none', 'interests': 'none'}
 
             response = requests.get(link, headers=header, timeout=(30, 30))
             try:
@@ -510,7 +539,7 @@ def save_info_mylife(soup, state):
                 body = soup.find('div', {'class': 'body-wrapper'})
                 ppl_info = json.loads("".join(body.find("script", {"type": "application/ld+json"}).contents))
                 try:
-                    extractedValues['Name'] = ppl_info['name']
+                    extractedValues['name'] = ppl_info['name']
                 except:
                     pass
 
@@ -524,7 +553,7 @@ def save_info_mylife(soup, state):
                 except:
                     pass
                 try:
-                    extractedValues['city'] = address['addressLocality']
+                    extractedValues['currentTown'] = address['addressLocality']
                 except:
                     pass
 
@@ -550,12 +579,12 @@ def save_info_mylife(soup, state):
                     pass
 
                 try:
-                    extractedValues['Email'] = about['email']
+                    extractedValues['email'] = about['email']
                 except:
                     pass
 
                 try:
-                    extractedValues['BirthDate'] = about['birthDate']
+                    extractedValues['birthday'] = about['birthDate']
                 except:
                     pass
 
@@ -565,11 +594,11 @@ def save_info_mylife(soup, state):
                     pass
 
                 try:
-                    extractedValues['Gender'] = about['gender']
+                    extractedValues['gender'] = about['gender']
                 except:
                     pass
                 try:
-                    extractedValues['PhoneNumber'] = about['telephone']
+                    extractedValues['phoneNum'] = about['telephone']
                 except:
                     pass
                 if extractedValues['state'].lower() == state.lower():

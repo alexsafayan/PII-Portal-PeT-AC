@@ -60,8 +60,6 @@ class Homepage extends React.Component {
       }
     
     handleSubmit(event) {
-        
-
         this.setState({
             errorMessage: "",
             line1: "",
@@ -94,6 +92,8 @@ class Homepage extends React.Component {
                 
                 
                 if(response.status === 202) {
+                    console.log("entities length")
+                    console.log(response.data.entities.length)
                     entities.push(response.data.entities[0])
                     sources.push(response.data.sources[0])
                     dates.push(response.data.dates[0])
@@ -232,6 +232,7 @@ class Homepage extends React.Component {
                 </div> : null}
                 </div>
                 ,
+                
                 <div className="container d-flex justify-content-center">
                     {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
                 </div>,
