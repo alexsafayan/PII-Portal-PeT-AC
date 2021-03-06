@@ -7,7 +7,7 @@ from rest_framework import status
 from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
-
+from script_backend import runEntityResolution
 
 from backend.CalculateScore import calc_score, combine
 
@@ -33,6 +33,8 @@ def email_list(request):
     
 
     if request.method == 'POST':
+        predictions = runEntityResolution() 
+        return JsonResponse({"predictions":predictions},status=status.HTTP_201_CREATED)
         req = request.body.decode()
         dic = eval(req)
         entities = []
@@ -54,6 +56,7 @@ def email_list(request):
                 crawlerResponse["email"] = email
                 crawlerResponse["platform"] = "that's them"
                 crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
+                print("crawlerresponse is ")
                 print(crawlerResponse)
                 email_serializer = EmailSerializer(item)
                 dbResponse = {}
@@ -72,15 +75,15 @@ def email_list(request):
                 print("score : " + str(score))
 
                 comboResponse["score"] = score
-                
+                comboResponse["percentile"] = .75
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
             except Exception as e: 
                 print(str(e))
                 return JsonResponse({'error_message': str(e)}, status=status.HTTP_204_NO_CONTENT)
                  
-            comboResponse["percentile"] = .75
-            entities.append(comboResponse)
-            sourceList.append(sources)
-            datesCollected.append(dateCollected)
+            
             return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
 
@@ -123,7 +126,7 @@ def email_subscribe(request):
             return JsonResponse({'message': 'There was an error'}, status=status.HTTP_204_NO_CONTENT) 
         return JsonResponse({'message': 'Success'})
 
-@api_view(['GET', 'POST', 'DELETE']) #not used ?
+@api_view(['GET', 'POST', 'DELETE'])
 def name_detail(request):
     
     if request.method == 'POST':
@@ -150,8 +153,8 @@ def name_detail(request):
                     all_vals.append(values)
                     # print("value:")
                     # print(values)
-            # print("all vals")
-            # print(all_vals)
+            print("crawlers response: ")
+            print(all_vals)
 
             ## HERE WE NEED TO DO ER MATCHING OF EACH RETURNED RESULT WITH THE DB RESPONSE, THEN COMBINE DIFF MATCHING RESULTS INTO ENTITIES
 
@@ -160,6 +163,9 @@ def name_detail(request):
             email_serializer = EmailSerializer(item)
             dbResponse = {}
             dbResponse.update(email_serializer.data)
+            print("db response: ")
+            print(dbResponse)
+            
             # for each in all_vals:
             for each in all_vals:
                 comboResponse, sources, dateCollected = combine(each,dbResponse)
@@ -191,64 +197,71 @@ def name_detail(request):
         # return JsonResponse(email_serializer.data)
 
 @api_view(['GET', 'POST', 'DELETE'])
-def name_detail2(request):
+def name_detailTemp(request):
     
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
-        # print(dic)
+
         name = dic.get('name')
         zip = dic.get('zip')
-        # print(zip)
+        entities = []
+        sourceList = []
+        datesCollected = []
         try: 
-            namesplit = name.split(' ')
-            re1 = r'%'
-            for each in namesplit:
-                re1+=each
-                re1+='%'
-            print("re1 below")
-            print(re1)
-
-            re2 = '%'+str(zip)+'%'
-            print(namesplit[0].strip())
-
-            #item = EmailModel.objects.filter(name__startswith=namesplit[0].strip(), zip__contains=zip)[0]
-
-            #return all entries with matching first name and zip
-            item = None
-            items = EmailModel.objects.filter(name__startswith=namesplit[0].strip(), zip__contains=zip)
-            lname = namesplit[-1].lower()
-            for i in items:
-                ilname = i.name.split(' ')[-1].lower()
-                if lname == ilname:
-                    item = i
-                    break
-
+            item = EmailModel.objects.get(name=name, zip=zip)
             start_time = time.time()
+            data = {"name": name, "zip": zip}
+            response = requests.post("http://127.0.0.1:5000/users", data)
+            res = response.json()
+            all_vals = []
+            for values in res['info']:
+                if type(values) != dict:
+                    print("type not dict!!")
+                    continue
+                else:
+                    all_vals.append(values)
+                    # print("value:")
+                    # print(values)
+            print("crawlers response: ")
+            print(all_vals)
 
+            ## HERE WE NEED TO DO ER MATCHING OF EACH RETURNED RESULT WITH THE DB RESPONSE, THEN COMBINE DIFF MATCHING RESULTS INTO ENTITIES
+
+
+            ## IN THE CASE THAT WE HAVE MATCHING RECORDS, COMBINE:
+            email_serializer = EmailSerializer(item)
+            dbResponse = {}
+            dbResponse.update(email_serializer.data)
+            print("db response: ")
+            print(dbResponse)
+            
+            # for each in all_vals:
+            for each in all_vals:
+                comboResponse, sources, dateCollected = combine(each,dbResponse)
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+
+            # each = all_vals[0]
+            # comboResponse, sources, dateCollected = combine(each,dbResponse)
+            #then calc score:
+            # score = calc_score(comboResponse)
+            # comboResponse["score"] = score
+            # entities.append(comboResponse)
+            # sourceList.append(sources)
+            # datesCollected.append(dateCollected)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
-            print("error!!!: "+str(e))
+            print("ran into error : "+str(e))
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
-
-        if item == None:
-            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT)
-        name_serializer = EmailSerializer(item)
-        #print("name_serializer below")
-        #print(name_serializer.data)
-        response = {}
-        response.update(name_serializer.data)
-        print("response is ")
-        print(response)
-        #print("calculating score using response")
-        score = calc_score(response)
-        print("score : " + str(score))
-        #plot = generate_boxplot(score, response["agebucket"])
-        response["score"] = score
-        #response["plot"] = plot
-        response["platform"] = response["platform"].replace("_",", ")
-        return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
-        #return JsonResponse(name_serializer.data)
+        # email_serializer = EmailSerializer(item)
+        # print("email_serializer below")
+        # print(email_serializer.data)
+        # return JsonResponse(email_serializer.data)

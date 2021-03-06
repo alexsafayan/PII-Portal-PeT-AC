@@ -124,6 +124,16 @@ class Homepage extends React.Component {
                         showSearchAgain: true
                     })
                     return false
+                }else if(response.status === 201) {
+                    console.log("response: ")
+                    console.log(response)
+                    this.setState({
+                        showLoader: false,
+                        line1: "We do not have any record of your information being compromised.",
+                        line2: "",
+                        line3: "",
+                        showSearchAgain: true
+                    })
                 }
             }).catch(e => {
                 console.log(e);

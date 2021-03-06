@@ -150,6 +150,16 @@ class Search extends React.Component {
                         showSearchAgain: true
                     })
                     return false
+                } else if(response.status === 201) {
+                    console.log("response: ")
+                    console.log(response)
+                    this.setState({
+                        showLoader: false,
+                        line1: "We do not have any record of your information being compromised.",
+                        line2: "",
+                        line3: "",
+                        showSearchAgain: true
+                    })
                 }
             }).catch(e => {
                 console.log("in hizzere2")
@@ -369,6 +379,20 @@ class Search extends React.Component {
                     : null
                 }
                 </div>,
+
+                // <div className="container d-flex justify-content-center">
+                //     {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                //     : null
+                //     }
+                // </div>,
+
+                // <div className="container d-flex justify-content-center">
+                //     {this.state.entityInd >=0 ? 
+                //     <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
+                //     : null
+                //     }
+                // </div>,
+
                 <div className="container">
                     <div className="row">
                         <div className="col-4"></div>
