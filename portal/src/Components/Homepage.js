@@ -41,11 +41,13 @@ class Homepage extends React.Component {
           showLowScore: false,
           showSearchByName: true,
           showSearch: true,
+          showSearchAgain: false,
           showLoader: false,
           entityInd: -1,
           selectedValue: "",
           entities: [],
           sources: [],
+          datesCollected: [],
           score: 0
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,8 +61,6 @@ class Homepage extends React.Component {
       }
     
     handleSubmit(event) {
-        
-
         this.setState({
             errorMessage: "",
             line1: "",
@@ -88,23 +88,31 @@ class Homepage extends React.Component {
             .then(response => {
                 var entities = []
                 var sources = []
+                var dates = []
                 // need a for each loop here to push all returned entities
-                entities.push(response.data.entities[0])
-                sources.push(response.data.sources[0])
-                entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                    ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                    ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                sources.push(response.data.sources[0])
-                console.log("entities, sources: ")
-                console.log(entities)
-                console.log(sources)
+                
                 
                 if(response.status === 202) {
+                    console.log("entities length")
+                    console.log(response.data.entities.length)
+                    entities.push(response.data.entities[0])
+                    sources.push(response.data.sources[0])
+                    dates.push(response.data.dates[0])
+                    entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
+                        ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
+                        ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
+                    sources.push(response.data.sources[0])
+                    dates.push(response.data.dates[0])
+                    console.log("entities, sources: ")
+                    console.log(entities)
+                    console.log(sources)
+                    console.log(dates)
                     this.setState({
                         showEntities: true,
                         showLoader: false,
                         entities: entities,
                         sources: sources,
+                        datesCollected: dates
                     })
                     return true;
                 } else if(response.status === 204) {
@@ -112,7 +120,8 @@ class Homepage extends React.Component {
                         showLoader: false,
                         line1: "We do not have any record of your email being compromised.",
                         line2: "",
-                        line3: ""
+                        line3: "",
+                        showSearchAgain: true
                     })
                     return false
                 }
@@ -122,7 +131,8 @@ class Homepage extends React.Component {
                     showLoader: false,
                     line1: "We do not have any record of your email being compromised.",
                     line2: "",
-                    line3: ""
+                    line3: "",
+                    showSearchAgain: true
                 })
                 return false
             });
@@ -174,12 +184,12 @@ class Homepage extends React.Component {
             entityInd: this.state.selectedValue,
             showEntities: false
         })
-        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue])
+        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
         //event.preventDefault();
     }
 
-    callDisplay(entity, sources) {
-        this.DisplayResults.current.setState({entity: null, sources:null})
+    callDisplay(entity, sources, datesCollected) {
+        this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
         //display returned results
         console.log("in calldisplay")
         console.log(entity)
@@ -187,6 +197,7 @@ class Homepage extends React.Component {
         this.DisplayResults.current.setState({
             entity: entity,
             sources: sources,
+            datesCollected: datesCollected,
             score: entity.score
         })
         if(entity.percentile<.16){
@@ -224,18 +235,19 @@ class Homepage extends React.Component {
                 </div> : null}
                 </div>
                 ,
+                
                 <div className="container d-flex justify-content-center">
                     {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
                 </div>,
 
-                <div>
-                    {this.state.showSearchByName ? 
-                        <div className="container d-flex justify-content-center">
-                            <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
-                        : 
-                        null
-                    }
-                </div>,
+                // <div>
+                //     {this.state.showSearchByName ? 
+                //         <div className="container d-flex justify-content-center">
+                //             <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
+                //         : 
+                //         null
+                //     }
+                // </div>,
 
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length === 0 ? null
@@ -317,8 +329,10 @@ class Homepage extends React.Component {
                     : null}
                 </div>,
 
-                <div>
-                    {this.state.showSearch ? null : null}
+                <div className="container d-flex justify-content-center">
+                    {this.state.showSearchAgain ? <a href="/Home"><button className="btn btn-outline-dark">Search Again</button></a> 
+                    : null
+                    }
                 </div>
                     
 

@@ -8,10 +8,7 @@ from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 
-from backend.TwitterCollector import TwitterCollector
-from backend.InstagramCollector import InstagramCollector
-from backend.ThatThemCollector import ThatThemCollector
-from backend.FlickrCollector import FlickrCollector
+
 from backend.CalculateScore import calc_score, combine
 
 import json
@@ -40,6 +37,7 @@ def email_list(request):
         dic = eval(req)
         entities = []
         sourceList = []
+        datesCollected = []
         if 'email' in dic:
 
             email = dic.get('email')
@@ -66,7 +64,7 @@ def email_list(request):
 
 
                 #in the case the entites are the same, combine them:
-                comboResponse, sources = combine(crawlerResponse,dbResponse)
+                comboResponse, sources, dateCollected = combine(crawlerResponse,dbResponse)
 
 
                 #then calc score:
@@ -82,20 +80,18 @@ def email_list(request):
             comboResponse["percentile"] = .75
             entities.append(comboResponse)
             sourceList.append(sources)
-            return JsonResponse({"entities":entities, "sources": sourceList},status=status.HTTP_202_ACCEPTED)
+            datesCollected.append(dateCollected)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
 
         elif 'val' in dic:
-            print("in this bitch")
             val = dic.get('val')
             response = {}
             if val == 'val1':
-                print('val1 in this bich')
                 response['score'] = 3.6
                 #plot = generate_boxplot(3.6, 'millenial')
                 #response['plot'] = plot
             else:
-                print('val2 in this biznoth')
                 response['score'] = 5.4
                 #plot = generate_boxplot(5.4, 'boomer')
                 #response['plot'] = plot
@@ -133,49 +129,66 @@ def name_detail(request):
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
-        # print(dic)
+
         name = dic.get('name')
         zip = dic.get('zip')
-        # print(zip)
+        entities = []
+        sourceList = []
+        datesCollected = []
         try: 
             item = EmailModel.objects.get(name=name, zip=zip)
-            # print("item below")
-            # print(item)
-            # print()
-            # item_2 = EmailModel.objects.get(zip=zip)
-
             start_time = time.time()
+            data = {"name": name, "zip": zip}
+            response = requests.post("http://127.0.0.1:5000/users", data)
+            res = response.json()
+            all_vals = []
+            for values in res['info']:
+                if type(values) != dict:
+                    print("type not dict!!")
+                    continue
+                else:
+                    all_vals.append(values)
+                    # print("value:")
+                    # print(values)
+            # print("all vals")
+            # print(all_vals)
 
-            tc = TwitterCollector()
-            tc_result = tc.crawl(inputDict={"fullname": name, "zip": zip})
+            ## HERE WE NEED TO DO ER MATCHING OF EACH RETURNED RESULT WITH THE DB RESPONSE, THEN COMBINE DIFF MATCHING RESULTS INTO ENTITIES
 
-            # ic = InstagramCollector()
-            # ic_result = ic.crawl(inputDict={"fullname": name, "zip": zip})
 
-            # thatsthem = ThatThemCollector(executablePath= r"C:\Users\ajula\Desktop\AI Lab On-Site\geckodriver.exe")
-            # thatsthem_result = thatsthem.crawl(inputDict={"fullname": name, "zip": zip})
+            ## IN THE CASE THAT WE HAVE MATCHING RECORDS, COMBINE:
+            email_serializer = EmailSerializer(item)
+            dbResponse = {}
+            dbResponse.update(email_serializer.data)
+            # for each in all_vals:
+            for each in all_vals:
+                comboResponse, sources, dateCollected = combine(each,dbResponse)
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
 
-            # flickr = FlickrCollector(executablePath= r"C:\Users\ajula\Desktop\AI Lab On-Site\geckodriver.exe")
-            # flickr_result = flickr.crawl(inputDict={"fullname": name, "zip": zip})
-
+            # each = all_vals[0]
+            # comboResponse, sources, dateCollected = combine(each,dbResponse)
+            #then calc score:
+            # score = calc_score(comboResponse)
+            # comboResponse["score"] = score
+            # entities.append(comboResponse)
+            # sourceList.append(sources)
+            # datesCollected.append(dateCollected)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
-            print(tc_result)
-            # print()
-            # print(ic_result)
-            # print()
-            # print(thatsthem_result)
-            # print()
-            # print(flickr_result)
-            
 
-        except EmailModel.DoesNotExist: 
+        except Exception as e: 
+            print("ran into error : "+str(e))
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
-        email_serializer = EmailSerializer(item)
-        print("email_serializer below")
-        print(email_serializer.data)
-        return JsonResponse(email_serializer.data)
+        # email_serializer = EmailSerializer(item)
+        # print("email_serializer below")
+        # print(email_serializer.data)
+        # return JsonResponse(email_serializer.data)
 
 @api_view(['GET', 'POST', 'DELETE'])
 def name_detail2(request):

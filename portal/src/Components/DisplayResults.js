@@ -10,6 +10,7 @@ class DisplayResults extends React.Component {
       this.state = {
         entity: this.props.entity,
         sources: this.props.sources,
+        datesCollected: this.props.datesCollected,
         score: 0
       };
     }
@@ -32,18 +33,18 @@ class DisplayResults extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                        {this.state.entity.phoneNumber ? <tr><td>phone number</td><td>spam</td><td>high</td><td>{this.state.sources.phoneNum}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.email ? <tr><td>email</td><td>spam, phishing</td><td> low</td><td>{this.state.sources.email}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.password ? <tr><td>password</td><td>access to private accounts</td><td>{this.state.sources.password}</td><td>{this.state.entity.dateCollected}</td><td> high</td></tr> : null}
-                        {this.state.entity.address ? <tr><td>address</td><td>spam</td><td> high</td><td>{this.state.sources.address}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.birthday ? <tr><td>birthday</td><td>identity theft</td><td>low</td><td>{this.state.sources.birthday}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.hometown ? <tr><td>hometown</td><td>identity theft</td><td>low</td><td>{this.state.sources.hometown}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.currenttown ? <tr><td>current town</td><td>identity theft</td><td>low</td><td>{this.state.sources.currentTown}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.jobdetails ? <tr><td>job details</td><td>identity theft</td><td>low</td><td>{this.state.sources.jobDetails}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.relationshipstatus ? <tr><td>relationship status</td><td>spam</td><td>high</td><td>{this.state.sources.relationshipStatus}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.interests ? <tr><td>interests</td><td></td>phishing<td>low</td><td>{this.state.sources.interests}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.political ? <tr><td>political views</td><td>discrimination</td><td> high</td><td>{this.state.sources.politicalViews}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
-                        {this.state.entity.religious ? <tr><td>religious views</td><td>discrimination</td><td> high</td><td>{this.state.sources.religiousViews}</td><td>{this.state.entity.dateCollected}</td></tr> : null}
+                        {this.state.entity.phoneNumber ? <tr><td>phone number</td><td>spam</td><td>high</td><td>{this.state.sources.phoneNum}</td><td>{this.state.datesCollected.phoneNum}</td></tr> : null}
+                        {this.state.entity.email ? <tr><td>email</td><td>spam, phishing</td><td> low</td><td>{this.state.sources.email}</td><td>{this.state.datesCollected.email}</td></tr> : null}
+                        {this.state.entity.password ? <tr><td>password</td><td>access to private accounts</td><td>{this.state.sources.password}</td><td>{this.state.datesCollected.password}</td><td> high</td></tr> : null}
+                        {this.state.entity.address ? <tr><td>address</td><td>spam</td><td> high</td><td>{this.state.sources.address}</td><td>{this.state.datesCollected.address}</td></tr> : null}
+                        {this.state.entity.birthday ? <tr><td>birthday</td><td>identity theft</td><td>low</td><td>{this.state.sources.birthday}</td><td>{this.state.datesCollected.birthday}</td></tr> : null}
+                        {this.state.entity.hometown ? <tr><td>hometown</td><td>identity theft</td><td>low</td><td>{this.state.sources.zip}</td><td>{this.state.datesCollected.zip}</td></tr> : null}
+                        {this.state.entity.currentTown ? <tr><td>current town</td><td>identity theft</td><td>low</td><td>{this.state.sources.currentTown}</td><td>{this.state.datesCollected.currentTown}</td></tr> : null}
+                        {this.state.entity.jobDetails ? <tr><td>job details</td><td>identity theft</td><td>low</td><td>{this.state.sources.jobDetails}</td><td>{this.state.datesCollected.phonejobDetailsNum}</td></tr> : null}
+                        {this.state.entity.relationshipStatus ? <tr><td>relationship status</td><td>spam</td><td>high</td><td>{this.state.sources.relationshipStatus}</td><td>{this.state.datesCollected.relationshipStatus}</td></tr> : null}
+                        {this.state.entity.interests ? <tr><td>interests</td><td>phishing</td><td>low</td><td>{this.state.sources.interests}</td><td>{this.state.datesCollected.interests}</td></tr> : null}
+                        {this.state.entity.politicalViews ? <tr><td>political views</td><td>discrimination</td><td> high</td><td>{this.state.sources.politicalViews}</td><td>{this.state.datesCollected.politicalViews}</td></tr> : null}
+                        {this.state.entity.religiousViews ? <tr><td>religious views</td><td>discrimination</td><td> high</td><td>{this.state.sources.religiousViews}</td><td>{this.state.datesCollected.religiousViews}</td></tr> : null}
                         </tbody>
                         </Table>
                     </div> 
