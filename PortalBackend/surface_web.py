@@ -180,7 +180,7 @@ def anywho(name, state, city):
     header = initial_hearder()
     try:
         
-        for i in range(1, 2000):
+        for i in range(1, 2):
             url = 'https://www.anywho.com/people/{0}/{1}+{2}/?page={3}'.format(name.replace(" ", "+"), city.replace(" ", "+"), state,i)
             try:
                 response = requests.get(url, headers=header, timeout=(10, 10))

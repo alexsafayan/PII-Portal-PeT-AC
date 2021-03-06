@@ -56,6 +56,7 @@ class Search extends React.Component {
           showplot: false,
           plot: "",
           showSearchByEmail: true,
+          es: "",
           score: 0
         };
         this.callDisplay = this.callDisplay.bind(this);
@@ -65,7 +66,6 @@ class Search extends React.Component {
         this.handleZipChange = this.handleZipChange.bind(this);
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
-        this.queryMongoName = this.queryMongoName.bind(this);
         this.chooseEntity = this.chooseEntity.bind(this);
         this.DisplayResults = React.createRef();
 
@@ -112,8 +112,8 @@ class Search extends React.Component {
             })
             EmailDataService.getData(this.state.nameValue, this.state.zipValue)
             .then(response => {
-                console.log("response:");
-                console.log(response);
+                // console.log("response:");
+                // console.log(response);
                 var entities = []
                 var sources = []
                 var dates = []
@@ -128,12 +128,17 @@ class Search extends React.Component {
                     console.log(entities)
                     console.log(sources)
                     console.log(dates)
+                    var es = "es"
+                    if(entities.length == 1) {
+                        es = ""
+                    }
                     this.setState({
                         showEntities: true,
                         showLoader: false,
                         entities: entities,
                         sources: sources,
-                        datesCollected: dates
+                        datesCollected: dates,
+                        es: es,
                     })
                     return true;
                 } else if(response.status === 204) {
@@ -217,64 +222,6 @@ class Search extends React.Component {
         event.preventDefault();
     }
 
-    queryMongoName(event) {
-        if(this.state.nameValue.length > 0 && this.state.zipValue > 0){
-            console.log(this.state.nameValue);
-            this.setState({
-                showSearch: false,
-                showLoader: true,
-                showSearchByName: false,
-            })
-            EmailDataService.getData(this.state.nameValue, this.state.zipValue)
-            .then(response => {
-                console.log("response:");
-                console.log(response);
-                var entities = []
-                var sources = []
-                var dates = []
-                //alert("we have your name and zip in database")
-                if(response.status === 202) {
-                    entities.push(response.data.entities[0])
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                        ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                        ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    console.log("entities, sources: ")
-                    console.log(entities)
-                    console.log(sources)
-                    console.log(dates)
-                    this.setState({
-                        showEntities: true,
-                        showLoader: false,
-                        entities: entities,
-                        sources: sources,
-                        datesCollected: dates
-                    })
-                    return true;
-                } else if(response.status === 204) {
-                    this.setState({
-                        showLoader: false,
-                        line1: "We do not have any record of your information being compromised.",
-                        line2: "",
-                        line3: ""
-                    })
-                    return false
-                }
-            }).catch(e => {
-                console.log("in hizzere2")
-                console.log(e);
-                //alert("we do not have your name and zip stored in the database")
-                
-            });
-
-            //event.preventDefault();
-        }
-
-    }
-
     setSelection(event) {
         console.log(event.target.value);
         this.setState({
@@ -288,69 +235,23 @@ class Search extends React.Component {
         this.setState({
             selectedValue: id,
             entityInd: id,
-            showEntities: false
+            showEntities: false,
+            showSearchAgain: true
         })
         this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
         
     }
 
-    chooseEntity0(event) {
-        console.log("selected value: "+this.state.selectedValue)
+
+    goBack(event) {
+        console.log("in the go back funct")
         this.setState({
-            entityInd: this.state.selectedValue,
-            showEntities: false
-        })
-        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
-        //event.preventDefault();
-    }
-
-    //searches database for address and name CONTAINING name and zip values
-    queryMongoName3(event) {
-        var other = this.state.phoneValue;
-        if (this.state.zipValue.length > 0) {
-            other = this.state.zipValue;
-        }
-        EmailDataService.getByName(this.state.nameValue, other)
-        .then(response => {
-            //send the returned json to handle submit
-            console.log("query3 response:");
-            console.log(response.data);
-            // response email:
-            //console.log(response.data.email);
-
-            if(response.status == 202) {
-                this.callDisplay(response.data);
-                this.setState({
-                    showResults: true,
-                    //email: true,
-                    line1: "Your name and zip are compromised!",
-                    line2: "",
-                    line3: ""
-                })
-                return true;
-            }
-            else if (response.status == 204) {
-                this.setState({
-                    line1: "We do not have your name and zip in our database. Please continue browsing safely!",
-                    line2: "",
-                    line3: ""
-                })
-                return false
-            }
-            //alert("we have your email in database under the name: "+response.data.name)
-        }).catch(e => {
-            console.log("in hizzere3")
-            console.log(e);
-            this.setState({
-                line1: "Your name and zip are NOT compromised!",
-                line2: "We do not have your name and zip in our database. Please continue browsing safely!",
-                line3: ""
-            })
-            return false
-            //alert("we do not have your email stored in the database")
+            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false
         });
-
-        //event.preventDefault();
+        this.DisplayResults.current.setState({
+            show: false,
+            score: 0
+        });
     }
 
     render() {
@@ -443,12 +344,13 @@ class Search extends React.Component {
                 </div>,
 
                 <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
+                    <DisplayResults ref={this.DisplayResults}/> 
+                    
                 </div>,
                 <div className="container">
                 {this.state.showEntities ? 
                     <div>
-                    <h1 className="text-center">We found {this.state.entities.length} potential matches:</h1>
+                    <h1 className="text-center">We found {this.state.entities.length} potential match{this.state.es}:</h1>
                     <div className="row">
                     {this.state.entities.map((value, index) => {
                         return <div className="col-4" style={{paddingBottom: "10px"}}>
@@ -467,11 +369,22 @@ class Search extends React.Component {
                     : null
                 }
                 </div>,
-
-                <div className="container d-flex justify-content-center">
-                    {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                    : null
-                    }
+                <div className="container">
+                    <div className="row">
+                        <div className="col-4"></div>
+                        <div className="col-2">
+                            {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                            : null
+                            }
+                        </div>
+                        <div className="col-2">
+                            {this.state.entityInd >=0 ? 
+                            <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
+                            : null
+                            }
+                        </div>
+                        <div className="col-4"></div>
+                    </div>
                 </div>
 
         ]
