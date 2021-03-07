@@ -134,6 +134,7 @@ def calc_score(attributes):
 
         else:
                 attributes["birthday"] = False
+                attributes["birthyear"] = "unknown"
         if(not 'none' in str(attributes["hometown"]).lower() or not 'none' in str(attributes["zip"]).lower()):
                 score+= sc["hometown"]
                 #print("adding score for hometown")
@@ -223,3 +224,56 @@ def combine(crawlerResponse, dbResponse):
                 sources[key] = curr[0:-2]
         comboResponse['name'] = crawlerResponse['name']
         return comboResponse, sources, dateCollected
+
+def combineMultiple(crawlerResponses, dbResponse):
+        comboResponse = {"email": "none"}
+        sources = {}
+        dateCollected = {}
+        currDate = datetime.today().strftime('%Y-%m-%d')
+        
+        #add db response items first
+        for key, value in dbResponse.items():
+                try:
+                        sources[key] = []
+                        if(not 'none' in str(value).lower()):
+                                sources[key].append(dbResponse["platform"])
+                                dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
+                        comboResponse[key] = value
+                except Exception as e:
+                        #print("exception occurred when trying key: "+str(key))
+                        #print("exception: "+str(e))
+                        pass
+        for crawlerResponse in crawlerResponses:
+                for key, value in comboResponse.items():
+                        try:
+                                if(not 'none' in str(crawlerResponse[key]).lower()):
+                                        sources[key].append(crawlerResponse["platform"])
+                                        dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
+                                        comboResponse[key] = crawlerResponse[key]
+                        except Exception as e:
+                                #print("exception occurred when trying key: "+str(key))
+                                #print("exception: "+str(e))
+                                pass
+        for key, value in sources.items():
+                curr = ""
+                for each in value:
+                        curr+=each+', '
+                sources[key] = curr[0:-2]
+        # comboResponse['name'] = crawlerResponses['name']
+        return comboResponse, sources, dateCollected
+
+def getSources(response):
+        sources = {}
+        dateCollected = {}
+        for key, value in response.items():
+                try:
+                        sources[key] = []
+                        if(not 'none' in str(value).lower()):
+                                sources[key].append(response["platform"])
+                                dateCollected[key] = response["dateCollected"].split(' ')[0]
+                        #comboResponse[key] = value
+                except Exception as e:
+                        #print("exception occurred when trying key: "+str(key))
+                        #print("exception: "+str(e))
+                        pass
+        return sources, dateCollected

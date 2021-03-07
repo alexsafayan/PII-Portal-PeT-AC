@@ -9,7 +9,7 @@ from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 from script_backend import runEntityResolution
 
-from backend.CalculateScore import calc_score, combine
+from backend.CalculateScore import calc_score, combine, combineMultiple, getSources
 
 import json
 import time
@@ -33,8 +33,6 @@ def email_list(request):
     
 
     if request.method == 'POST':
-        predictions = runEntityResolution() 
-        return JsonResponse({"predictions":predictions},status=status.HTTP_201_CREATED)
         req = request.body.decode()
         dic = eval(req)
         entities = []
@@ -100,17 +98,6 @@ def email_list(request):
                 #response['plot'] = plot
             return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
                 
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def email_detail(request, email):
-#     # find email
-#     try: 
-#         item = EmailModel.objects.get(email=email) 
-#     except EmailModel.DoesNotExist: 
-#         return JsonResponse({'message': 'The email does not exist'}, status=status.HTTP_204_NO_CONTENT) 
-#     # GET email
-#     if request.method == 'GET': 
-#         email_serializer = EmailSerializer(item) 
-#         return JsonResponse(email_serializer.data)
 
 @api_view(['POST'])
 def email_subscribe(request):
@@ -205,11 +192,9 @@ def name_detailTemp(request):
 
         name = dic.get('name')
         zip = dic.get('zip')
-        entities = []
-        sourceList = []
-        datesCollected = []
+        surfaceWebResponse = []
         try: 
-            item = EmailModel.objects.get(name=name, zip=zip)
+            # item = EmailModel.objects.get(name=name, zip=zip)
             start_time = time.time()
             data = {"name": name, "zip": zip}
             response = requests.post("http://127.0.0.1:5000/users", data)
@@ -221,41 +206,21 @@ def name_detailTemp(request):
                     continue
                 else:
                     all_vals.append(values)
-                    # print("value:")
-                    # print(values)
             print("crawlers response: ")
             print(all_vals)
 
             ## HERE WE NEED TO DO ER MATCHING OF EACH RETURNED RESULT WITH THE DB RESPONSE, THEN COMBINE DIFF MATCHING RESULTS INTO ENTITIES
-
-
-            ## IN THE CASE THAT WE HAVE MATCHING RECORDS, COMBINE:
-            email_serializer = EmailSerializer(item)
-            dbResponse = {}
-            dbResponse.update(email_serializer.data)
-            print("db response: ")
-            print(dbResponse)
             
             # for each in all_vals:
             for each in all_vals:
-                comboResponse, sources, dateCollected = combine(each,dbResponse)
-                score = calc_score(comboResponse)
-                comboResponse["score"] = score
-                entities.append(comboResponse)
-                sourceList.append(sources)
-                datesCollected.append(dateCollected)
+                temp = each.copy()
+                score = calc_score(temp)
+                temp["score"] = score
+                surfaceWebResponse.append(temp)
 
-            # each = all_vals[0]
-            # comboResponse, sources, dateCollected = combine(each,dbResponse)
-            #then calc score:
-            # score = calc_score(comboResponse)
-            # comboResponse["score"] = score
-            # entities.append(comboResponse)
-            # sourceList.append(sources)
-            # datesCollected.append(dateCollected)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -265,3 +230,84 @@ def name_detailTemp(request):
         # print("email_serializer below")
         # print(email_serializer.data)
         # return JsonResponse(email_serializer.data)
+
+@api_view(['GET', 'POST', 'DELETE'])
+def resolve_entities(request):
+    start_time = time.time()
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+        name = dic.get('name')
+        zip = dic.get('zip')
+        surfaceWebVals = dic.get("surfaceWebResponse")
+        entities = []
+        sourceList = []
+        datesCollected = []
+        try: 
+            
+            item = EmailModel.objects.get(name=name, zip=zip)
+            ## HERE WE NEED TO DO ER MATCHING OF EACH RETURNED RESULT WITH THE DB RESPONSE, THEN COMBINE DIFF MATCHING RESULTS INTO ENTITIES
+            
+        
+
+            ## IN THE CASE THAT WE HAVE MATCHING RECORDS, COMBINE:
+            email_serializer = EmailSerializer(item)
+            dbResponse = {}
+            dbResponse.update(email_serializer.data)
+            left_input = []
+            right_input = []
+            left_input.append(dbResponse)
+            right_input.append(surfaceWebVals)
+            print("running ER")
+            predictions = runEntityResolution(left_input, right_input) 
+            print("predictions")
+            print(predictions)
+            # for each in all_vals:
+            ind = 0
+            nonMatches = []
+            matches = []
+
+            for each in surfaceWebVals:
+                prediction = predictions[ind][1]
+                if (prediction) > 0.5:
+                    matches.append(each)
+                else:
+                    nonMatches.append(each)
+
+                ind+=1
+            if(len(matches)>0):
+                comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
+            else:
+                comboResponse = dbResponse
+                sources, dateCollected = getSources(dbResponse)
+            score = calc_score(comboResponse)
+            comboResponse["score"] = score
+            entities.append(comboResponse)
+            sourceList.append(sources)
+            datesCollected.append(dateCollected)
+
+            for each in nonMatches:
+                sources, dateCollected = getSources(each)
+                score = calc_score(each)
+                each["score"] = score
+                entities.append(each)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+
+            elapsed_time = time.time() - start_time
+            print("it took this long --- " + str(elapsed_time))
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+
+
+        except Exception as e: 
+            for each in surfaceWebVals:
+                print("nothing found in database")
+                sources, dateCollected = getSources(each)
+                score = calc_score(each)
+                each["score"] = score
+                entities.append(each)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+            
+
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)

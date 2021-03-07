@@ -26,13 +26,17 @@ class EmailDataService {
   }
 
   getByName(name, other) {
-    // return http.post('/emails', {
-    //   name: name,
-    //   zip: other
-    // })
     return http.post('/names', {
       name: name,
       zip: other
+    })
+  }
+
+  resolve(name, zip, surfaceWebResponse) {
+    return http.post('/resolve', {
+      name: name,
+      zip: zip,
+      surfaceWebResponse: surfaceWebResponse
     })
   }
 

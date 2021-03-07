@@ -8,7 +8,7 @@ Input Data: from our database
 Output Data: aggregated from the crawlers
 Both are list of dicts, can also come from json.
 """
-def runEntityResolution():
+def runEntityResolution(dbResponse, surfaceWebResponse):
     input_test = [{"username": "Kenneth1", "profilename": "Kenneth Hall", "id": 12811523,
             "description": "Independent producer, writer, actor, FX artist. Founder and President of Total Fabrication, "
                             "The Fright Film Factory", "following_count": 157, "followers_count": 224}]
@@ -27,7 +27,10 @@ def runEntityResolution():
     2. Organize the data
     into organized dataframe for the ease of processing.
     """
-
+    # print("ER left input: ")
+    # print(dbResponse)
+    # print("ER right input: ")
+    # print(surfaceWebResponse)
     def organize_data2(left_data, right_data):
         df = pd.DataFrame(columns=['left_', 'right_','id'])
 
@@ -60,9 +63,9 @@ def runEntityResolution():
 
         return df
 
-    df = organize_data2(input_test, output_test)
+    df = organize_data2(dbResponse, surfaceWebResponse)
 
-    for i in input_test:
+    for i in dbResponse:
         input_content = ''.join(str(x) for x in i.values())
 
     df = df.assign(left_=input_content)

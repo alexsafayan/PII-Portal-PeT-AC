@@ -1,0 +1,24 @@
+2020-11-29 02:01:26 [scrapy] DEBUG: Crawled (404) <GET https://thatsthem.com/emailreadingyourwords@gmail.com> (referer: None)
+2020-11-29 02:01:27 [scrapy] INFO: Ignoring response <404 https://thatsthem.com/emailreadingyourwords@gmail.com>: HTTP status code is not handled or not allowed
+2020-11-29 02:01:27 [scrapy] INFO: Closing spider (finished)
+2020-11-29 02:01:27 [scrapy] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 319,
+ 'downloader/request_count': 1,
+ 'downloader/request_method_count/GET': 1,
+ 'downloader/response_bytes': 2708,
+ 'downloader/response_count': 1,
+ 'downloader/response_status_count/404': 1,
+ 'elapsed_time_seconds': 0.452138,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2020, 11, 29, 10, 1, 27, 83870),
+ 'httperror/response_ignored_count': 1,
+ 'httperror/response_ignored_status_count/404': 1,
+ 'log_count/DEBUG': 1,
+ 'log_count/INFO': 8,
+ 'response_received_count': 1,
+ 'scheduler/dequeued': 1,
+ 'scheduler/dequeued/memory': 1,
+ 'scheduler/enqueued': 1,
+ 'scheduler/enqueued/memory': 1,
+ 'start_time': datetime.datetime(2020, 11, 29, 10, 1, 26, 631732)}
+2020-11-29 02:01:27 [scrapy] INFO: Spider closed (finished)

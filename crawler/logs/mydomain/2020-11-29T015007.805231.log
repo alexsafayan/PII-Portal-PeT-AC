@@ -1,0 +1,16 @@
+2020-11-29 01:50:07 [scrapy] ERROR: Error while obtaining start requests
+Traceback (most recent call last):
+  File "c:\users\ajula\desktop\pii-portal-master\env\lib\site-packages\scrapy\core\engine.py", line 129, in _next_request
+    request = next(slot.start_requests)
+  File "C:\Users\ajula\Desktop\PII-Portal-old\portalbackend\crawler\crawler\spiders\mydomain.py", line 15, in start_requests
+    with open('./email_list.txt', 'r') as file:
+FileNotFoundError: [Errno 2] No such file or directory: './email_list.txt'
+2020-11-29 01:50:07 [scrapy] INFO: Closing spider (finished)
+2020-11-29 01:50:07 [scrapy] INFO: Dumping Scrapy stats:
+{'elapsed_time_seconds': 0.005,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2020, 11, 29, 9, 50, 7, 816231),
+ 'log_count/ERROR': 1,
+ 'log_count/INFO': 7,
+ 'start_time': datetime.datetime(2020, 11, 29, 9, 50, 7, 811231)}
+2020-11-29 01:50:07 [scrapy] INFO: Spider closed (finished)

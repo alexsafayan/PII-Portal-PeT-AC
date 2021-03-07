@@ -212,8 +212,6 @@ class MatchingDataset(data.Dataset):
 
     @staticmethod
     def load_cache(fields, datafiles, cachefile, column_naming, state_args):
-        print("\n\n\ncachefile: ")
-        print(cachefile)
         cached_data = torch.load(cachefile)
         cache_stale_cause = set()
 
