@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
 import Navigation from './Components/Navigation.js'
-import Homepage from './Components/Homepage.js'
 import Jumboboy from './Components/Jumboboy.js'
 import { Routes } from './Routes';
 

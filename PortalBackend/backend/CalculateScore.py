@@ -35,6 +35,9 @@ def calc_score(attributes):
     score = 0 
 #     print("\ncalculating score of:")
 #     print(attributes)
+    if not "zip" in attributes:
+            print("setting zip")
+            attributes['zip'] = "none"
     sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
     "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
     "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
@@ -270,7 +273,10 @@ def getSources(response):
                         sources[key] = []
                         if(not 'none' in str(value).lower()):
                                 sources[key].append(response["platform"])
-                                dateCollected[key] = response["dateCollected"].split(' ')[0]
+                                if("dateCollected") in response:
+                                        dateCollected[key] = response["dateCollected"].split(' ')[0]
+                                else:
+                                        dateCollected[key] = datetime.today().strftime('%Y-%m-%d')
                         #comboResponse[key] = value
                 except Exception as e:
                         #print("exception occurred when trying key: "+str(key))

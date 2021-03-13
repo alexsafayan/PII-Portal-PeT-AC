@@ -33,7 +33,7 @@ class DisplayResults extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                        {this.state.entity.phoneNumber ? <tr><td>phone number</td><td>spam</td><td>high</td><td>{this.state.sources.phoneNum}</td><td>{this.state.datesCollected.phoneNum}</td></tr> : null}
+                        {this.state.entity.phoneNum ? <tr><td>phone number</td><td>spam</td><td>high</td><td>{this.state.sources.phoneNum}</td><td>{this.state.datesCollected.phoneNum}</td></tr> : null}
                         {this.state.entity.email ? <tr><td>email</td><td>spam, phishing</td><td> low</td><td>{this.state.sources.email}</td><td>{this.state.datesCollected.email}</td></tr> : null}
                         {this.state.entity.password ? <tr><td>password</td><td>access to private accounts</td><td>{this.state.sources.password}</td><td>{this.state.datesCollected.password}</td><td> high</td></tr> : null}
                         {this.state.entity.address ? <tr><td>address</td><td>spam</td><td> high</td><td>{this.state.sources.address}</td><td>{this.state.datesCollected.address}</td></tr> : null}

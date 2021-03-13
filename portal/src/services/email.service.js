@@ -32,6 +32,13 @@ class EmailDataService {
     })
   }
 
+  searchSurfaceWeb(name, other) {
+    return http.post('/crawl', {
+      name: name,
+      zip: other
+    })
+  }
+
   resolve(name, zip, surfaceWebResponse) {
     return http.post('/resolve', {
       name: name,

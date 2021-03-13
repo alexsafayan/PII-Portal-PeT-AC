@@ -4,19 +4,7 @@ import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 import PuffLoader from "react-spinners/PuffLoader";
-
-const initialResultsState = {
-    email: false,
-    password: false,
-    zip: false,
-    phoneNumber: false,
-    ssn: false,
-    address: false,
-    relatives: false,
-    databreach_sources: [],
-    surfaceweb_sources: []
-};
-
+import BeatLoader from "react-spinners/BeatLoader";
 
 const AdditionalCriteria = props => {
     return (
@@ -56,8 +44,10 @@ class Search extends React.Component {
           showplot: false,
           plot: "",
           showSearchByEmail: true,
+          showSurfaceWebResponse: false,
           es: "",
-          score: 0
+          score: 0,
+          loaderMessage: ""
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -67,27 +57,7 @@ class Search extends React.Component {
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
         this.chooseEntity = this.chooseEntity.bind(this);
-        this.DisplayResults = React.createRef();
-
-        var resultJson = {
-            //score: score,
-            email: false,
-            address: false,
-            password: false,
-            phoneNumber: false,
-            zip: false,
-            ssn: false,
-            birthday: false,
-            hometown: false,
-            currenttown: false,
-            jobdetails: false,
-            relationshipstatus: false,
-            interests: false,
-            political: false,
-            religious: false,
-            databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
-        } 
+        this.DisplayResults = React.createRef(); 
       }
     
     handleSubmit(event) {
@@ -108,42 +78,79 @@ class Search extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
+                loaderMessage: "Searching the surface web",
                 showSearchByEmail: false,
             })
-            EmailDataService.getData(this.state.nameValue, this.state.zipValue)
+            EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
-                // console.log("response:");
-                // console.log(response);
-                var entities = []
-                var sources = []
-                var dates = []
-                //alert("we have your name and zip in database")
+                console.log("response.data:");
+                console.log(response.data);
+                var surfaceWebResponse = response.data.surfaceWebResponse
                 if(response.status === 202) {
-                    for(var i = 0; i < response.data.entities.length; i++) {
-                        entities.push(response.data.entities[i])
-                        sources.push(response.data.sources[i])
-                        dates.push(response.data.dates[i])
-                    }
-                    console.log("entities, sources: ")
-                    console.log(entities)
-                    console.log(sources)
-                    console.log(dates)
-                    var es = "es"
-                    if(entities.length == 1) {
+                    var es = "s"
+                    if(surfaceWebResponse.length === 1) {
                         es = ""
                     }
                     this.setState({
-                        showEntities: true,
-                        showLoader: false,
-                        entities: entities,
-                        sources: sources,
-                        datesCollected: dates,
+                        showSurfaceWebResponse: true,
+                        //showLoader: false,
+                        loaderMessage: "Resolving entities",
+                        surfaceWebResults: surfaceWebResponse,
                         es: es,
                     })
+                    EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response.data.return)
+                    .then(response2 => {
+                        console.log("response2: ")
+                        console.log(response2)
+                        var entities = []
+                        var sources = []
+                        var dates = []
+                        //alert("we have your name and zip in database")
+                        if(response2.status === 202) {
+                            for(var i = 0; i < response2.data.entities.length; i++) {
+                                entities.push(response2.data.entities[i])
+                                sources.push(response2.data.sources[i])
+                                dates.push(response2.data.dates[i])
+                            }
+                            console.log("entities, sources: ")
+                            console.log(entities)
+                            console.log(sources)
+                            console.log(dates)
+                            var es = "es"
+                            if(entities.length === 1) {
+                                es = ""
+                            }
+                            this.setState({
+                                showEntities: true,
+                                showSurfaceWebResponse: false,
+                                showLoader: false,
+                                entities: entities,
+                                sources: sources,
+                                datesCollected: dates,
+                                es: es,
+                            })
+                            return true;
+                        } else if(response2.status === 204) {
+                            this.setState({
+                                showLoader: false,
+                                line1: "We do not have any record of your information being compromised.",
+                                line2: "",
+                                line3: "",
+                                showSearchAgain: true
+                            })
+                            return false
+                        }
+                    }).catch(e => {
+                        console.log("error on second api call")
+                        console.log(e);
+                        //alert("we do not have your name and zip stored in the database")
+                        
+                    });
                     return true;
                 } else if(response.status === 204) {
                     this.setState({
                         showLoader: false,
+                        showSurfaceWebResponse: false,
                         line1: "We do not have any record of your information being compromised.",
                         line2: "",
                         line3: "",
@@ -191,7 +198,7 @@ class Search extends React.Component {
         })
         if(entity.score<1.6){
             this.setState({
-                showMediumScore: true
+                showLowScore: true
             })
         }
         else if(entity.score>8.4){
@@ -277,20 +284,7 @@ class Search extends React.Component {
                 </div>,
 
                 <div className="container d-flex justify-content-center">
-                    {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
-                </div>,
-
-                // <div>
-                //     {this.state.showSearchByEmail ? 
-                //         <div className="container d-flex justify-content-center">
-                //             <a href="/search"><button className="btn btn-outline-dark">Search by email</button></a></div>
-                //         : 
-                //         null
-                //     }
-                // </div>,
-
-                <div className="container d-flex justify-content-center">
-                    {this.state.errorMessage.length == 0 ? null
+                    {this.state.errorMessage.length === 0 ? null
                     : 
                     <Alert variant="danger">
                         <p>
@@ -316,6 +310,17 @@ class Search extends React.Component {
                         <Alert variant="warning">
                             <h4>{this.state.entities[this.state.entityInd].name}</h4>
                             <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>medium</b> privacy exposure rating relative to your age group.</p>
+                        </Alert>
+                    </div>
+                    : null}
+                </div>,
+
+                <div style={{cursor:'pointer'}} className="container">
+                   {this.state.showLowScore ? 
+                   <div className="row justify-content-center text-center">
+                        <Alert variant="success">
+                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
+                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
                         </Alert>
                     </div>
                     : null}
@@ -379,19 +384,40 @@ class Search extends React.Component {
                     : null
                 }
                 </div>,
+                <div className="container">
+                {this.state.showSurfaceWebResponse ? 
+                    <div>
+                    <h1 className="text-center">We found {this.state.surfaceWebResults.length} result{this.state.es} searching the surface web:</h1>
+                    <div className="row">
+                    {this.state.surfaceWebResults.map((value, index) => {
+                        return <div className="col-4" style={{paddingBottom: "10px"}}>
+                            <div className="card" style={{paddingBottom: "10px"}}>
+                                <div className="card-body" style={{paddingBottom: "10px"}}>
+                                <h5 className="card-title">{value.name}</h5>
+                                {/* <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p> */}
+                                <p className="card-text">Source: {value.platform}</p>
+                                {/* <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a> */}
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                    </div>
+                    </div>
+                    : null
+                }
+                </div>,
 
-                // <div className="container d-flex justify-content-center">
-                //     {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                //     : null
-                //     }
-                // </div>,
+                <div className="container d-flex justify-content-center">
+                    {this.state.showLoader ? 
+                    <div> 
+                        <h2>{this.state.loaderMessage}<BeatLoader color={"#000000"} loading={true} size={20} /> </h2>
+                        
+                    </div>
+                    
+                    : null}
 
-                // <div className="container d-flex justify-content-center">
-                //     {this.state.entityInd >=0 ? 
-                //     <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
-                //     : null
-                //     }
-                // </div>,
+                </div>,
 
                 <div className="container">
                     <div className="row">

@@ -5,6 +5,7 @@ import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 import PuffLoader from "react-spinners/PuffLoader";
 import BeatLoader from "react-spinners/BeatLoader";
+import { SiCheckmarx } from "react-icons/si";
 
 const AdditionalCriteria = props => {
     return (
@@ -41,13 +42,11 @@ class Search extends React.Component {
           line1: "",
           line2: "",
           line3: "",
-          showplot: false,
-          plot: "",
           showSearchByEmail: true,
           showSurfaceWebResponse: false,
           es: "",
-          score: 0,
-          loaderMessage: ""
+          dbComplete: false,
+          surfaceSearchComplete: false,
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -78,27 +77,23 @@ class Search extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
-                loaderMessage: "Searching the surface web",
+                loaderMessage: "Searching the database",
                 showSearchByEmail: false,
             })
             EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
                 console.log("response.data:");
                 console.log(response.data);
-                var surfaceWebResponse = response.data.surfaceWebResponse
                 if(response.status === 202) {
-                    var es = "s"
-                    if(surfaceWebResponse.length === 1) {
-                        es = ""
-                    }
+                    var dbResponse = response.data.dbResponse;
                     this.setState({
-                        showSurfaceWebResponse: true,
+                        //showSurfaceWebResponse: true,
                         //showLoader: false,
-                        loaderMessage: "Resolving entities",
-                        surfaceWebResults: surfaceWebResponse,
-                        es: es,
+                        loaderMessage: "Searching surfaceweb",
+                        dbAmount: 1,
+                        dbComplete: true,
                     })
-                    EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response.data.return)
+                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
                     .then(response2 => {
                         console.log("response2: ")
                         console.log(response2)
@@ -107,28 +102,64 @@ class Search extends React.Component {
                         var dates = []
                         //alert("we have your name and zip in database")
                         if(response2.status === 202) {
-                            for(var i = 0; i < response2.data.entities.length; i++) {
-                                entities.push(response2.data.entities[i])
-                                sources.push(response2.data.sources[i])
-                                dates.push(response2.data.dates[i])
-                            }
-                            console.log("entities, sources: ")
-                            console.log(entities)
-                            console.log(sources)
-                            console.log(dates)
-                            var es = "es"
-                            if(entities.length === 1) {
-                                es = ""
-                            }
+                            var surfaceWebResponse = response2.data.surfaceWebResponse
                             this.setState({
-                                showEntities: true,
                                 showSurfaceWebResponse: false,
-                                showLoader: false,
-                                entities: entities,
-                                sources: sources,
-                                datesCollected: dates,
-                                es: es,
+                                surfaceSearchComplete: true,
+                                surfaceWebResults: surfaceWebResponse,
+                                loaderMessage: "Resolving Entities"
                             })
+
+                            EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response2.data.return)
+                            .then(finalResponse => {
+                                console.log("response2: ")
+                                console.log(finalResponse)
+                                var entities = []
+                                var sources = []
+                                var dates = []
+                                //alert("we have your name and zip in database")
+                                if(finalResponse.status === 202) {
+                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
+                                        entities.push(finalResponse.data.entities[i])
+                                        sources.push(finalResponse.data.sources[i])
+                                        dates.push(finalResponse.data.dates[i])
+                                    }
+                                    console.log("entities, sources: ")
+                                    console.log(entities)
+                                    console.log(sources)
+                                    console.log(dates)
+                                    var es = "es"
+                                    if(entities.length === 1) {
+                                        es = ""
+                                    }
+                                    this.setState({
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        showEntities: true,
+                                        showSurfaceWebResponse: false,
+                                        showLoader: false,
+                                        entities: entities,
+                                        sources: sources,
+                                        datesCollected: dates,
+                                        es: es,
+                                    })
+                                    return true;
+                                } else if(finalResponse.status === 204) {
+                                    this.setState({
+                                        showLoader: false,
+                                        line1: "We do not have any record of your information being compromised.",
+                                        line2: "",
+                                        line3: "",
+                                        showSearchAgain: true
+                                    })
+                                    return false
+                                }
+                            }).catch(e => {
+                                console.log("error on third api call")
+                                console.log(e);
+                                //alert("we do not have your name and zip stored in the database")
+                                
+                            });
                             return true;
                         } else if(response2.status === 204) {
                             this.setState({
@@ -157,19 +188,9 @@ class Search extends React.Component {
                         showSearchAgain: true
                     })
                     return false
-                } else if(response.status === 201) {
-                    console.log("response: ")
-                    console.log(response)
-                    this.setState({
-                        showLoader: false,
-                        line1: "We do not have any record of your information being compromised.",
-                        line2: "",
-                        line3: "",
-                        showSearchAgain: true
-                    })
                 }
             }).catch(e => {
-                console.log("in hizzere2")
+                console.log("error in first api call")
                 console.log(e);
                 //alert("we do not have your name and zip stored in the database")
                 
@@ -198,7 +219,7 @@ class Search extends React.Component {
         })
         if(entity.score<1.6){
             this.setState({
-                showMediumScore: true
+                showLowScore: true
             })
         }
         else if(entity.score>8.4){
@@ -315,6 +336,17 @@ class Search extends React.Component {
                     : null}
                 </div>,
 
+                <div style={{cursor:'pointer'}} className="container">
+                   {this.state.showLowScore ? 
+                   <div className="row justify-content-center text-center">
+                        <Alert variant="success">
+                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
+                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
+                        </Alert>
+                    </div>
+                    : null}
+                </div>,
+
                  <div className="container d-flex justify-content-center">
                     <h3>{this.state.line1}</h3>
                 </div>,
@@ -383,8 +415,8 @@ class Search extends React.Component {
                             <div className="card" style={{paddingBottom: "10px"}}>
                                 <div className="card-body" style={{paddingBottom: "10px"}}>
                                 <h5 className="card-title">{value.name}</h5>
-                                <p className="card-text">Phone number: {value.phoneNumber}</p>
-                                <p className="card-text">Birthyear: {value.birthyear}</p>
+                                {/* <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p> */}
                                 <p className="card-text">Source: {value.platform}</p>
                                 {/* <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a> */}
                                 </div>
@@ -394,6 +426,22 @@ class Search extends React.Component {
                     </div>
                     </div>
                     : null
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.dbComplete && 
+                    <div>
+                    <h1 className="text-center">Database query complete <SiCheckmarx/> </h1>
+                    </div>
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.surfaceSearchComplete && 
+                    <div>
+                    <h1 className="text-center">Surface web search complete <SiCheckmarx/> </h1>
+                    </div>
                 }
                 </div>,
 
