@@ -77,7 +77,7 @@ class Search extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
-                loaderMessage: "Searching the database",
+                loaderMessage: "Searching breached records ",
                 showSearchByEmail: false,
             })
             EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
@@ -432,7 +432,7 @@ class Search extends React.Component {
                 <div className="container">
                 {this.state.dbComplete && 
                     <div>
-                    <h1 className="text-center">Database query complete <SiCheckmarx/> </h1>
+                    <h2 className="text-center">Searching breached records <SiCheckmarx/></h2>
                     </div>
                 }
                 </div>,
@@ -440,7 +440,7 @@ class Search extends React.Component {
                 <div className="container">
                 {this.state.surfaceSearchComplete && 
                     <div>
-                    <h1 className="text-center">Surface web search complete <SiCheckmarx/> </h1>
+                    <h2 className="text-center">Searching surface web <SiCheckmarx/></h2>
                     </div>
                 }
                 </div>,
