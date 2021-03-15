@@ -1,6 +1,7 @@
 import mcan
 import os
 import pandas as pd
+import math
 
 """
 1. Load Data
@@ -33,15 +34,19 @@ def runEntityResolution(dbResponse, surfaceWebResponse):
     # print(surfaceWebResponse)
     def organize_data2(left_data, right_data):
         df = pd.DataFrame(columns=['left_', 'right_','id'])
-
+        print("data frame guy")
         for i in left_data:
             if isinstance(i, list):
                 for j in i:
-                    test = ''.join(str(x) for x in j.values())
+                    test = ''.join(str(x)+' ' for x in j.values())
+                    
+                    #print("appending left {0} in list part".format(test))
                     df = df.append({'left_': test}, ignore_index=True)
 
             elif isinstance(i, dict):
-                test = ''.join(str(x) for x in i.values())
+                test = ''.join(str(x)+' ' for x in i.values())
+                
+                #print("appending left {0} in dict part".format(test))
                 df = df.append({'left_': test}, ignore_index=True)
             else:
                 print("Left Type Error: Input is not list/dict.")
@@ -50,11 +55,15 @@ def runEntityResolution(dbResponse, surfaceWebResponse):
             for m in right_data:
                 if isinstance(m, list):
                     for n in m:
-                        num += 1
-                        test2 = ''.join(str(x) for x in n.values())
+                        num += 1 
+                        test2 = ''.join(str(x)+' ' for x in n.values())
+                        
+                        #print("appending right {0} in list part".format(test2))
                         df = df.append({'right_': test2,'id': num}, ignore_index=True)
                 elif isinstance(m, dict):
-                    test2 = ''.join(str(x) for x in m.values())
+                    test2 = ''.join(str(x)+' ' for x in m.values())
+                    
+                    #print("appending right {0} in dict part".format(test2))
                     df = df.append({'right_': test2}, ignore_index=True)
                 else:
                     print("Right Type Error: Input is not list/dict.")
@@ -64,11 +73,19 @@ def runEntityResolution(dbResponse, surfaceWebResponse):
         return df
 
     df = organize_data2(dbResponse, surfaceWebResponse)
-
-    for i in dbResponse:
-        input_content = ''.join(str(x) for x in i.values())
-
-    df = df.assign(left_=input_content)
+    amt = len(df['left_'])
+    curr = ''
+    for ind in range (amt):
+        guy = df['left_'][ind]
+        if str(guy) == "nan":
+            df['left_'][ind] = curr.replace("none","").replace("None","")
+            df['right_'][ind] = df['right_'][ind].replace("none","").replace("None","")
+        else:
+            curr = guy
+    #df = df.assign(left_=df['left_'][0])
+    # for i in dbResponse:
+    #     input_content = ''.join(str(x) for x in i.values())
+    # df.to_csv('mikey_processed.csv',index=False)
     df2 = df.dropna()
     del df
     df2['label'] = '1'
@@ -76,13 +93,13 @@ def runEntityResolution(dbResponse, surfaceWebResponse):
     # Save the test file in local for documentation. Can delete later.
     cwd = os.getcwd()
     df2.to_csv('test_processed.csv',index=False)
-    len = df2.shape[0]
+    leng = df2.shape[0]
 
     """
     3. Start entity resolution
     The suspected leaked data to warn the users.
     """
-    print(str(len) + " suspected records retrieved from surface web, computing if they are your data...")
+    print(str(leng) + " suspected records retrieved from surface web, computing if they are your data...")
 
     train, validation, test = mcan.data.process(path= cwd , train='test_processed.csv',
         validation='test_processed.csv',
@@ -103,5 +120,5 @@ def runEntityResolution(dbResponse, surfaceWebResponse):
     #df.loc[df['_right'] == ID_of_PII]
 
     #Remove the documentation if we want.
-    os.remove("test_processed.csv")
+    #os.remove("test_processed.csv")
     return return2

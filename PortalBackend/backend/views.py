@@ -127,24 +127,18 @@ def name_detail(request):
         sourceList = []
         datesCollected = []
         try: 
-            # testItems = EmailModel.objects.filter(name=name, zip=zip)
-            # print("testitems length")
-            # print(len(testItems))
-            # print("each item: ")
-            # for testItem in testItems:
-            #     email_serializer = EmailSerializer(testItem)
-            #     print(email_serializer.data)
-            #     print()
-            # return
-            item = EmailModel.objects.get(name=name, zip=zip)
-            email_serializer = EmailSerializer(item)
-            dbResponse = {}
-            dbResponse.update(email_serializer.data)
+            dbResponses = []
+            items = EmailModel.objects.filter(name=name, zip=zip)
+            for item in items:
+                email_serializer = EmailSerializer(item)
+                dbResponses.append(email_serializer.data)
+            if len(dbResponses) == 0:
+                return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
             print("db response: ")
-            print(dbResponse)
+            print(dbResponses)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"dbResponse":dbResponse},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"dbResponse":dbResponses},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -175,8 +169,8 @@ def searchSurfaceWeb(request):
                 else:
                     if not "none" in str(values['name']).lower():
                         all_vals.append(values)
-            print("crawlers response: ")
-            print(all_vals)
+            # print("crawlers response: ")
+            # print(all_vals)
             
             # for each in all_vals:
             for each in all_vals:
@@ -196,6 +190,7 @@ def searchSurfaceWeb(request):
 
 @api_view(['GET', 'POST', 'DELETE'])
 def resolve_entities(request):
+    print("in resolve_entities")
     start_time = time.time()
     if request.method == 'POST':
         req = request.body.decode()
@@ -207,44 +202,46 @@ def resolve_entities(request):
         sourceList = []
         datesCollected = []
         try: 
+            dbResponses = []
+            items = EmailModel.objects.filter(name=name, zip=zip)
+            for item in items:
+                email_serializer = EmailSerializer(item)
+                dbResponses.append(email_serializer.data)
             
-            item = EmailModel.objects.get(name=name, zip=zip)
-            email_serializer = EmailSerializer(item)
-            dbResponse = {}
-            dbResponse.update(email_serializer.data)
-            ## gotta do an if statement in the case we have no surface web return
-
-            left_input = []
             right_input = []
-            left_input.append(dbResponse)
+            left_input = dbResponses
+            # left_input = []
+            # left_input.append(dbResponses[1])
             right_input.append(surfaceWebVals)
-            print("running ER")
+            print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
             predictions = runEntityResolution(left_input, right_input) 
             print("predictions")
             print(predictions)
             # for each in all_vals:
             ind = 0
-            nonMatches = []
-            matches = []
+            for dbResponse in left_input:
+                nonMatches = []
+                matches = []
+                for each in surfaceWebVals:
+                    
+                    prediction = predictions[ind][1]
+                    #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
+                    if (prediction) > 0.5:
+                        matches.append(each)
+                    else:
+                        nonMatches.append(each)
 
-            for each in surfaceWebVals:
-                prediction = predictions[ind][1]
-                if (prediction) > 0.01:
-                    matches.append(each)
+                    ind+=1
+                if(len(matches)>0):
+                    comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
                 else:
-                    nonMatches.append(each)
-
-                ind+=1
-            if(len(matches)>0):
-                comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
-            else:
-                comboResponse = dbResponse
-                sources, dateCollected = getSources(dbResponse)
-            score = calc_score(comboResponse)
-            comboResponse["score"] = score
-            entities.append(comboResponse)
-            sourceList.append(sources)
-            datesCollected.append(dateCollected)
+                    comboResponse = dbResponse
+                    sources, dateCollected = getSources(dbResponse)
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
 
             # for each in nonMatches:
             #     sources, dateCollected = getSources(each)
@@ -260,8 +257,8 @@ def resolve_entities(request):
 
 
         except Exception as e: 
+            print("error occurred : {0}".format(str(e)))
             for each in surfaceWebVals:
-                print("nothing found in database")
                 sources, dateCollected = getSources(each)
                 score = calc_score(each)
                 each["score"] = score
