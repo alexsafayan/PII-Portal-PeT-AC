@@ -5,6 +5,7 @@ import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 import PuffLoader from "react-spinners/PuffLoader";
 import BeatLoader from "react-spinners/BeatLoader";
+import { SiCheckmarx } from "react-icons/si";
 
 const AdditionalCriteria = props => {
     return (
@@ -41,13 +42,12 @@ class Search extends React.Component {
           line1: "",
           line2: "",
           line3: "",
-          showplot: false,
-          plot: "",
           showSearchByEmail: true,
           showSurfaceWebResponse: false,
           es: "",
-          score: 0,
-          loaderMessage: ""
+          dbComplete: false,
+          surfaceSearchComplete: false,
+          searchAgainClass: "col-4"
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -78,27 +78,21 @@ class Search extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
-                loaderMessage: "Searching the surface web",
+                loaderMessage: "Searching breached records ",
                 showSearchByEmail: false,
             })
             EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
                 console.log("response.data:");
                 console.log(response.data);
-                var surfaceWebResponse = response.data.surfaceWebResponse
                 if(response.status === 202) {
-                    var es = "s"
-                    if(surfaceWebResponse.length === 1) {
-                        es = ""
-                    }
+                    var dbResponse = response.data.dbResponse;
                     this.setState({
-                        showSurfaceWebResponse: true,
-                        //showLoader: false,
-                        loaderMessage: "Resolving entities",
-                        surfaceWebResults: surfaceWebResponse,
-                        es: es,
+                        loaderMessage: "Searching surfaceweb",
+                        dbAmount: 1,
+                        dbComplete: true,
                     })
-                    EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response.data.return)
+                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
                     .then(response2 => {
                         console.log("response2: ")
                         console.log(response2)
@@ -107,28 +101,67 @@ class Search extends React.Component {
                         var dates = []
                         //alert("we have your name and zip in database")
                         if(response2.status === 202) {
-                            for(var i = 0; i < response2.data.entities.length; i++) {
-                                entities.push(response2.data.entities[i])
-                                sources.push(response2.data.sources[i])
-                                dates.push(response2.data.dates[i])
-                            }
-                            console.log("entities, sources: ")
-                            console.log(entities)
-                            console.log(sources)
-                            console.log(dates)
-                            var es = "es"
-                            if(entities.length === 1) {
-                                es = ""
-                            }
+                            var surfaceWebResponse = response2.data.surfaceWebResponse
                             this.setState({
-                                showEntities: true,
                                 showSurfaceWebResponse: false,
-                                showLoader: false,
-                                entities: entities,
-                                sources: sources,
-                                datesCollected: dates,
-                                es: es,
+                                surfaceSearchComplete: true,
+                                surfaceWebResults: surfaceWebResponse,
+                                loaderMessage: "Resolving Entities"
                             })
+
+                            EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response2.data.return)
+                            .then(finalResponse => {
+                                console.log("response2: ")
+                                console.log(finalResponse)
+                                var entities = []
+                                var sources = []
+                                var dates = []
+                                //alert("we have your name and zip in database")
+                                if(finalResponse.status === 202) {
+                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
+                                        entities.push(finalResponse.data.entities[i])
+                                        sources.push(finalResponse.data.sources[i])
+                                        dates.push(finalResponse.data.dates[i])
+                                    }
+                                    console.log("entities, sources: ")
+                                    console.log(entities)
+                                    console.log(sources)
+                                    console.log(dates)
+                                    var es = "es"
+                                    if(entities.length === 1) {
+                                        es = ""
+                                    }
+                                    this.setState({
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        showEntities: true,
+                                        showSurfaceWebResponse: false,
+                                        showLoader: false,
+                                        entities: entities,
+                                        sources: sources,
+                                        datesCollected: dates,
+                                        es: es,
+                                    })
+                                    return true;
+                                } else if(finalResponse.status === 204) {
+                                    this.setState({
+                                        showLoader: false,
+                                        line1: "We do not have any record of your information being compromised.",
+                                        line2: "",
+                                        line3: "",
+                                        showSearchAgain: true,
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        searchAgainClass: "col-5"
+                                    })
+                                    return false
+                                }
+                            }).catch(e => {
+                                console.log("error on third api call")
+                                console.log(e);
+                                //alert("we do not have your name and zip stored in the database")
+                                
+                            });
                             return true;
                         } else if(response2.status === 204) {
                             this.setState({
@@ -136,7 +169,10 @@ class Search extends React.Component {
                                 line1: "We do not have any record of your information being compromised.",
                                 line2: "",
                                 line3: "",
-                                showSearchAgain: true
+                                showSearchAgain: true,
+                                surfaceSearchComplete: false,
+                                dbComplete: false,
+                                searchAgainClass: "col-5"
                             })
                             return false
                         }
@@ -154,22 +190,15 @@ class Search extends React.Component {
                         line1: "We do not have any record of your information being compromised.",
                         line2: "",
                         line3: "",
-                        showSearchAgain: true
+                        showSearchAgain: true,
+                        surfaceSearchComplete: false,
+                        dbComplete: false,
+                        searchAgainClass: "col-5"
                     })
                     return false
-                } else if(response.status === 201) {
-                    console.log("response: ")
-                    console.log(response)
-                    this.setState({
-                        showLoader: false,
-                        line1: "We do not have any record of your information being compromised.",
-                        line2: "",
-                        line3: "",
-                        showSearchAgain: true
-                    })
                 }
             }).catch(e => {
-                console.log("in hizzere2")
+                console.log("error in first api call")
                 console.log(e);
                 //alert("we do not have your name and zip stored in the database")
                 
@@ -253,7 +282,8 @@ class Search extends React.Component {
             selectedValue: id,
             entityInd: id,
             showEntities: false,
-            showSearchAgain: true
+            showSearchAgain: true,
+            searchAgainClass: "col-4"
         })
         this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
         
@@ -263,7 +293,7 @@ class Search extends React.Component {
     goBack(event) {
         console.log("in the go back funct")
         this.setState({
-            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false
+            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false, searchAgainClass: "col-5"
         });
         this.DisplayResults.current.setState({
             show: false,
@@ -408,6 +438,22 @@ class Search extends React.Component {
                 }
                 </div>,
 
+                <div className="container">
+                {this.state.dbComplete && 
+                    <div>
+                    <h2 className="text-center">Searching breached records <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.surfaceSearchComplete && 
+                    <div>
+                    <h2 className="text-center">Searching surface web <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
+
                 <div className="container d-flex justify-content-center">
                     {this.state.showLoader ? 
                     <div> 
@@ -421,19 +467,18 @@ class Search extends React.Component {
 
                 <div className="container">
                     <div className="row">
-                        <div className="col-4"></div>
-                        <div className="col-2">
-                            {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                            : null
-                            }
-                        </div>
-                        <div className="col-2">
-                            {this.state.entityInd >=0 ? 
-                            <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
-                            : null
-                            }
-                        </div>
-                        <div className="col-4"></div>
+                        <div className={this.state.searchAgainClass}></div>
+                        {this.state.showSearchAgain && 
+                            <div className="col-2">
+                                <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                            </div>
+                        }
+                        {this.state.entityInd >=0 &&
+                            <div className="col-2">
+                                <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
+                            </div>
+                        }
+                        <div className="col-2"></div>
                     </div>
                 </div>
 

@@ -1,27 +1,9 @@
 import http from "../http-common";
 
 class EmailDataService {
-  getAll() {
-    return http.get("/emails");
-  }
-
-
-  get(email) {
+  getByEmail(email) {
     return http.post('/emails', {
       email: email
-    })
-  }
-
-  dummyGet(val) {
-    return http.post('/emails', {
-      val: val
-    })
-  }
-
-  getData(name, zip) {
-    return http.post('/name', {
-      name: name,
-      zip: zip
     })
   }
 
@@ -39,10 +21,23 @@ class EmailDataService {
     })
   }
 
+  searchSurfaceWebEmail(email) {
+    return http.post('/crawlEmail', {
+      email: email
+    })
+  }
+
   resolve(name, zip, surfaceWebResponse) {
     return http.post('/resolve', {
       name: name,
       zip: zip,
+      surfaceWebResponse: surfaceWebResponse
+    })
+  }
+
+  resolveEmail(dbResponse, surfaceWebResponse) {
+    return http.post('/resolveEmail', {
+      dbResponse: dbResponse,
       surfaceWebResponse: surfaceWebResponse
     })
   }

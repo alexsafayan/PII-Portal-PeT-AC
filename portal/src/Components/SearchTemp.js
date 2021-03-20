@@ -47,6 +47,7 @@ class Search extends React.Component {
           es: "",
           dbComplete: false,
           surfaceSearchComplete: false,
+          searchAgainClass: "col-4"
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -150,7 +151,8 @@ class Search extends React.Component {
                                         line1: "We do not have any record of your information being compromised.",
                                         line2: "",
                                         line3: "",
-                                        showSearchAgain: true
+                                        showSearchAgain: true,
+                                        searchAgainClass: "col-5"
                                     })
                                     return false
                                 }
@@ -167,7 +169,8 @@ class Search extends React.Component {
                                 line1: "We do not have any record of your information being compromised.",
                                 line2: "",
                                 line3: "",
-                                showSearchAgain: true
+                                showSearchAgain: true,
+                                searchAgainClass: "col-5"
                             })
                             return false
                         }
@@ -185,7 +188,8 @@ class Search extends React.Component {
                         line1: "We do not have any record of your information being compromised.",
                         line2: "",
                         line3: "",
-                        showSearchAgain: true
+                        showSearchAgain: true,
+                        searchAgainClass: "col-5"
                     })
                     return false
                 }
@@ -274,7 +278,8 @@ class Search extends React.Component {
             selectedValue: id,
             entityInd: id,
             showEntities: false,
-            showSearchAgain: true
+            showSearchAgain: true,
+            searchAgainClass: "col-4"
         })
         this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
         
@@ -284,7 +289,7 @@ class Search extends React.Component {
     goBack(event) {
         console.log("in the go back funct")
         this.setState({
-            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false
+            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false, searchAgainClass: "col-5"
         });
         this.DisplayResults.current.setState({
             show: false,
@@ -458,19 +463,18 @@ class Search extends React.Component {
 
                 <div className="container">
                     <div className="row">
-                        <div className="col-4"></div>
-                        <div className="col-2">
-                            {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                            : null
-                            }
-                        </div>
-                        <div className="col-2">
-                            {this.state.entityInd >=0 ? 
-                            <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
-                            : null
-                            }
-                        </div>
-                        <div className="col-4"></div>
+                        <div className={this.state.searchAgainClass}></div>
+                        {this.state.showSearchAgain && 
+                            <div className="col-2">
+                                <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                            </div>
+                        }
+                        {this.state.entityInd >=0 &&
+                            <div className="col-2">
+                                <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
+                            </div>
+                        }
+                        <div className="col-2"></div>
                     </div>
                 </div>
 

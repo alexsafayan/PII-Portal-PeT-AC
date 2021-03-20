@@ -3,7 +3,7 @@ import { About } from './views/About/about.js';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Homepage from './Components/Homepage.js'
 import Testing from './Components/Testing.js'
-import Search from './Components/SearchTemp.js'
+import Search from './Components/Search.js'
 
 export const Routes = () => {
   return (

@@ -19,19 +19,6 @@ import requests
 # Create your views here.
 @api_view(['GET', 'POST', 'DELETE'])
 def email_list(request):
-    # GET list of emails, POST a new email, DELETE all emails
-    if request.method == 'GET':
-        req = request.body.decode()
-        try: 
-            body = json.loads(req)
-        except Exception as e:
-            body = str(e)
-        return JsonResponse({"request":str(request), "req": str(req), "body": body},status=status.HTTP_202_ACCEPTED)
-    #     emails_serializer = EmailSerializer(emails, many=True)
-    #     return JsonResponse(emails_serializer.data, safe=False)
-        # 'safe=False' for objects serialization
-    
-
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
@@ -39,65 +26,119 @@ def email_list(request):
         sourceList = []
         datesCollected = []
         if 'email' in dic:
-
             email = dic.get('email')
-            print("email is : " +str(email))
+            print("email is : {}".format(email))
             try: 
                 item = EmailModel.objects.filter(email=email)[0]
-                spider_url = 'https://thatsthem.com/email/' + email
-                scrapyrt_url = 'http://localhost:9080/crawl.json?spider_name=mydomain&url='
-                final_url = scrapyrt_url + spider_url
-                print(final_url)
-                results = requests.get(url=final_url)
-                #print(results.json()['items'][0])
-                crawlerResponse = results.json()['items'][0]
-                crawlerResponse["email"] = email
-                crawlerResponse["platform"] = "that's them"
-                crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
-                print("crawlerresponse is ")
-                print(crawlerResponse)
                 email_serializer = EmailSerializer(item)
                 dbResponse = {}
                 dbResponse.update(email_serializer.data)
+                for key in dbResponse:
+                    val = dbResponse[key]
+                    if val == None:
+                        dbResponse[key] = str(val)
                 print("dbresponse is ")
                 print(dbResponse)
-                # here we would need to do entity resolution; then return either resolved entity or multiple entities
-
-
-                #in the case the entites are the same, combine them:
-                comboResponse, sources, dateCollected = combine(crawlerResponse,dbResponse)
-
-
-                #then calc score:
-                score = calc_score(comboResponse)
-                print("score : " + str(score))
-
-                comboResponse["score"] = score
-                comboResponse["percentile"] = .75
-                entities.append(comboResponse)
-                sourceList.append(sources)
-                datesCollected.append(dateCollected)
             except Exception as e: 
                 print(str(e))
                 return JsonResponse({'error_message': str(e)}, status=status.HTTP_204_NO_CONTENT)
                  
             
+            return JsonResponse({"dbResponse":dbResponse},status=status.HTTP_202_ACCEPTED)
+                
+@api_view(['GET', 'POST', 'DELETE'])
+def searchSurfaceWebEmail(request):
+    start_time = time.time()
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+
+        email = dic.get('email')
+        surfaceWebResponse = []
+        try: 
+            # item = EmailModel.objects.get(name=name, zip=zip)
+            
+            spider_url = 'https://thatsthem.com/email/' + email
+            scrapyrt_url = 'http://localhost:9080/crawl.json?spider_name=mydomain&url='
+            final_url = scrapyrt_url + spider_url
+            print(final_url)
+            results = requests.get(url=final_url)
+            #print(results.json()['items'][0])
+            res = results.json()['items']
+            print("total amount of results is {}".format(len(res)))
+            crawlerResponse = results.json()['items'][0]
+            crawlerResponse["email"] = email
+            crawlerResponse["platform"] = "that's them"
+            crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
+            print("crawlerresponse is ")
+            print(crawlerResponse)
+
+            elapsed_time = time.time() - start_time
+            print("it took this long --- " + str(elapsed_time))
+            return JsonResponse({"surfaceWebResponse":crawlerResponse},status=status.HTTP_202_ACCEPTED)
+
+
+        except Exception as e: 
+            print("ran into error : "+str(e))
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+
+@api_view(['GET', 'POST', 'DELETE'])
+def resolve_entitiesEmail(request):
+    print("in resolve_entities EMAILLL")
+    start_time = time.time()
+    if request.method == 'POST':
+        req = request.body.decode()
+        dic = eval(req)
+        dbResponse = dic.get("dbResponse")
+        surfaceWebVals = []
+        surfaceWebVals.append(dic.get("surfaceWebResponse"))
+        entities = []
+        sourceList = []
+        datesCollected = []
+        try: 
+            left_input = []
+            right_input = []
+            left_input.append(dbResponse)
+            right_input.append(surfaceWebVals)
+            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
+            predictions = runEntityResolution(left_input, right_input) 
+            # print("predictions")
+            # print(predictions)
+            # for each in all_vals:
+            ind = 0
+            for dbResponse in left_input:
+                nonMatches = []
+                matches = []
+                for each in surfaceWebVals:
+                    
+                    prediction = predictions[ind][1]
+                    #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
+                    if (prediction) > 0.01:
+                        matches.append(each)
+                    else:
+                        nonMatches.append(each)
+
+                    ind+=1
+                if(len(matches)>0):
+                    comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
+                else:
+                    comboResponse = dbResponse
+                    sources, dateCollected = getSources(dbResponse)
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+
+            elapsed_time = time.time() - start_time
+            print("it took this long --- " + str(elapsed_time))
             return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
 
 
-        elif 'val' in dic:
-            val = dic.get('val')
-            response = {}
-            if val == 'val1':
-                response['score'] = 3.6
-                #plot = generate_boxplot(3.6, 'millenial')
-                #response['plot'] = plot
-            else:
-                response['score'] = 5.4
-                #plot = generate_boxplot(5.4, 'boomer')
-                #response['plot'] = plot
-            return JsonResponse(response,status=status.HTTP_202_ACCEPTED)
-                
+        except Exception as e: 
+            print("error occurred on resolve email entities :")
+            print(e)
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def email_subscribe(request):
@@ -226,7 +267,7 @@ def resolve_entities(request):
                     
                     prediction = predictions[ind][1]
                     #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
-                    if (prediction) > 0.5:
+                    if (prediction) > 0.01:
                         matches.append(each)
                     else:
                         nonMatches.append(each)
@@ -258,13 +299,4 @@ def resolve_entities(request):
 
         except Exception as e: 
             print("error occurred : {0}".format(str(e)))
-            for each in surfaceWebVals:
-                sources, dateCollected = getSources(each)
-                score = calc_score(each)
-                each["score"] = score
-                entities.append(each)
-                sourceList.append(sources)
-                datesCollected.append(dateCollected)
-            
-
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT)

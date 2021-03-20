@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^api/name$', views.name_detail),
     url(r'^api/names$', views.name_detail),
     url(r'^api/crawl$', views.searchSurfaceWeb),
-    url(r'^api/resolve$', views.resolve_entities)
+    url(r'^api/crawlEmail$', views.searchSurfaceWebEmail),
+    url(r'^api/resolve$', views.resolve_entities),
+    url(r'^api/resolveEmail$', views.resolve_entitiesEmail)
 ]
