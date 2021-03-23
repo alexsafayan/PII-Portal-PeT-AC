@@ -4,6 +4,8 @@ import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 import PuffLoader from "react-spinners/PuffLoader";
+import BeatLoader from "react-spinners/BeatLoader";
+import { SiCheckmarx } from "react-icons/si";
 
 
 const DefaultCriteria = props => {
@@ -27,11 +29,9 @@ class Homepage extends React.Component {
         this.state = {
           results: "",
           emailValue: "",
-          phoneValue: "",
-          nameValue: "",
-          zipValue: "",
           errorMessage: "",
-          showAdditionalCriteria: false,
+          surfaceSearchComplete: false,
+          dbComplete: false,
           line1: "",
           line2: "",
           line3: "",
@@ -52,10 +52,6 @@ class Homepage extends React.Component {
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleZipChange = this.handleZipChange.bind(this);
-        this.handlePhoneChange = this.handlePhoneChange.bind(this);
-        this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.DisplayResults = React.createRef();
       }
@@ -70,11 +66,6 @@ class Homepage extends React.Component {
             showLowScore: false,
             score: 0
         });
-        this.DisplayResults.current.setState({
-            show: false,
-            score: 0
-        });
-
         console.log("in handle submit");
         if(this.validateEmail(this.state.emailValue)) {
 
@@ -82,48 +73,127 @@ class Homepage extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
+                loaderMessage: "Searching breached records",
                 showSearchByName: false,
             })
-            EmailDataService.get(this.state.emailValue)
+            EmailDataService.getByEmail(this.state.emailValue)
             .then(response => {
-                var entities = []
-                var sources = []
-                var dates = []
-                // need a for each loop here to push all returned entities
-                
-                
                 if(response.status === 202) {
-                    console.log("entities length")
-                    console.log(response.data.entities.length)
-                    entities.push(response.data.entities[0])
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                        ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                        ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    console.log("entities, sources: ")
-                    console.log(entities)
-                    console.log(sources)
-                    console.log(dates)
+                    console.log("response:")
+                    console.log(response)
                     this.setState({
-                        showEntities: true,
-                        showLoader: false,
-                        entities: entities,
-                        sources: sources,
-                        datesCollected: dates
+                        dbComplete: true,
+                        loaderMessage: "Searching surface web"
                     })
+                    EmailDataService.searchSurfaceWebEmail(this.state.emailValue)
+                    .then(response2 => {
+                        console.log("response2: ")
+                        console.log(response2)
+                        //alert("we have your name and zip in database")
+                        if(response2.status === 202) {
+                            var surfaceWebResponse = response2.data.surfaceWebResponse
+                            this.setState({
+                                showSurfaceWebResponse: false,
+                                surfaceSearchComplete: true,
+                                surfaceWebResults: surfaceWebResponse,
+                                loaderMessage: "Resolving Entities"
+                            })
+
+                            EmailDataService.resolveEmail(response.data.dbResponse, response2.data.surfaceWebResponse)
+                            .then(finalResponse => {
+                                console.log("final response: ")
+                                console.log(finalResponse)
+                                var entities = []
+                                var sources = []
+                                var dates = []
+                                //alert("we have your name and zip in database")
+                                if(finalResponse.status === 202) {
+                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
+                                        entities.push(finalResponse.data.entities[i])
+                                        sources.push(finalResponse.data.sources[i])
+                                        dates.push(finalResponse.data.dates[i])
+                                    }
+                                    console.log("entities, sources: ")
+                                    console.log(entities)
+                                    console.log(sources)
+                                    console.log(dates)
+                                    var es = "es"
+                                    if(entities.length === 1) {
+                                        es = ""
+                                    }
+                                    this.setState({
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        showEntities: true,
+                                        showSurfaceWebResponse: false,
+                                        showLoader: false,
+                                        entities: entities,
+                                        sources: sources,
+                                        datesCollected: dates,
+                                        es: es,
+                                    })
+                                    return true;
+                                } else if(finalResponse.status === 204) {
+                                    this.setState({
+                                        showLoader: false,
+                                        line1: "We do not have any record of your information being compromised.",
+                                        line2: "",
+                                        line3: "",
+                                        showSearchAgain: true,
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        searchAgainClass: "col-5"
+                                    })
+                                    return false
+                                }
+                            }).catch(e => {
+                                console.log("error on third api call")
+                                console.log(e);
+                                //alert("we do not have your name and zip stored in the database")
+                                
+                            });
+                            return true;
+                        } else if(response2.status === 204) {
+                            this.setState({
+                                showLoader: false,
+                                surfaceSearchComplete: false,
+                                dbComplete: false,
+                                line1: "We do not have any record of your information being compromised.",
+                                line2: "",
+                                line3: "",
+                                showSearchAgain: true,
+                                searchAgainClass: "col-5"
+                            })
+                            return false
+                        }
+                    }).catch(e => {
+                        console.log("error on second api call")
+                        console.log(e);
+                        //alert("we do not have your name and zip stored in the database")
+                        
+                    });
                     return true;
                 } else if(response.status === 204) {
                     this.setState({
                         showLoader: false,
+                        surfaceSearchComplete: false,
+                        dbComplete: false,
                         line1: "We do not have any record of your email being compromised.",
                         line2: "",
                         line3: "",
                         showSearchAgain: true
                     })
                     return false
+                }else if(response.status === 201) {
+                    console.log("response: ")
+                    console.log(response)
+                    this.setState({
+                        showLoader: false,
+                        line1: "We do not have any record of your information being compromised.",
+                        line2: "",
+                        line3: "",
+                        showSearchAgain: true
+                    })
                 }
             }).catch(e => {
                 console.log(e);
@@ -158,34 +228,18 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
-    handleNameChange(event) {
-        this.setState({nameValue: event.target.value});
+    chooseEntity(id, event) {
         event.preventDefault();
-    }
-
-    handleZipChange(event) {
-        this.setState({zipValue: event.target.value});
-        event.preventDefault();
-    }
-
-    handlePhoneChange(event) {
-        this.setState({phoneValue: event.target.value});
-        event.preventDefault();
-    }
-
-    handleShowAdditionalCriteria(event) {
-        this.setState({showAdditionalCriteria: !this.state.showAdditionalCriteria})
-        event.preventDefault();
-    }
-
-    chooseEntity(event) {
-        console.log("selected value: "+this.state.selectedValue)
+        console.log("selected value: "+id)
         this.setState({
-            entityInd: this.state.selectedValue,
-            showEntities: false
+            selectedValue: id,
+            entityInd: id,
+            showEntities: false,
+            showSearchAgain: true,
+            searchAgainClass: "col-4"
         })
-        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
-        //event.preventDefault();
+        this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
+        
     }
 
     callDisplay(entity, sources, datesCollected) {
@@ -200,12 +254,12 @@ class Homepage extends React.Component {
             datesCollected: datesCollected,
             score: entity.score
         })
-        if(entity.percentile<.16){
+        if(entity.score<1.6){
             this.setState({
-                showMediumScore: true
+                showLowScore: true
             })
         }
-        else if(entity.percentile>.84){
+        else if(entity.score>8.4){
             this.setState({
                 showHighScore: true
             })
@@ -235,19 +289,6 @@ class Homepage extends React.Component {
                 </div> : null}
                 </div>
                 ,
-                
-                <div className="container d-flex justify-content-center">
-                    {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
-                </div>,
-
-                // <div>
-                //     {this.state.showSearchByName ? 
-                //         <div className="container d-flex justify-content-center">
-                //             <a href="/search"><button className="btn btn-outline-dark">Search by name</button></a></div>
-                //         : 
-                //         null
-                //     }
-                // </div>,
 
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length === 0 ? null
@@ -257,19 +298,6 @@ class Homepage extends React.Component {
                     </Alert>
                     }
                 </div>,   
-
-                <div className="container d-flex justify-content-center">
-                    {this.state.showEntities ? 
-                        <div onChange={this.setSelection.bind(this)}>
-                        We found {this.state.entities.length} potential matches:<div></div>
-                        {this.state.entities.map((value, index) => {
-                            return <div><input type="radio" value={index} key={index} name="entity"/> Name: {value.name}, Age: {value.age}, Phone Number: {value.phoneNumber}</div>
-                        })}
-                        <button onClick= {this.chooseEntity.bind(this)} className="btn btn-outline-dark">Select</button>
-                        </div>
-                        : null
-                    }
-                </div>,
 
                 <div style={{cursor:'pointer'}} className="container">
                     {this.state.showHighScore ? 
@@ -293,6 +321,17 @@ class Homepage extends React.Component {
                     : null}
                 </div>,
 
+                <div style={{cursor:'pointer'}} className="container">
+                   {this.state.showLowScore ? 
+                   <div className="row justify-content-center text-center">
+                        <Alert variant="success">
+                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
+                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
+                        </Alert>
+                    </div>
+                    : null}
+                </div>,
+
                  <div className="container d-flex justify-content-center">
                     <h3>{this.state.line1}</h3>
                 </div>,
@@ -300,6 +339,56 @@ class Homepage extends React.Component {
                 <div className="container d-flex justify-content-center">
                     <p>{this.state.line2}</p>
                     <p><b>{this.state.line3}</b></p>
+                </div>,
+
+                <div className="container">
+                {this.state.showEntities ? 
+                    <div>
+                    <h1 className="text-center">We found {this.state.entities.length} potential match{this.state.es}:</h1>
+                    <div className="row">
+                    {this.state.entities.map((value, index) => {
+                        return <div className="col-4" style={{paddingBottom: "10px"}}>
+                            <div className="card" style={{paddingBottom: "10px"}}>
+                                <div className="card-body" style={{paddingBottom: "10px"}}>
+                                <h5 className="card-title">{value.name}</h5>
+                                <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p>
+                                <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a>
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                    </div>
+                    </div>
+                    : null
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.dbComplete && 
+                    <div>
+                    <h2 className="text-center">Searching breached records <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.surfaceSearchComplete && 
+                    <div>
+                    <h2 className="text-center">Searching surface web <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
+
+                <div className="container d-flex justify-content-center">
+                    {this.state.showLoader ? 
+                    <div> 
+                        <h2>{this.state.loaderMessage}<BeatLoader color={"#000000"} loading={true} size={20} /> </h2>
+                        
+                    </div>
+                    
+                    : null}
+
                 </div>,
 
                 <div className="container d-flex justify-content-center">

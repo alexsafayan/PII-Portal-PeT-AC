@@ -4,19 +4,8 @@ import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 import PuffLoader from "react-spinners/PuffLoader";
-
-const initialResultsState = {
-    email: false,
-    password: false,
-    zip: false,
-    phoneNumber: false,
-    ssn: false,
-    address: false,
-    relatives: false,
-    databreach_sources: [],
-    surfaceweb_sources: []
-};
-
+import BeatLoader from "react-spinners/BeatLoader";
+import { SiCheckmarx } from "react-icons/si";
 
 const AdditionalCriteria = props => {
     return (
@@ -53,10 +42,12 @@ class Search extends React.Component {
           line1: "",
           line2: "",
           line3: "",
-          showplot: false,
-          plot: "",
           showSearchByEmail: true,
-          score: 0
+          showSurfaceWebResponse: false,
+          es: "",
+          dbComplete: false,
+          surfaceSearchComplete: false,
+          searchAgainClass: "col-4"
         };
         this.callDisplay = this.callDisplay.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -65,29 +56,8 @@ class Search extends React.Component {
         this.handleZipChange = this.handleZipChange.bind(this);
         this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleShowAdditionalCriteria = this.handleShowAdditionalCriteria.bind(this);
-        this.queryMongoName = this.queryMongoName.bind(this);
         this.chooseEntity = this.chooseEntity.bind(this);
-        this.DisplayResults = React.createRef();
-
-        var resultJson = {
-            //score: score,
-            email: false,
-            address: false,
-            password: false,
-            phoneNumber: false,
-            zip: false,
-            ssn: false,
-            birthday: false,
-            hometown: false,
-            currenttown: false,
-            jobdetails: false,
-            relationshipstatus: false,
-            interests: false,
-            political: false,
-            religious: false,
-            databreach_sources: [],
-            surfaceweb_sources: ['checkmate', 'beenverified', 'spokeo'],
-        } 
+        this.DisplayResults = React.createRef(); 
       }
     
     handleSubmit(event) {
@@ -108,46 +78,127 @@ class Search extends React.Component {
             this.setState({
                 showSearch: false,
                 showLoader: true,
+                loaderMessage: "Searching breached records ",
                 showSearchByEmail: false,
             })
-            EmailDataService.getData(this.state.nameValue, this.state.zipValue)
+            EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
-                console.log("response:");
-                console.log(response);
-                var entities = []
-                var sources = []
-                var dates = []
-                //alert("we have your name and zip in database")
+                console.log("response.data:");
+                console.log(response.data);
                 if(response.status === 202) {
-                    for(var i = 0; i < response.data.entities.length; i++) {
-                        entities.push(response.data.entities[i])
-                        sources.push(response.data.sources[i])
-                        dates.push(response.data.dates[i])
-                    }
-                    console.log("entities, sources: ")
-                    console.log(entities)
-                    console.log(sources)
-                    console.log(dates)
+                    var dbResponse = response.data.dbResponse;
                     this.setState({
-                        showEntities: true,
-                        showLoader: false,
-                        entities: entities,
-                        sources: sources,
-                        datesCollected: dates
+                        loaderMessage: "Searching surfaceweb",
+                        dbAmount: 1,
+                        dbComplete: true,
                     })
+                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
+                    .then(response2 => {
+                        console.log("response2: ")
+                        console.log(response2)
+                        var entities = []
+                        var sources = []
+                        var dates = []
+                        //alert("we have your name and zip in database")
+                        if(response2.status === 202) {
+                            var surfaceWebResponse = response2.data.surfaceWebResponse
+                            this.setState({
+                                showSurfaceWebResponse: false,
+                                surfaceSearchComplete: true,
+                                surfaceWebResults: surfaceWebResponse,
+                                loaderMessage: "Resolving Entities"
+                            })
+
+                            EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response2.data.return)
+                            .then(finalResponse => {
+                                console.log("response2: ")
+                                console.log(finalResponse)
+                                var entities = []
+                                var sources = []
+                                var dates = []
+                                //alert("we have your name and zip in database")
+                                if(finalResponse.status === 202) {
+                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
+                                        entities.push(finalResponse.data.entities[i])
+                                        sources.push(finalResponse.data.sources[i])
+                                        dates.push(finalResponse.data.dates[i])
+                                    }
+                                    console.log("entities, sources: ")
+                                    console.log(entities)
+                                    console.log(sources)
+                                    console.log(dates)
+                                    var es = "es"
+                                    if(entities.length === 1) {
+                                        es = ""
+                                    }
+                                    this.setState({
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        showEntities: true,
+                                        showSurfaceWebResponse: false,
+                                        showLoader: false,
+                                        entities: entities,
+                                        sources: sources,
+                                        datesCollected: dates,
+                                        es: es,
+                                    })
+                                    return true;
+                                } else if(finalResponse.status === 204) {
+                                    this.setState({
+                                        showLoader: false,
+                                        line1: "We do not have any record of your information being compromised.",
+                                        line2: "",
+                                        line3: "",
+                                        showSearchAgain: true,
+                                        surfaceSearchComplete: false,
+                                        dbComplete: false,
+                                        searchAgainClass: "col-5"
+                                    })
+                                    return false
+                                }
+                            }).catch(e => {
+                                console.log("error on third api call")
+                                console.log(e);
+                                //alert("we do not have your name and zip stored in the database")
+                                
+                            });
+                            return true;
+                        } else if(response2.status === 204) {
+                            this.setState({
+                                showLoader: false,
+                                line1: "We do not have any record of your information being compromised.",
+                                line2: "",
+                                line3: "",
+                                showSearchAgain: true,
+                                surfaceSearchComplete: false,
+                                dbComplete: false,
+                                searchAgainClass: "col-5"
+                            })
+                            return false
+                        }
+                    }).catch(e => {
+                        console.log("error on second api call")
+                        console.log(e);
+                        //alert("we do not have your name and zip stored in the database")
+                        
+                    });
                     return true;
                 } else if(response.status === 204) {
                     this.setState({
                         showLoader: false,
+                        showSurfaceWebResponse: false,
                         line1: "We do not have any record of your information being compromised.",
                         line2: "",
                         line3: "",
-                        showSearchAgain: true
+                        showSearchAgain: true,
+                        surfaceSearchComplete: false,
+                        dbComplete: false,
+                        searchAgainClass: "col-5"
                     })
                     return false
                 }
             }).catch(e => {
-                console.log("in hizzere2")
+                console.log("error in first api call")
                 console.log(e);
                 //alert("we do not have your name and zip stored in the database")
                 
@@ -176,7 +227,7 @@ class Search extends React.Component {
         })
         if(entity.score<1.6){
             this.setState({
-                showMediumScore: true
+                showLowScore: true
             })
         }
         else if(entity.score>8.4){
@@ -217,64 +268,6 @@ class Search extends React.Component {
         event.preventDefault();
     }
 
-    queryMongoName(event) {
-        if(this.state.nameValue.length > 0 && this.state.zipValue > 0){
-            console.log(this.state.nameValue);
-            this.setState({
-                showSearch: false,
-                showLoader: true,
-                showSearchByName: false,
-            })
-            EmailDataService.getData(this.state.nameValue, this.state.zipValue)
-            .then(response => {
-                console.log("response:");
-                console.log(response);
-                var entities = []
-                var sources = []
-                var dates = []
-                //alert("we have your name and zip in database")
-                if(response.status === 202) {
-                    entities.push(response.data.entities[0])
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    entities.push({address: true, age: 26,agebucket: "the millenial generation",birthday: true,currentTown: true,dateCollected: "2017-07-07 17:56:15"
-                        ,email: true,hometown: true,interests: false,jobDetails: false,medianscore: 3.3,name: "Mickey Pizzone",phoneNum: true,phoneNumber: "954-***-****",platform: "TorMarket"
-                        ,politicalViews: false,relationshipStatus: false,religiousViews: false,score: 4.8,zip: "33***",percentile:.93})
-                    sources.push(response.data.sources[0])
-                    dates.push(response.data.dates[0])
-                    console.log("entities, sources: ")
-                    console.log(entities)
-                    console.log(sources)
-                    console.log(dates)
-                    this.setState({
-                        showEntities: true,
-                        showLoader: false,
-                        entities: entities,
-                        sources: sources,
-                        datesCollected: dates
-                    })
-                    return true;
-                } else if(response.status === 204) {
-                    this.setState({
-                        showLoader: false,
-                        line1: "We do not have any record of your information being compromised.",
-                        line2: "",
-                        line3: ""
-                    })
-                    return false
-                }
-            }).catch(e => {
-                console.log("in hizzere2")
-                console.log(e);
-                //alert("we do not have your name and zip stored in the database")
-                
-            });
-
-            //event.preventDefault();
-        }
-
-    }
-
     setSelection(event) {
         console.log(event.target.value);
         this.setState({
@@ -288,69 +281,24 @@ class Search extends React.Component {
         this.setState({
             selectedValue: id,
             entityInd: id,
-            showEntities: false
+            showEntities: false,
+            showSearchAgain: true,
+            searchAgainClass: "col-4"
         })
         this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
         
     }
 
-    chooseEntity0(event) {
-        console.log("selected value: "+this.state.selectedValue)
+
+    goBack(event) {
+        console.log("in the go back funct")
         this.setState({
-            entityInd: this.state.selectedValue,
-            showEntities: false
-        })
-        this.callDisplay(this.state.entities[this.state.selectedValue],this.state.sources[this.state.selectedValue],this.state.datesCollected[this.state.selectedValue])
-        //event.preventDefault();
-    }
-
-    //searches database for address and name CONTAINING name and zip values
-    queryMongoName3(event) {
-        var other = this.state.phoneValue;
-        if (this.state.zipValue.length > 0) {
-            other = this.state.zipValue;
-        }
-        EmailDataService.getByName(this.state.nameValue, other)
-        .then(response => {
-            //send the returned json to handle submit
-            console.log("query3 response:");
-            console.log(response.data);
-            // response email:
-            //console.log(response.data.email);
-
-            if(response.status == 202) {
-                this.callDisplay(response.data);
-                this.setState({
-                    showResults: true,
-                    //email: true,
-                    line1: "Your name and zip are compromised!",
-                    line2: "",
-                    line3: ""
-                })
-                return true;
-            }
-            else if (response.status == 204) {
-                this.setState({
-                    line1: "We do not have your name and zip in our database. Please continue browsing safely!",
-                    line2: "",
-                    line3: ""
-                })
-                return false
-            }
-            //alert("we have your email in database under the name: "+response.data.name)
-        }).catch(e => {
-            console.log("in hizzere3")
-            console.log(e);
-            this.setState({
-                line1: "Your name and zip are NOT compromised!",
-                line2: "We do not have your name and zip in our database. Please continue browsing safely!",
-                line3: ""
-            })
-            return false
-            //alert("we do not have your email stored in the database")
+            showEntities: true, entityInd:-1, showMediumScore:false, showHighScore:false,showLowScore:false, showSearchAgain: false, searchAgainClass: "col-5"
         });
-
-        //event.preventDefault();
+        this.DisplayResults.current.setState({
+            show: false,
+            score: 0
+        });
     }
 
     render() {
@@ -366,20 +314,7 @@ class Search extends React.Component {
                 </div>,
 
                 <div className="container d-flex justify-content-center">
-                    {this.state.showLoader ? <PuffLoader color={"#000000"} loading={true} size={150} />: null}
-                </div>,
-
-                // <div>
-                //     {this.state.showSearchByEmail ? 
-                //         <div className="container d-flex justify-content-center">
-                //             <a href="/search"><button className="btn btn-outline-dark">Search by email</button></a></div>
-                //         : 
-                //         null
-                //     }
-                // </div>,
-
-                <div className="container d-flex justify-content-center">
-                    {this.state.errorMessage.length == 0 ? null
+                    {this.state.errorMessage.length === 0 ? null
                     : 
                     <Alert variant="danger">
                         <p>
@@ -405,6 +340,17 @@ class Search extends React.Component {
                         <Alert variant="warning">
                             <h4>{this.state.entities[this.state.entityInd].name}</h4>
                             <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>medium</b> privacy exposure rating relative to your age group.</p>
+                        </Alert>
+                    </div>
+                    : null}
+                </div>,
+
+                <div style={{cursor:'pointer'}} className="container">
+                   {this.state.showLowScore ? 
+                   <div className="row justify-content-center text-center">
+                        <Alert variant="success">
+                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
+                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
                         </Alert>
                     </div>
                     : null}
@@ -443,12 +389,13 @@ class Search extends React.Component {
                 </div>,
 
                 <div className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
+                    <DisplayResults ref={this.DisplayResults}/> 
+                    
                 </div>,
                 <div className="container">
                 {this.state.showEntities ? 
                     <div>
-                    <h1 className="text-center">We found {this.state.entities.length} potential matches:</h1>
+                    <h1 className="text-center">We found {this.state.entities.length} potential match{this.state.es}:</h1>
                     <div className="row">
                     {this.state.entities.map((value, index) => {
                         return <div className="col-4" style={{paddingBottom: "10px"}}>
@@ -467,11 +414,72 @@ class Search extends React.Component {
                     : null
                 }
                 </div>,
+                <div className="container">
+                {this.state.showSurfaceWebResponse ? 
+                    <div>
+                    <h1 className="text-center">We found {this.state.surfaceWebResults.length} result{this.state.es} searching the surface web:</h1>
+                    <div className="row">
+                    {this.state.surfaceWebResults.map((value, index) => {
+                        return <div className="col-4" style={{paddingBottom: "10px"}}>
+                            <div className="card" style={{paddingBottom: "10px"}}>
+                                <div className="card-body" style={{paddingBottom: "10px"}}>
+                                <h5 className="card-title">{value.name}</h5>
+                                {/* <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p> */}
+                                <p className="card-text">Source: {value.platform}</p>
+                                {/* <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a> */}
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                    </div>
+                    </div>
+                    : null
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.dbComplete && 
+                    <div>
+                    <h2 className="text-center">Searching breached records <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
+
+                <div className="container">
+                {this.state.surfaceSearchComplete && 
+                    <div>
+                    <h2 className="text-center">Searching surface web <SiCheckmarx/></h2>
+                    </div>
+                }
+                </div>,
 
                 <div className="container d-flex justify-content-center">
-                    {this.state.showSearchAgain ? <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                    : null
-                    }
+                    {this.state.showLoader ? 
+                    <div> 
+                        <h2>{this.state.loaderMessage}<BeatLoader color={"#000000"} loading={true} size={20} /> </h2>
+                        
+                    </div>
+                    
+                    : null}
+
+                </div>,
+
+                <div className="container">
+                    <div className="row">
+                        <div className={this.state.searchAgainClass}></div>
+                        {this.state.showSearchAgain && 
+                            <div className="col-2">
+                                <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
+                            </div>
+                        }
+                        {this.state.entityInd >=0 &&
+                            <div className="col-2">
+                                <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
+                            </div>
+                        }
+                        <div className="col-2"></div>
+                    </div>
                 </div>
 
         ]
