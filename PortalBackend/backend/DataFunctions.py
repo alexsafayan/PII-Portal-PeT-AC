@@ -251,7 +251,7 @@ def combineMultiple(crawlerResponses, dbResponse):
                         try:
                                 if(not 'none' in str(crawlerResponse[key]).lower()):
                                         sources[key].append(crawlerResponse["platform"])
-                                        dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
+                                        dateCollected[key] = currDate = datetime.today().strftime('%Y-%m-%d')
                                         comboResponse[key] = crawlerResponse[key]
                         except Exception as e:
                                 #print("exception occurred when trying key: "+str(key))
@@ -283,3 +283,59 @@ def getSources(response):
                         #print("exception: "+str(e))
                         pass
         return sources, dateCollected
+
+def normalizeAge(attributes):
+        if(not 'none' in str(attributes["birthday"]).lower()):
+               # print("adding score for birthday")
+                bday = str(attributes["birthday"])
+                today = datetime.today()
+                curryear = today.year
+                age = -1
+                if("-" in bday):
+                        splitt = bday.split("-")
+                        age1 = int(splitt[0])
+                        age2 = int(splitt[1])
+                        age = int(round((age1+age2)/2, 0))
+                elif('/' in bday):
+                        print("this bday is complete")
+                        splitt = bday.split("/")
+                        mn = splitt[0]
+                        day = splitt[1]
+                        year = splitt[2]
+                        attributes["birthyear"] = year
+                        age = curryear - int(year)
+                elif(len(bday)) == 4:
+                        print("this bday is a year")
+                        attributes["birthyear"] = bday
+                        age = curryear - int(bday)
+                elif(len(bday) < 4 and len(bday) > 0):
+                        print("this bday is an age")
+                        age = int(bday)
+                attributes["age"] = age
+
+def checkPhone(attributes):
+        if(not 'none' in str(attributes["phoneNum"]).lower()):
+              #  print("adding score for phoneNumber")
+                pn = ''
+                if(isinstance(attributes["phoneNum"],list)):
+                        print("phone numbers are a list")
+                        pn = attributes["phoneNum"][0]
+                else:
+                        print("phone numbers are NOT a list")
+                        pn = attributes["phoneNum"]
+                numberPrefix = ''
+                for character in pn:
+                        if character.isdigit():
+                                numberPrefix += character
+                                if(len(numberPrefix)>=3):
+                                        break
+                if(len(numberPrefix)==3):
+                        #attributes["phoneNumber"] = pn.split('-')[0]+'-***-****'
+                        attributes["phoneNumber"] = numberPrefix+'-***-****'
+                        attributes["phoneNum"] = True
+                else:
+                        attributes["phoneNum"] = False
+                        attributes["phoneNumber"] = "unknown"
+        else:
+                attributes["phoneNum"] = False
+                attributes["phoneNumber"] = "unknown"

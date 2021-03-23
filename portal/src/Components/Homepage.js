@@ -98,7 +98,9 @@ class Homepage extends React.Component {
                                 surfaceWebResults: surfaceWebResponse,
                                 loaderMessage: "Resolving Entities"
                             })
-
+                            console.log("resolving email function for: ")
+                            console.log(response.data.dbResponse)
+                            console.log(response2.data.surfaceWebResponse)
                             EmailDataService.resolveEmail(response.data.dbResponse, response2.data.surfaceWebResponse)
                             .then(finalResponse => {
                                 console.log("final response: ")

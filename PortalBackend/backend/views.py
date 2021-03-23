@@ -9,7 +9,7 @@ from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 from script_backend import runEntityResolution
 
-from backend.CalculateScore import calc_score, combine, combineMultiple, getSources
+from backend.DataFunctions import calc_score, combine, combineMultiple, getSources, normalizeAge, checkPhone
 
 import json
 import time
@@ -90,40 +90,52 @@ def resolve_entitiesEmail(request):
         req = request.body.decode()
         dic = eval(req)
         dbResponse = dic.get("dbResponse")
-        surfaceWebVals = []
-        surfaceWebVals.append(dic.get("surfaceWebResponse"))
+        if(isinstance(dic.get("surfaceWebResponse"),list)):
+            surfaceWebVals = dic.get("surfaceWebResponse")
+        else:
+            surfaceWebVals = []
+            surfaceWebVals.append(dic.get("surfaceWebResponse"))
         entities = []
         sourceList = []
         datesCollected = []
         try: 
-            left_input = []
-            right_input = []
-            left_input.append(dbResponse)
-            right_input.append(surfaceWebVals)
-            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
-            predictions = runEntityResolution(left_input, right_input) 
-            # print("predictions")
-            # print(predictions)
-            # for each in all_vals:
-            ind = 0
-            for dbResponse in left_input:
-                nonMatches = []
-                matches = []
-                for each in surfaceWebVals:
-                    
-                    prediction = predictions[ind][1]
-                    #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
-                    if (prediction) > 0.01:
-                        matches.append(each)
-                    else:
-                        nonMatches.append(each)
+            if(len(surfaceWebVals) > 0):
+                left_input = []
+                right_input = []
+                left_input.append(dbResponse)
+                right_input.append(surfaceWebVals)
+                # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
+                predictions = runEntityResolution(left_input, right_input) 
+                # print("predictions")
+                # print(predictions)
+                # for each in all_vals:
+                ind = 0
+                for dbResponse in left_input:
+                    nonMatches = []
+                    matches = []
+                    for each in surfaceWebVals:
+                        
+                        prediction = predictions[ind][1]
+                        #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
+                        if (prediction) > 0.01:
+                            matches.append(each)
+                        else:
+                            nonMatches.append(each)
 
-                    ind+=1
-                if(len(matches)>0):
-                    comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
-                else:
-                    comboResponse = dbResponse
-                    sources, dateCollected = getSources(dbResponse)
+                        ind+=1
+                    if(len(matches)>0):
+                        comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
+                    else:
+                        comboResponse = dbResponse
+                        sources, dateCollected = getSources(dbResponse)
+                    score = calc_score(comboResponse)
+                    comboResponse["score"] = score
+                    entities.append(comboResponse)
+                    sourceList.append(sources)
+                    datesCollected.append(dateCollected)
+            else:
+                comboResponse = dbResponse
+                sources, dateCollected = getSources(dbResponse)
                 score = calc_score(comboResponse)
                 comboResponse["score"] = score
                 entities.append(comboResponse)
@@ -169,17 +181,28 @@ def name_detail(request):
         datesCollected = []
         try: 
             dbResponses = []
+            uneditedResponses = []
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
-                dbResponses.append(email_serializer.data)
+                res = email_serializer.data
+                for key in res:
+                    val = res[key]
+                    if val == None:
+                        res[key] = str(val)
+                temp = res.copy()
+                uneditedResponses.append(temp)
+                normalizeAge(res)
+                checkPhone(res)
+                
+                dbResponses.append(res)
             if len(dbResponses) == 0:
                 return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
             print("db response: ")
             print(dbResponses)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"dbResponse":dbResponses},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -239,6 +262,8 @@ def resolve_entities(request):
         name = dic.get('name')
         zip = dic.get('zip')
         surfaceWebVals = dic.get("surfaceWebResponse")
+        for each in surfaceWebVals:
+            normalizeAge(each)
         entities = []
         sourceList = []
         datesCollected = []
@@ -247,14 +272,13 @@ def resolve_entities(request):
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
-                dbResponses.append(email_serializer.data)
-            
+                res = email_serializer.data
+                normalizeAge(res)
+                dbResponses.append(res)
             right_input = []
             left_input = dbResponses
-            # left_input = []
-            # left_input.append(dbResponses[1])
             right_input.append(surfaceWebVals)
-            print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
+            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
             predictions = runEntityResolution(left_input, right_input) 
             print("predictions")
             print(predictions)
