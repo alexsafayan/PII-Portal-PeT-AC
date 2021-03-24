@@ -174,7 +174,7 @@ def name_detail(request):
         req = request.body.decode()
         dic = eval(req)
 
-        name = dic.get('name')
+        name = dic.get('name').lower()
         zip = dic.get('zip')
         entities = []
         sourceList = []

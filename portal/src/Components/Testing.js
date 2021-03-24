@@ -1,9 +1,4 @@
 import React from 'react';
-import DisplayResults from './DisplayResults.js'
-import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
-import EmailDataService from "../services/email.service";
-import axios from "axios";
-import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
 
 

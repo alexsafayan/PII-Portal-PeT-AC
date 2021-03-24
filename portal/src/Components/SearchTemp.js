@@ -83,8 +83,8 @@ class Search extends React.Component {
             })
             EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
-                console.log("response.data:");
-                console.log(response.data);
+                // console.log("response.data:");
+                // console.log(response.data);
                 if(response.status === 202) {
                     var dbResponse = response.data.dbResponse;
                     var es = ""
@@ -117,6 +117,14 @@ class Search extends React.Component {
             }).catch(e => {
                 console.log("error in first api call")
                 console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    line1: "We do not have any record of your information being compromised.",
+                    line2: "",
+                    line3: "",
+                    showSearchAgain: true,
+                })
                 //alert("we do not have your name and zip stored in the database")
                 
             });
@@ -157,7 +165,6 @@ class Search extends React.Component {
     }
 
     setSelection(event) {
-        console.log(event.target.value);
         this.setState({
             selectedValue: event.target.value
         });
@@ -165,7 +172,6 @@ class Search extends React.Component {
     
     chooseDbResponse(id, event) {
         event.preventDefault();
-        console.log("selected value: "+id)
         var sendBack = this.state.sendBack[id]
         this.setState({
             sendBack: sendBack,
@@ -175,8 +181,8 @@ class Search extends React.Component {
         })
         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
         .then(response => {
-            console.log("response2: ")
-            console.log(response)
+            // console.log("response2: ")
+            // console.log(response)
             var entities = []
             var sources = []
             var dates = []
@@ -188,13 +194,10 @@ class Search extends React.Component {
                     surfaceWebResults: surfaceWebResponse,
                     loaderMessage: "Resolving Entities"
                 })
-                console.log("resolving email function for: ")
-                console.log(this.state.sendBack)
-                console.log(response.data.return)
                 EmailDataService.resolveEmail(this.state.sendBack, response.data.return)
                 .then(finalResponse => {
-                    console.log("final resp: ")
-                    console.log(finalResponse)
+                    // console.log("final resp: ")
+                    // console.log(finalResponse)
                     var entities = []
                     var sources = []
                     var dates = []
@@ -205,10 +208,10 @@ class Search extends React.Component {
                             sources.push(finalResponse.data.sources[i])
                             dates.push(finalResponse.data.dates[i])
                         }
-                        console.log("entities, sources: ")
-                        console.log(entities)
-                        console.log(sources)
-                        console.log(dates)
+                        // console.log("entities, sources: ")
+                        // console.log(entities)
+                        // console.log(sources)
+                        // console.log(dates)
                         this.setState({
                             surfaceSearchComplete: false,
                             dbComplete: false,
@@ -233,6 +236,16 @@ class Search extends React.Component {
                 }).catch(e => {
                     console.log("error on third api call")
                     console.log(e);
+                    this.setState({
+                        showLoader: false,
+                        showSurfaceWebResponse: false,
+                        line1: "We do not have any record of your information being compromised.",
+                        line2: "",
+                        line3: "",
+                        showSearchAgain: true,
+                        surfaceSearchComplete: false,
+                        searchAgainClass: "col-5"
+                    })
                     //alert("we do not have your name and zip stored in the database")
                     
                 });
@@ -252,6 +265,16 @@ class Search extends React.Component {
         }).catch(e => {
             console.log("error on second api call")
             console.log(e);
+            this.setState({
+                showLoader: false,
+                showSurfaceWebResponse: false,
+                line1: "We do not have any record of your information being compromised.",
+                line2: "",
+                line3: "",
+                showSearchAgain: true,
+                surfaceSearchComplete: false,
+                searchAgainClass: "col-5"
+            })
             //alert("we do not have your name and zip stored in the database")
             
         });
@@ -260,7 +283,6 @@ class Search extends React.Component {
 
     chooseEntity(id, event) {
         event.preventDefault();
-        console.log("selected value: "+id)
         this.setState({
             selectedValue: id,
             entityInd: id,
@@ -275,9 +297,9 @@ class Search extends React.Component {
     callDisplay(entity, sources, datesCollected) {
         this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
         //display returned results
-        console.log("in calldisplay")
-        console.log(entity)
-        console.log(sources)
+        // console.log("in calldisplay")
+        // console.log(entity)
+        // console.log(sources)
         this.DisplayResults.current.setState({
             entity: entity,
             sources: sources,
