@@ -106,8 +106,8 @@ def resolve_entitiesEmail(request):
                 right_input.append(surfaceWebVals)
                 # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
                 predictions = runEntityResolution(left_input, right_input) 
-                # print("predictions")
-                # print(predictions)
+                print("predictions")
+                print(predictions)
                 # for each in all_vals:
                 ind = 0
                 for dbResponse in left_input:

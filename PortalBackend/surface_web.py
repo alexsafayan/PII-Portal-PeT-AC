@@ -103,8 +103,8 @@ def distribution(name, zip):
         pass
     try:
         result_list += zabasearch(name, state)
-    except:
-        pass
+    except Exception as e:
+        print("error on zabasearch : {}".format(e))
     try:
         result_list += anywho(name, state)
     except:
@@ -179,7 +179,7 @@ def zabasearch(name, state):
     try:
         response = requests.get(url, headers=header, timeout=(10, 10))
         soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
-        result_list += save_info_zabasearch(soup)
+        result_list.append(save_info_zabasearch(soup))
         try:
             pages = len(soup.find('div', {'id': "pagination"}).findAll('a', {'class': "a-pag"})) - 1
             for page in range(2, pages + 1):

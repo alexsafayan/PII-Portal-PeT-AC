@@ -181,8 +181,8 @@ class Search extends React.Component {
         })
         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
         .then(response => {
-            // console.log("response2: ")
-            // console.log(response)
+            console.log("response2: ")
+            console.log(response)
             var entities = []
             var sources = []
             var dates = []

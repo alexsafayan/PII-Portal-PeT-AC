@@ -257,10 +257,14 @@ def combineMultiple(crawlerResponses, dbResponse):
                                 #print("exception occurred when trying key: "+str(key))
                                 #print("exception: "+str(e))
                                 pass
+        
         for key, value in sources.items():
                 curr = ""
+                sourceSet = set()
                 for each in value:
-                        curr+=each+', '
+                        if not each in sourceSet:
+                                curr+=each+', '
+                        sourceSet.add(each)
                 sources[key] = curr[0:-2]
         # comboResponse['name'] = crawlerResponses['name']
         return comboResponse, sources, dateCollected
