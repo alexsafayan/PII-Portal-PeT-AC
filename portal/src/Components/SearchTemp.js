@@ -370,7 +370,8 @@ class Search extends React.Component {
                     <div className="row justify-content-center text-center">
                         <Alert variant="danger">
                             <h4>{this.state.entity.name}</h4>
-                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>high</b> privacy exposure rating relative to your age group.</p>
+                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>high</b> privacy exposure rating relative to your age group. 
+                            This means that your privacy exposure rating is 1+ standard deviation above the norm.</p>
                         </Alert>
                     </div>
                     : null}
@@ -392,7 +393,8 @@ class Search extends React.Component {
                    <div className="row justify-content-center text-center">
                         <Alert variant="success">
                             <h4>{this.state.entity.name}</h4>
-                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
+                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.
+                            This means that your privacy exposure rating is 1+ standard deviation below the norm.</p>
                         </Alert>
                     </div>
                     : null}

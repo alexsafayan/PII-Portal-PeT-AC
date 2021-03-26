@@ -238,6 +238,7 @@ def combineMultiple(crawlerResponses, dbResponse):
         for key, value in dbResponse.items():
                 try:
                         sources[key] = []
+                        #print(" combining {} from db response".format(key))
                         if(not 'none' in str(value).lower()):
                                 sources[key].append(dbResponse["platform"])
                                 dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]

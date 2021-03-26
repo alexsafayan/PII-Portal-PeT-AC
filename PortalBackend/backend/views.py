@@ -140,6 +140,7 @@ def resolve_entitiesEmail(request):
 
                         ind+=1
                     if(len(matches)>0):
+                        print("combining multiple")
                         comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
                     else:
                         comboResponse = dbResponse
