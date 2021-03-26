@@ -296,10 +296,6 @@ class Search extends React.Component {
 
     callDisplay(entity, sources, datesCollected) {
         this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
-        //display returned results
-        // console.log("in calldisplay")
-        // console.log(entity)
-        // console.log(sources)
         this.DisplayResults.current.setState({
             entity: entity,
             sources: sources,

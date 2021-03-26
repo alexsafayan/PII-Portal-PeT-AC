@@ -69,8 +69,8 @@ def runEntityResolution(left_input, right_input):
     for ind in range (amt):
         guy = df['left_'][ind]
         if str(guy) == "nan":
-            df['left_'][ind] = curr.replace("none","").replace("None","")
-            df['right_'][ind] = df['right_'][ind].replace("none","").replace("None","")
+            df['left_'][ind] = curr.replace("none ","").replace("None ","")
+            df['right_'][ind] = df['right_'][ind].replace("none ","").replace("None ","").lower()
         else:
             curr = guy
 

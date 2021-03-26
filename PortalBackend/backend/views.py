@@ -52,9 +52,12 @@ def searchSurfaceWebEmail(request):
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
-
+        dbResponse = dic.get('dbResponse')
         email = dic.get('email')
         surfaceWebResponse = []
+        entities = []
+        sourceList = []
+        datesCollected = []
         try: 
             # item = EmailModel.objects.get(name=name, zip=zip)
             
@@ -66,16 +69,29 @@ def searchSurfaceWebEmail(request):
             #print(results.json()['items'][0])
             res = results.json()['items']
             print("total amount of results is {}".format(len(res)))
-            crawlerResponse = results.json()['items'][0]
-            crawlerResponse["email"] = email
-            crawlerResponse["platform"] = "that's them"
-            crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
-            print("crawlerresponse is ")
-            print(crawlerResponse)
-
-            elapsed_time = time.time() - start_time
-            print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":crawlerResponse},status=status.HTTP_202_ACCEPTED)
+            if(len(res) > 0):
+                crawlerResponse = results.json()['items'][0]
+                crawlerResponse["email"] = email
+                crawlerResponse["platform"] = "that's them"
+                crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
+                print("crawlerresponse is ")
+                print(crawlerResponse)
+                comboResponse = crawlerResponse
+                sources, dateCollected = getSources(crawlerResponse)
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+                print("combo response: ")
+                print(comboResponse)
+                elapsed_time = time.time() - start_time
+                print("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+            else:
+                elapsed_time = time.time() - start_time
+                print("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"dbResponse":dbResponse},status=status.HTTP_204_NO_CONTENT)
 
 
         except Exception as e: 

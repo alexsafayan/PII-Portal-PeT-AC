@@ -85,82 +85,37 @@ class Homepage extends React.Component {
                         dbComplete: true,
                         loaderMessage: "Searching surface web"
                     })
-                    EmailDataService.searchSurfaceWebEmail(this.state.emailValue)
+                    EmailDataService.searchSurfaceWebEmail(this.state.emailValue, response.data.dbResponse)
                     .then(response2 => {
                         console.log("response2: ")
                         console.log(response2)
                         //alert("we have your name and zip in database")
                         if(response2.status === 202) {
-                            var surfaceWebResponse = response2.data.surfaceWebResponse
+                            var entities = []
+                            var sources = []
+                            var dates = []
+                            for(var i = 0; i < response2.data.entities.length; i++) {
+                                entities.push(response2.data.entities[i])
+                                sources.push(response2.data.sources[i])
+                                dates.push(response2.data.dates[i])
+                            }
                             this.setState({
+                                surfaceSearchComplete: false,
+                                dbComplete: false,
                                 showSurfaceWebResponse: false,
-                                surfaceSearchComplete: true,
-                                surfaceWebResults: surfaceWebResponse,
-                                loaderMessage: "Resolving Entities"
+                                showLoader: false,
+                                entities: entities,
+                                sources: sources,
+                                datesCollected: dates,
                             })
-                            console.log("resolving email function for: ")
-                            console.log(response.data.dbResponse)
-                            console.log(response2.data.surfaceWebResponse)
-                            EmailDataService.resolveEmail(response.data.dbResponse, response2.data.surfaceWebResponse)
-                            .then(finalResponse => {
-                                console.log("final response: ")
-                                console.log(finalResponse)
-                                var entities = []
-                                var sources = []
-                                var dates = []
-                                //alert("we have your name and zip in database")
-                                if(finalResponse.status === 202) {
-                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
-                                        entities.push(finalResponse.data.entities[i])
-                                        sources.push(finalResponse.data.sources[i])
-                                        dates.push(finalResponse.data.dates[i])
-                                    }
-                                    console.log("entities, sources: ")
-                                    console.log(entities)
-                                    console.log(sources)
-                                    console.log(dates)
-                                    var es = "es"
-                                    if(entities.length === 1) {
-                                        es = ""
-                                    }
-                                    this.setState({
-                                        surfaceSearchComplete: false,
-                                        dbComplete: false,
-                                        showEntities: true,
-                                        showSurfaceWebResponse: false,
-                                        showLoader: false,
-                                        entities: entities,
-                                        sources: sources,
-                                        datesCollected: dates,
-                                        es: es,
-                                    })
-                                    return true;
-                                } else if(finalResponse.status === 204) {
-                                    this.setState({
-                                        showLoader: false,
-                                        line1: "We do not have any record of your information being compromised.",
-                                        line2: "",
-                                        line3: "",
-                                        showSearchAgain: true,
-                                        surfaceSearchComplete: false,
-                                        dbComplete: false,
-                                        searchAgainClass: "col-5"
-                                    })
-                                    return false
-                                }
-                            }).catch(e => {
-                                console.log("error on third api call")
-                                console.log(e);
-                                //alert("we do not have your name and zip stored in the database")
-                                
-                            });
+                            this.callDisplay(entities[0],sources[0],dates[0])
                             return true;
                         } else if(response2.status === 204) {
                             this.setState({
                                 showLoader: false,
                                 surfaceSearchComplete: false,
                                 dbComplete: false,
-                                line1: "We do not have any record of your information being compromised.",
+                                line1: "Your email has been compromised.",
                                 line2: "",
                                 line3: "",
                                 showSearchAgain: true,
@@ -258,17 +213,29 @@ class Homepage extends React.Component {
         })
         if(entity.score<1.6){
             this.setState({
-                showLowScore: true
+                showLowScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
             })
         }
         else if(entity.score>8.4){
             this.setState({
-                showHighScore: true
+                showHighScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
             })
         }
         else {
             this.setState({
-                showMediumScore: true
+                showMediumScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
             })
         }
     }
