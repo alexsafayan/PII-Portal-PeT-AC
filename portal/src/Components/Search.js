@@ -43,7 +43,7 @@ class Search extends React.Component {
           line2: "",
           line3: "",
           showSearchByEmail: true,
-          showSurfaceWebResponse: false,
+          showDbResponse: false,
           es: "",
           dbComplete: false,
           surfaceSearchComplete: false,
@@ -83,106 +83,25 @@ class Search extends React.Component {
             })
             EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
             .then(response => {
-                console.log("response.data:");
-                console.log(response.data);
+                // console.log("response.data:");
+                // console.log(response.data);
                 if(response.status === 202) {
                     var dbResponse = response.data.dbResponse;
+                    var es = ""
+                    if(dbResponse.length != 1) {
+                        es = "s"
+                    }
                     this.setState({
+                        showDbResponse: true,
+                        showLoader: false,
                         loaderMessage: "Searching surfaceweb",
                         dbAmount: 1,
-                        dbComplete: true,
+                        dbResponse: dbResponse,
+                        sendBack: response.data.uneditedResponses,
+                        es: es,
+                        showSearchAgain: true
                     })
-                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
-                    .then(response2 => {
-                        console.log("response2: ")
-                        console.log(response2)
-                        var entities = []
-                        var sources = []
-                        var dates = []
-                        //alert("we have your name and zip in database")
-                        if(response2.status === 202) {
-                            var surfaceWebResponse = response2.data.surfaceWebResponse
-                            this.setState({
-                                showSurfaceWebResponse: false,
-                                surfaceSearchComplete: true,
-                                surfaceWebResults: surfaceWebResponse,
-                                loaderMessage: "Resolving Entities"
-                            })
-
-                            EmailDataService.resolve(this.state.nameValue, this.state.zipValue, response2.data.return)
-                            .then(finalResponse => {
-                                console.log("response2: ")
-                                console.log(finalResponse)
-                                var entities = []
-                                var sources = []
-                                var dates = []
-                                //alert("we have your name and zip in database")
-                                if(finalResponse.status === 202) {
-                                    for(var i = 0; i < finalResponse.data.entities.length; i++) {
-                                        entities.push(finalResponse.data.entities[i])
-                                        sources.push(finalResponse.data.sources[i])
-                                        dates.push(finalResponse.data.dates[i])
-                                    }
-                                    console.log("entities, sources: ")
-                                    console.log(entities)
-                                    console.log(sources)
-                                    console.log(dates)
-                                    var es = "es"
-                                    if(entities.length === 1) {
-                                        es = ""
-                                    }
-                                    this.setState({
-                                        surfaceSearchComplete: false,
-                                        dbComplete: false,
-                                        showEntities: true,
-                                        showSurfaceWebResponse: false,
-                                        showLoader: false,
-                                        entities: entities,
-                                        sources: sources,
-                                        datesCollected: dates,
-                                        es: es,
-                                    })
-                                    return true;
-                                } else if(finalResponse.status === 204) {
-                                    this.setState({
-                                        showLoader: false,
-                                        line1: "We do not have any record of your information being compromised.",
-                                        line2: "",
-                                        line3: "",
-                                        showSearchAgain: true,
-                                        surfaceSearchComplete: false,
-                                        dbComplete: false,
-                                        searchAgainClass: "col-5"
-                                    })
-                                    return false
-                                }
-                            }).catch(e => {
-                                console.log("error on third api call")
-                                console.log(e);
-                                //alert("we do not have your name and zip stored in the database")
-                                
-                            });
-                            return true;
-                        } else if(response2.status === 204) {
-                            this.setState({
-                                showLoader: false,
-                                line1: "We do not have any record of your information being compromised.",
-                                line2: "",
-                                line3: "",
-                                showSearchAgain: true,
-                                surfaceSearchComplete: false,
-                                dbComplete: false,
-                                searchAgainClass: "col-5"
-                            })
-                            return false
-                        }
-                    }).catch(e => {
-                        console.log("error on second api call")
-                        console.log(e);
-                        //alert("we do not have your name and zip stored in the database")
-                        
-                    });
-                    return true;
+                    return true
                 } else if(response.status === 204) {
                     this.setState({
                         showLoader: false,
@@ -191,8 +110,6 @@ class Search extends React.Component {
                         line2: "",
                         line3: "",
                         showSearchAgain: true,
-                        surfaceSearchComplete: false,
-                        dbComplete: false,
                         searchAgainClass: "col-5"
                     })
                     return false
@@ -200,6 +117,14 @@ class Search extends React.Component {
             }).catch(e => {
                 console.log("error in first api call")
                 console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    line1: "We do not have any record of your information being compromised.",
+                    line2: "",
+                    line3: "",
+                    showSearchAgain: true,
+                })
                 //alert("we do not have your name and zip stored in the database")
                 
             });
@@ -211,35 +136,6 @@ class Search extends React.Component {
             })
         }
         event.preventDefault();
-    }
-
-    callDisplay(entity, sources, datesCollected) {
-        this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
-        //display returned results
-        console.log("in calldisplay")
-        console.log(entity)
-        console.log(sources)
-        this.DisplayResults.current.setState({
-            entity: entity,
-            sources: sources,
-            datesCollected: datesCollected,
-            score: entity.score
-        })
-        if(entity.score<1.6){
-            this.setState({
-                showLowScore: true
-            })
-        }
-        else if(entity.score>8.4){
-            this.setState({
-                showHighScore: true
-            })
-        }
-        else {
-            this.setState({
-                showMediumScore: true
-            })
-        }
     }
 
 
@@ -269,15 +165,124 @@ class Search extends React.Component {
     }
 
     setSelection(event) {
-        console.log(event.target.value);
         this.setState({
             selectedValue: event.target.value
         });
     }
     
+    chooseDbResponse(id, event) {
+        event.preventDefault();
+        var sendBack = this.state.sendBack[id]
+        this.setState({
+            sendBack: sendBack,
+            showDbResponse: false,
+            showLoader: true,
+            showSearchAgain: false
+        })
+        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
+        .then(response => {
+            console.log("response2: ")
+            console.log(response)
+            var entities = []
+            var sources = []
+            var dates = []
+            if(response.status === 202) {
+                var surfaceWebResponse = response.data.surfaceWebResponse
+                this.setState({
+                    showSurfaceWebResponse: false,
+                    surfaceSearchComplete: true,
+                    surfaceWebResults: surfaceWebResponse,
+                    loaderMessage: "Resolving Entities"
+                })
+                EmailDataService.resolveEmail(this.state.sendBack, response.data.return)
+                .then(finalResponse => {
+                    // console.log("final resp: ")
+                    // console.log(finalResponse)
+                    var entities = []
+                    var sources = []
+                    var dates = []
+                    //alert("we have your name and zip in database")
+                    if(finalResponse.status === 202) {
+                        for(var i = 0; i < finalResponse.data.entities.length; i++) {
+                            entities.push(finalResponse.data.entities[i])
+                            sources.push(finalResponse.data.sources[i])
+                            dates.push(finalResponse.data.dates[i])
+                        }
+                        // console.log("entities, sources: ")
+                        // console.log(entities)
+                        // console.log(sources)
+                        // console.log(dates)
+                        this.setState({
+                            surfaceSearchComplete: false,
+                            dbComplete: false,
+                            showSurfaceWebResponse: false,
+                            showLoader: false,
+                            showSearchAgain: true
+                        })
+                        this.callDisplay(entities[0],sources[0],dates[0])
+                        return true;
+                    } else if(finalResponse.status === 204) {
+                        this.setState({
+                            showLoader: false,
+                            line1: "We do not have any record of your information being compromised.",
+                            line2: "",
+                            line3: "",
+                            surfaceSearchComplete: false,
+                            showSearchAgain: true,
+                            searchAgainClass: "col-5"
+                        })
+                        return false
+                    }
+                }).catch(e => {
+                    console.log("error on third api call")
+                    console.log(e);
+                    this.setState({
+                        showLoader: false,
+                        showSurfaceWebResponse: false,
+                        line1: "We do not have any record of your information being compromised.",
+                        line2: "",
+                        line3: "",
+                        showSearchAgain: true,
+                        surfaceSearchComplete: false,
+                        searchAgainClass: "col-5"
+                    })
+                    //alert("we do not have your name and zip stored in the database")
+                    
+                });
+                return true;
+            } else if(response.status === 204) {
+                this.setState({
+                    showLoader: false,
+                    line1: "We do not have any record of your information being compromised.",
+                    line2: "",
+                    line3: "",
+                    surfaceSearchComplete: false,
+                    showSearchAgain: true,
+                    searchAgainClass: "col-5"
+                })
+                return false
+            }
+        }).catch(e => {
+            console.log("error on second api call")
+            console.log(e);
+            this.setState({
+                showLoader: false,
+                showSurfaceWebResponse: false,
+                line1: "We do not have any record of your information being compromised.",
+                line2: "",
+                line3: "",
+                showSearchAgain: true,
+                surfaceSearchComplete: false,
+                searchAgainClass: "col-5"
+            })
+            //alert("we do not have your name and zip stored in the database")
+            
+        });
+        
+    }
+
     chooseEntity(id, event) {
         event.preventDefault();
-        console.log("selected value: "+id)
         this.setState({
             selectedValue: id,
             entityInd: id,
@@ -289,6 +294,43 @@ class Search extends React.Component {
         
     }
 
+    callDisplay(entity, sources, datesCollected) {
+        this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
+        this.DisplayResults.current.setState({
+            entity: entity,
+            sources: sources,
+            datesCollected: datesCollected,
+            score: entity.score,
+
+        })
+        if(entity.score<1.6){
+            this.setState({
+                showLowScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
+            })
+        }
+        else if(entity.score>8.4){
+            this.setState({
+                showHighScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
+            })
+        }
+        else {
+            this.setState({
+                showMediumScore: true,
+                entity: entity,
+                source: sources,
+                dates: datesCollected,
+                entityInd: 0
+            })
+        }
+    }
 
     goBack(event) {
         console.log("in the go back funct")
@@ -327,8 +369,9 @@ class Search extends React.Component {
                     {this.state.showHighScore ? 
                     <div className="row justify-content-center text-center">
                         <Alert variant="danger">
-                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
-                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>high</b> privacy exposure rating relative to your age group.</p>
+                            <h4>{this.state.entity.name}</h4>
+                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>high</b> privacy exposure rating relative to your age group. 
+                            This means that your privacy exposure rating is 1+ standard deviation above the norm.</p>
                         </Alert>
                     </div>
                     : null}
@@ -338,8 +381,8 @@ class Search extends React.Component {
                    {this.state.showMediumScore ? 
                    <div className="row justify-content-center text-center">
                         <Alert variant="warning">
-                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
-                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>medium</b> privacy exposure rating relative to your age group.</p>
+                            <h4>{this.state.entity.name}</h4>
+                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>medium</b> privacy exposure rating relative to your age group.</p>
                         </Alert>
                     </div>
                     : null}
@@ -349,8 +392,9 @@ class Search extends React.Component {
                    {this.state.showLowScore ? 
                    <div className="row justify-content-center text-center">
                         <Alert variant="success">
-                            <h4>{this.state.entities[this.state.entityInd].name}</h4>
-                            <p>You belong to {this.state.entities[this.state.entityInd].agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.</p>
+                            <h4>{this.state.entity.name}</h4>
+                            <p>You belong to {this.state.entity.agebucket}. Based on the personally identifiable information we found, we determined that you have a <b>low</b> privacy exposure rating relative to your age group.
+                            This means that your privacy exposure rating is 1+ standard deviation below the norm.</p>
                         </Alert>
                     </div>
                     : null}
@@ -374,7 +418,7 @@ class Search extends React.Component {
                             <GaugeChart 
                                 id="gauge-chart2" 
                                 nrOfLevels={3} 
-                                percent={this.state.entities[this.state.entityInd].score / 10}
+                                percent={this.state.entity.score / 10}
                                 textColor={"#000000"} 
                                 arcsLength={[0.159, 0.682, 0.159]}
                                 style={{width:'100%'}}
@@ -414,20 +458,20 @@ class Search extends React.Component {
                     : null
                 }
                 </div>,
-                <div className="container">
-                {this.state.showSurfaceWebResponse ? 
+                <div className="container justify-content-center">
+                {this.state.showDbResponse ? 
                     <div>
-                    <h1 className="text-center">We found {this.state.surfaceWebResults.length} result{this.state.es} searching the surface web:</h1>
+                    <h1 className="text-center">We found {this.state.dbResponse.length} result{this.state.es} in our breached records:</h1>
                     <div className="row">
-                    {this.state.surfaceWebResults.map((value, index) => {
+                    {this.state.dbResponse.map((value, index) => {
                         return <div className="col-4" style={{paddingBottom: "10px"}}>
                             <div className="card" style={{paddingBottom: "10px"}}>
                                 <div className="card-body" style={{paddingBottom: "10px"}}>
                                 <h5 className="card-title">{value.name}</h5>
-                                {/* <p className="card-text">Phone number: {value.phoneNumber}</p>
-                                <p className="card-text">Birthyear: {value.birthyear}</p> */}
+                                <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                <p className="card-text">Birthyear: {value.birthyear}</p>
                                 <p className="card-text">Source: {value.platform}</p>
-                                {/* <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a> */}
+                                <a onClick={(e) => this.chooseDbResponse(index, e)} className="btn btn-secondary">Select</a>
                                 </div>
                             </div>
                         </div>
@@ -467,15 +511,10 @@ class Search extends React.Component {
 
                 <div className="container">
                     <div className="row">
-                        <div className={this.state.searchAgainClass}></div>
+                        <div className="col-5"></div>
                         {this.state.showSearchAgain && 
-                            <div className="col-2">
+                            <div className="col-4">
                                 <a href="/search"><button className="btn btn-outline-dark">Search Again</button></a> 
-                            </div>
-                        }
-                        {this.state.entityInd >=0 &&
-                            <div className="col-2">
-                                <button onClick={this.goBack.bind(this)} className="btn btn-secondary">Back To Results</button>
                             </div>
                         }
                         <div className="col-2"></div>

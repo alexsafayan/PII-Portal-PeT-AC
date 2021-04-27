@@ -1,12 +1,16 @@
 import React from 'react';
+import '../App.css'
 
 class Jumboboy extends React.Component {
 
     render() {
       return (
-        <div className="jumbotron text-center">
-                    <h1>AZSecure Privacy Portal</h1>
-                    <p>Check if your personal information has been compromised in a data breach</p>
+        <div className="jumbotron bg-white text-center">
+          <div className="row justify-content-center">
+            <img style={{height:"100px"}} src='lock.svg'></img>
+            <h1 style={{fontSize:"80px"}}>AZSecure Privacy Portal</h1>
+          </div>
+          <p style={{fontSize:"x-large"}}>Search. Know. Act.</p>
         </div>
       )
     }
