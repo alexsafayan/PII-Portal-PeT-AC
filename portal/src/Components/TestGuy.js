@@ -11,16 +11,6 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
 
 
-const DefaultCriteria = props => {
-    return (
-        <div className="row d-flex justify-content-center">
-            <div className="form-group col-lg-2">
-                <input style={{marginBottom: '10px'}} id="emailsearch" className="form-control" type="search" placeholder="Enter email address" aria-label="Search" value={props.emailValue} onChange={props.handleChange} />
-                <button className="btn btn-outline-dark btn-block" onClick={props.handleSubmit}>Search</button>
-            </div>
-        </div>
-    );
-}
 
 
 class Homepage extends React.Component {
@@ -30,8 +20,14 @@ class Homepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+          numBreaches: "4,240",
+          numEmails: "12,423,941,567",
+          numNames: "22,342,131",
+          showBreachTotals: true,
           results: "",
           searchValue: "",
+          nameValue: "",
+          zipValue: "",
           errorMessage: "",
           surfaceSearchComplete: false,
           dbComplete: false,
@@ -57,6 +53,7 @@ class Homepage extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
+        this.selectField = this.selectField.bind(this);
         this.DisplayResults = React.createRef();
       }
     
@@ -71,7 +68,7 @@ class Homepage extends React.Component {
             score: 0
         });
         console.log("in handle submit");
-        if(this.validateEmail(this.state.emailValue)) {
+        if(this.validateEmail(this.state.searchValue)) {
 
             console.log("email is valid")
             this.setState({
@@ -80,7 +77,7 @@ class Homepage extends React.Component {
                 loaderMessage: "Searching breached records",
                 showSearchByName: false,
             })
-            EmailDataService.getByEmail(this.state.emailValue)
+            EmailDataService.getByEmail(this.state.searchValue)
             .then(response => {
                 if(response.status === 202) {
                     console.log("response:")
@@ -89,7 +86,7 @@ class Homepage extends React.Component {
                         dbComplete: true,
                         loaderMessage: "Searching surface web"
                     })
-                    EmailDataService.searchSurfaceWebEmail(this.state.emailValue, response.data.dbResponse)
+                    EmailDataService.searchSurfaceWebEmail(this.state.searchValue, response.data.dbResponse)
                     .then(response2 => {
                         console.log("response2: ")
                         console.log(response2)
@@ -184,9 +181,29 @@ class Homepage extends React.Component {
         });
       }
 
-    handleChange(event) {
-        this.setState({searchValue: event.target.value});
-        event.preventDefault();
+    handleChange(field, event) {
+        if(event.target.value.indexOf(field + ": ") == 0) {
+            var newVal = event.target.value.substring(field.length + 2)
+            if(field === 'Email') {
+                this.setState({searchValue: newVal});
+            }else if(field === 'Name'){ 
+                this.setState({nameValue: newVal});
+            }
+            else if(field === 'Zip') {
+                this.setState({zipValue: newVal});
+            }
+            
+            event.preventDefault();
+        } else if(event.target.value == ""){
+            if(field === 'Email') {
+                this.setState({searchValue: ""});
+            }else if(field === 'Name'){ 
+                this.setState({nameValue: ""});
+            }
+            else if(field === 'Zip') {
+                this.setState({zipValue: ""});
+            }
+        }
     }
 
     chooseEntity(id, event) {
@@ -251,6 +268,13 @@ class Homepage extends React.Component {
         return re.test(String(email).toLowerCase());
     }
 
+    selectField(field, event) {
+        event.preventDefault();
+        this.setState({
+            fieldName:field
+        })
+    }
+
 
 
     render() {
@@ -261,18 +285,30 @@ class Homepage extends React.Component {
                     <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
                     <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}>
                     <Dropdown.Toggle style={{width: '100%', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%', fontSize: 'x-large'}} id="dropdown-basic">
-                        {this.state.fieldName}
+                        Field
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu>
-                        <Dropdown.Item href="#">Email</Dropdown.Item>
-                        <Dropdown.Item href="#">Name + Zip</Dropdown.Item>
+                        <Dropdown.Item onClick={(e) => this.selectField('Email', e)}>Email</Dropdown.Item>
+                        <Dropdown.Item onClick={(e) => this.selectField('Name & Zip', e)}>Name &amp; Zip</Dropdown.Item>
                     </Dropdown.Menu>
                     </Dropdown>
                     </div>
-                    <div className="col-lg-4" style={{paddingLeft: 0,paddingRight: 0}}>
-                        <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={this.state.searchValue} onChange={this.handleChange} />
-                    </div>
+                    {this.state.fieldName == 'Email' && 
+                        <div className="col-lg-4" style={{paddingLeft: 0,paddingRight: 0}}>
+                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={this.state.fieldName + ": " + this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} />
+                        </div> 
+                    }
+                    {this.state.fieldName == 'Name & Zip' && 
+                        <>
+                        <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
+                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={"Name: " + this.state.nameValue} onChange={(e) => this.handleChange('Name', e)} />
+                        </div> 
+                        <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
+                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={"Zip: " + this.state.zipValue} onChange={(e) => this.handleChange('Zip', e)} />
+                        </div> 
+                        </>
+                    }
+                    
                     <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
                     <button style={{width: '100%', height:'100%',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} className="btn" onClick={this.handleSubmit}>Search</button>
                     </div>
@@ -281,13 +317,51 @@ class Homepage extends React.Component {
                 ,
 
                 <div className="container d-flex justify-content-center">
-                    {this.state.errorMessage.length === 0 ? null
+                    {this.state.errorMessage.length === 0 ? 
+                    <div style={{marginTop:'82px'}}></div>
                     : 
                     <Alert variant="danger">
                         <p>{this.state.errorMessage}</p>
                     </Alert>
                     }
                 </div>,   
+
+                <div style={{fontSize: 'xx-large', fontWeight: 'bold'}}>
+                    {this.state.showBreachTotals && 
+                    <>
+                    <div className='row justify-content-center'>
+                        <div className="col-lg-2 ">
+                            <div className="row justify-content-center"> 
+                                {this.state.numBreaches}
+                            </div>
+                            <div className="row justify-content-center"> 
+                                breaches
+                            </div>
+                        </div> 
+                        <div className="col-lg-2">
+                            <div className="row justify-content-center"> 
+                                {this.state.numEmails}
+                            </div>
+                            <div className="row justify-content-center"> 
+                                emails
+                            </div>
+                        </div> 
+                        <div className="col-lg-2">
+                            <div className="row justify-content-center"> 
+                                {this.state.numNames}
+                            </div>
+                            <div className="row justify-content-center"> 
+                                names
+                            </div>
+                        </div> 
+                    </div>
+                    <div className='row justify-content-center'>
+                        How do I protect myself? Find out&nbsp;<a style={{color: "inherit"}}href="/ProtectYourself"><u>here</u></a>.
+                    </div>
+                    </>
+                    }
+                </div>,
+
 
                 <div style={{cursor:'pointer'}} className="container">
                     {this.state.showHighScore ? 

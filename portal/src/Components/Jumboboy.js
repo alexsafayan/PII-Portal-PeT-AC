@@ -8,9 +8,9 @@ class Jumboboy extends React.Component {
         <div className="jumbotron bg-white text-center">
           <div className="row justify-content-center">
             <img style={{height:"100px"}} src='lock.svg'></img>
-            <h1 style={{fontSize:"80px"}}>AZSecure Privacy Portal</h1>
+            <h1 style={{fontSize:"80px", color: 'black'}}>AZSecure Privacy Portal</h1>
           </div>
-          <p style={{fontSize:"x-large"}}>Search. Know. Act.</p>
+          <p style={{fontSize:"x-large", color: 'black'}}>Search. Know. Act.</p>
         </div>
       )
     }

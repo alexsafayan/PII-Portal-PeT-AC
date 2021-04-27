@@ -60,12 +60,7 @@ class SubscribeModal extends React.Component  {
     render() {
       return (
         <>
-{/* 
-          <Button variant="dark" active={false} onClick={this.handleShow}>
-            Subscribe
-          </Button>
-*/}
-          <Modal show={this.state.show} onHide={this.handleClose}>
+          <Modal style={{color:"black"}} show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Email Notifications</Modal.Title>
           </Modal.Header>

@@ -47,11 +47,11 @@ class Navigation extends React.Component {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <img src='UofALogo.png'></img>
                     <ul className="navbar-nav ml-auto w-100 justify-content-center" >
-                        <NavItem path="/" name="Home" />
+                        <NavItem path="/Home" name="Home" />
                         <NavItem path="/about" name="About" />
                         <NavItem path="#" name="Notify Me" onClick={this.subscribe}/>
-                        <NavItem path="/#" name="Data Breach List" />
-                        <NavItem path="/#" name="Protect Yourself" />
+                        <NavItem path="/DataBreachList" name="Data Breach List" />
+                        <NavItem path="/ProtectYourself" name="Protect Yourself" />
                         <NavItem path="/FAQ" name="FAQ" />
                         <SubscribeModal ref={this.Modal}/>
                         {/* <li className="nav-item" onClick={this.subscribe} style={{cursor:'pointer'}}>
