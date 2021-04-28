@@ -58,7 +58,13 @@ def searchSurfaceWebEmail(request):
         entities = []
         sourceList = []
         datesCollected = []
+        exposedAttributesList = []
+        exposedAttributesVals = []
         try: 
+            attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
             # item = EmailModel.objects.get(name=name, zip=zip)
             
             spider_url = 'https://thatsthem.com/email/' + email
@@ -78,16 +84,33 @@ def searchSurfaceWebEmail(request):
                 print(crawlerResponse)
                 comboResponse = crawlerResponse
                 sources, dateCollected = getSources(crawlerResponse)
+                comboResponseCopy = comboResponse.copy()
+
                 score = calc_score(comboResponse)
                 comboResponse["score"] = score
+
+                exposedAttribute = ""
+                exposedAttributeVals = {}
+                for each in comboResponse:
+                    if comboResponse[each] == True:
+                        try: 
+                            attr = attributeKey[each]
+                        except:
+                            attr = each
+                        exposedAttribute += "{}, ".format(attr)
+                        exposedAttributeVals[each] = comboResponseCopy[each]
+                exposedAttribute = exposedAttribute[0:-2]
+
                 entities.append(comboResponse)
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)
+                exposedAttributesList.append(exposedAttribute)
+                exposedAttributesVals.append(exposedAttributeVals)
                 print("combo response: ")
                 print(comboResponse)
                 elapsed_time = time.time() - start_time
                 print("it took this long --- " + str(elapsed_time))
-                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals},status=status.HTTP_202_ACCEPTED)
             else:
                 elapsed_time = time.time() - start_time
                 print("it took this long --- " + str(elapsed_time))
@@ -102,6 +125,7 @@ def searchSurfaceWebEmail(request):
 def resolve_entitiesEmail(request):
     print("in resolve_entities EMAILLL")
     start_time = time.time()
+
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
@@ -114,7 +138,13 @@ def resolve_entitiesEmail(request):
         entities = []
         sourceList = []
         datesCollected = []
+        exposedAttributesList = []
+        exposedAttributesVals = []
         try: 
+            attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
             if(len(surfaceWebVals) > 0):
                 left_input = []
                 right_input = []
@@ -145,23 +175,56 @@ def resolve_entitiesEmail(request):
                     else:
                         comboResponse = dbResponse
                         sources, dateCollected = getSources(dbResponse)
+                    
+                    comboResponseCopy = comboResponse.copy()
+
                     score = calc_score(comboResponse)
                     comboResponse["score"] = score
+
+                    exposedAttribute = ""
+                    exposedAttributeVals = {}
+                    for each in comboResponse:
+                        if comboResponse[each] == True:
+                            try: 
+                                attr = attributeKey[each]
+                            except:
+                                attr = each
+                            exposedAttribute += "{}, ".format(attr)
+                            exposedAttributeVals[each] = comboResponseCopy[each]
+                    exposedAttribute = exposedAttribute[0:-2]
+
                     entities.append(comboResponse)
                     sourceList.append(sources)
                     datesCollected.append(dateCollected)
+                    exposedAttributesList.append(exposedAttribute)
+                    exposedAttributesVals.append(exposedAttributeVals)
             else:
-                comboResponse = dbResponse
+                comboResponse = dbResponse.copy()
                 sources, dateCollected = getSources(dbResponse)
                 score = calc_score(comboResponse)
                 comboResponse["score"] = score
+
+                exposedAttribute = ""
+                exposedAttributeVals = []
+                for each in comboResponse:
+                    if comboResponse[each] == True:
+                        exposedAttribute += "{}, ".format(each)
+                        try: 
+                            val = attributeKey[dbResponse[each]]
+                        except:
+                            val = dbResponse[each]
+                        exposedAttributeVals.append(val)
+                exposedAttribute = exposedAttribute[0:-2]
+
                 entities.append(comboResponse)
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)
+                exposedAttributesList.append(exposedAttribute)
+                exposedAttributesVals.append(exposedAttributeVals)
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
