@@ -1,5 +1,6 @@
 import React from 'react';
 import '../App.css'
+import Button from 'react-bootstrap/Button'
 
 
 export const ProtectYourself = props => {
@@ -24,6 +25,9 @@ export const ProtectYourself = props => {
             <div className="row justify-content-center">
               <h3>Use Account Authentication</h3>
             </div>
+            <div className="row justify-content-center">
+              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+            </div>
         </div>
         <div className="col-lg-3">
             <div className="row justify-content-center">
@@ -31,6 +35,9 @@ export const ProtectYourself = props => {
             </div>
             <div className="row justify-content-center">
               <h3>Use Strong Passwords</h3>
+            </div>
+            <div className="row justify-content-center">
+              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
             </div>
         </div>
         <div className="col-lg-3">
@@ -40,6 +47,9 @@ export const ProtectYourself = props => {
             <div className="row justify-content-center">
               <h3>Keep Software Updated</h3>
             </div>
+            <div className="row justify-content-center">
+              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+            </div>
         </div>
         <div className="col-lg-3">
             <div className="row justify-content-center">
@@ -48,9 +58,12 @@ export const ProtectYourself = props => {
             <div className="row justify-content-center">
               <h3>Stay Educated on Phishing</h3>
             </div>
+            <div className="row justify-content-center">
+              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+            </div>
         </div>
         </div>
-
+      <hr></hr>
         {/* resources row */}
           <div className="col-lg-6">
             <div className = "row justify-content-center" style={{paddingBottom:"60px", paddingTop: "40px"}}>

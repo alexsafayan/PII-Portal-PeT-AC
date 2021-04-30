@@ -1,5 +1,5 @@
 import React from 'react';
-import DisplayResults from './DisplayResults.js'
+import DisplayResults, { ResultsTable } from './DisplayResults.js'
 import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
@@ -7,7 +7,6 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { SiCheckmarx, SiThewashingtonpost } from "react-icons/si";
 import '../App.css'
 import Dropdown from 'react-bootstrap/Dropdown'
-import Button from 'react-bootstrap/Button'
 import ReactLoading from 'react-loading';
 import SubscribeModal from './Sub.js'
 
@@ -22,8 +21,8 @@ class Homepage extends React.Component {
         super(props);
         this.state = {
           numBreaches: "4,240",
-          numEmails: "12,423,941,567",
-          numNames: "22,342,131",
+          numEmails: "2,730,903,926",
+          numNames: "11,068,457",
           showBreachTotals: true,
           showProtectYourself: true,
           results: "",
@@ -50,7 +49,7 @@ class Homepage extends React.Component {
           score: 0,
           amountBreached: 2,
           breaches: ['Chegg (April 2018), Facebook (March 2020)'],
-          fieldName: 'Email',
+          fieldName: 'Name + Zip',
           loaderType: 'spokes'
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,6 +58,8 @@ class Homepage extends React.Component {
         this.selectField = this.selectField.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
+        this.showPredictions = this.showPredictions.bind(this);
+        this.organizePredictionTable = this.organizePredictionTable.bind(this);
         this.Modal = React.createRef()
         this.DisplayResults = React.createRef();
       }
@@ -130,7 +131,7 @@ class Homepage extends React.Component {
                                     sources: sources,
                                     datesCollected: dates,
                                 })
-                                this.callDisplay(entities[0],sources[0],dates[0])
+                                this.callDisplay(entities[0],sources[0],dates[0],exposedAttributesList[0],exposedAttributesVals[0])
                                 return true;
                             } else if(response2.status === 204) {
                                 this.setState({
@@ -214,7 +215,7 @@ class Homepage extends React.Component {
                             loaderMessage: "Searching surfaceweb",
                             dbAmount: 1,
                             dbResponse: dbResponse,
-                            sendBack: response.data.uneditedResponses,
+                            uneditedDbResponse: response.data.uneditedResponses,
                             es: es,
                             showSearchAgain: true
                         })
@@ -259,9 +260,9 @@ class Homepage extends React.Component {
 
     chooseDbResponse(id, event) {
         event.preventDefault();
-        var sendBack = this.state.sendBack[id]
+        var uneditedDbResponse = this.state.uneditedDbResponse[id]
         this.setState({
-            sendBack: sendBack,
+            uneditedDbResponse: uneditedDbResponse,
             showDbResponse: false,
             showLoaders: true,
             showSearchAgain: false
@@ -270,20 +271,18 @@ class Homepage extends React.Component {
         .then(response => {
             console.log("response2: ")
             console.log(response)
-            var entities = []
-            var sources = []
-            var dates = []
             if(response.status === 202) {
-                var surfaceWebResponse = response.data.surfaceWebResponse
+                var surfaceWebResponse = response.data.return
                 this.setState({
                     showSurfaceWebResponse: false,
                     surfaceSearchComplete5: true,
                     surfaceWebResults: surfaceWebResponse,
                     showLoader: true,
                     showLoaders: false,
+                    surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
                     loaderMessage: "Resolving Entities"
                 })
-                EmailDataService.resolveEmail(this.state.sendBack, response.data.return)
+                EmailDataService.resolveEmail(this.state.uneditedDbResponse, response.data.return)
                 .then(finalResponse => {
                     // console.log("final resp: ")
                     // console.log(finalResponse)
@@ -292,6 +291,7 @@ class Homepage extends React.Component {
                     var dates = []
                     var exposedAttributesList = []
                     var exposedAttributesVals = []
+                    var predictions = finalResponse.data.predictions
                     //alert("we have your name and zip in database")
                     if(finalResponse.status === 202) {
                         for(var i = 0; i < finalResponse.data.entities.length; i++) {
@@ -301,17 +301,16 @@ class Homepage extends React.Component {
                             exposedAttributesList.push(finalResponse.data.exposedAttributesList[i])
                             exposedAttributesVals.push(finalResponse.data.exposedAttributesVals[i])
                         }
-                        // console.log("entities, sources: ")
-                        // console.log(entities)
-                        // console.log(sources)
-                        // console.log(dates)
+
+                        this.organizePredictionTable(predictions);
 
                         this.setState({
                             surfaceSearchComplete5: false,
                             dbComplete: false,
                             showSurfaceWebResponse: false,
                             showLoader: false,
-                            showSearchAgain: true
+                            showSearchAgain: true,
+                            predictions: predictions
                         })
                         this.callDisplay(entities[0],sources[0],dates[0],exposedAttributesList[0],exposedAttributesVals[0])
                         return true;
@@ -478,6 +477,52 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
+    showPredictions(event) {
+        console.log("predictions")
+        console.log(this.state.predictions)
+        console.log("surfacewebresults")
+        console.log(this.state.surfaceWebResults)
+
+        this.setState({
+            showPredictionResults: true,
+            showScore: false,
+        })
+        event.preventDefault();
+    }
+
+    goBack(event){
+        this.setState({
+            showPredictionResults: false,
+            showScore:true
+        })
+        event.preventDefault();
+    }
+
+    organizePredictionTable(predictions) {
+        //gotta create an array of dictionary objects that I can use to populate the predictions results table
+        //doesnt necessarily need to be sorted
+        //just need two lists, one for matches and one for nonmatches
+        var matches = []
+        var nonmatches = []
+        predictions.map((value, index) => {
+            var res = {}
+            res['value'] = value;
+            res['surfaceWebResults'] = this.state.surfaceWebResults[index]
+            res['surfaceWebAttributesLists'] = this.state.surfaceWebAttributesLists[index]
+
+            if(value > 0.5){ 
+                matches.push(res)
+            } else {
+                nonmatches.push(res)
+            }
+            this.setState({
+                predictionMatches: matches,
+                predictionnonMatches: nonmatches
+            })
+            
+        })
+
+    }
 
 
     render() {
@@ -534,7 +579,6 @@ class Homepage extends React.Component {
 
             //show db Response
                 <>
-                
                 <div className="row justify-content-center">
                 <div className="col-lg-6">
                 {this.state.showDbResponse ? 
@@ -611,13 +655,40 @@ class Homepage extends React.Component {
                          </div>
                          <h4>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
                          <h4>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
-                         <p>Find out what this score means&nbsp;<a style={{color: "inherit"}}href="/ProtectYourself"><u>here.</u></a></p>
+                         <p>Find out what this score means&nbsp;<a style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}><u>here.</u></a></p>
+                         {/* {this.state.showPredictionResults && 
+                            <div className="row justify-content-center text-center">
+                                <div className="col-lg-12">
+                                <Alert variant='dark'>
+                                    <ResultsTable predictions={this.state.predictions} surfaceWebResults={this.state.surfaceWebResults}
+                                    surfaceWebAttributesLists={this.state.surfaceWebAttributesLists}
+                                    >    
+                                    </ResultsTable>
+                                </Alert>
+                                </div>
+                            </div>
+                            } */}
                          </Alert>
                      </div>
                      
                  </div>
                  }
                 </div>,
+
+            //show prediction results
+            <div className="container">
+                {this.state.showPredictionResults && 
+                <div className="row justify-content-center text-center">
+                    <div className="col-lg-12">
+                    <Alert style={{backgroundColor: "#7C7C7C"}}>
+                        <ResultsTable matches={this.state.predictionMatches} nonmatches={this.state.predictionnonMatches}>    
+                        </ResultsTable>
+                    </Alert>
+                    <button className="btn btn-light" onClick={(e) => this.goBack(e)}>Go back</button>
+                    </div>
+                </div>
+                }
+            </div>,
 
             //show entities
                 <div className="container">
@@ -730,14 +801,14 @@ class Homepage extends React.Component {
                     {this.state.showBreachTotals && 
                     <>
                     <div className='row justify-content-center'>
-                        <div className="col-lg-2 ">
+                        {/* <div className="col-lg-2 ">
                             <div className="row justify-content-center"> 
                                 {this.state.numBreaches}
                             </div>
                             <div className="row justify-content-center"> 
                                 breaches
                             </div>
-                        </div> 
+                        </div>  */}
                         <div className="col-lg-2">
                             <div className="row justify-content-center"> 
                                 {this.state.numEmails}

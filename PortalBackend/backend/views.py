@@ -16,6 +16,11 @@ import time
 import requests
 
 
+attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
+
 # Create your views here.
 @api_view(['GET', 'POST', 'DELETE'])
 def email_list(request):
@@ -84,6 +89,7 @@ def searchSurfaceWebEmail(request):
                 print(crawlerResponse)
                 comboResponse = crawlerResponse
                 sources, dateCollected = getSources(crawlerResponse)
+
                 comboResponseCopy = comboResponse.copy()
 
                 score = calc_score(comboResponse)
@@ -154,6 +160,7 @@ def resolve_entitiesEmail(request):
                 predictions = runEntityResolution(left_input, right_input) 
                 print("predictions")
                 print(predictions)
+                predictionsReturn=[]
                 # for each in all_vals:
                 ind = 0
                 for dbResponse in left_input:
@@ -162,8 +169,9 @@ def resolve_entitiesEmail(request):
                     for each in surfaceWebVals:
                         
                         prediction = predictions[ind][1]
+                        predictionsReturn.append(prediction)
                         #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
-                        if (prediction) > 0.01:
+                        if (prediction) > 0.5:
                             matches.append(each)
                         else:
                             nonMatches.append(each)
@@ -199,6 +207,7 @@ def resolve_entitiesEmail(request):
                     exposedAttributesList.append(exposedAttribute)
                     exposedAttributesVals.append(exposedAttributeVals)
             else:
+                predictionsReturn = []
                 comboResponse = dbResponse.copy()
                 sources, dateCollected = getSources(dbResponse)
                 score = calc_score(comboResponse)
@@ -224,7 +233,7 @@ def resolve_entitiesEmail(request):
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -293,6 +302,7 @@ def name_detail(request):
 def searchSurfaceWeb(request):
     start_time = time.time()
     if request.method == 'POST':
+        surfaceWebAttributesLists = []
         req = request.body.decode()
         dic = eval(req)
 
@@ -321,11 +331,20 @@ def searchSurfaceWeb(request):
                 temp = each.copy()
                 score = calc_score(temp)
                 temp["score"] = score
+                attributesList = ""
+                for item in temp:
+                    if temp[item] == True:
+                        try: 
+                            attr = attributeKey[item]
+                        except:
+                            attr = item
+                        attributesList+='{}, '.format(attr)
+                surfaceWebAttributesLists.append(attributesList[0:-2])
                 surfaceWebResponse.append(temp)
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -388,6 +407,7 @@ def resolve_entities(request):
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)
 
+                
             # for each in nonMatches:
             #     sources, dateCollected = getSources(each)
             #     score = calc_score(each)

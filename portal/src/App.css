@@ -128,3 +128,18 @@
 .about-page {
   color: 'white';
 }
+
+.learn-more {
+  background-color: "#203864"; 
+  border-color:"#525252";
+}
+
+div {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+}
+div::-webkit-scrollbar {
+  display: none;
+}
+
+

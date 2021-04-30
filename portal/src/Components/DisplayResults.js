@@ -57,4 +57,60 @@ class DisplayResults extends React.Component {
     
 }
 
+
+
+
+class ResultsTable extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+      };
+    }
+
+    render() {
+        return (
+            <div>
+                <Table striped bordered hover  style={{fontSize: "large", color:"#F2F2F2"}}>
+                    <thead>
+                        <tr>
+                        <th>Platform</th>
+                        <th>Leaked Attributes</th>
+                        <th>MCA Matching Results</th>
+                        <th>TF/IDF Matching Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {this.props.matches.map((value, index) => {
+                        return <>
+                            <tr>
+                                <td>{value.surfaceWebResults.platform}</td>
+                                <td>{value.surfaceWebAttributesLists}</td>
+                                <td>match</td>
+                                <td>Coming soon</td>
+                            </tr>
+                        </>
+                    })}
+                    {this.props.nonmatches.map((value, index) => {
+                        return <>
+                            <tr>
+                                <td>{value.surfaceWebResults.platform}</td>
+                                <td>{value.surfaceWebAttributesLists}</td>
+                                <td>no match</td>
+                                <td>Coming soon</td>
+                            </tr>
+                        </>
+                    })}
+                    <tr></tr>
+                    </tbody>
+                </Table>
+            </div>
+        )
+      }
+    
+}
+
 export default DisplayResults;
+
+export {
+    ResultsTable
+}

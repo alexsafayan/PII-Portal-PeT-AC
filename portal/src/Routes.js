@@ -6,7 +6,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import Homepage from './Components/TestGuy.js';
 import Search from './Components/Search.js';
 import { ProtectYourself } from './views/protectyourself.js';
-import { BreachList } from './views/breachlist.js';
+import BreachList from './views/breachlist.js';
 
 export const Routes = () => {
   return (
