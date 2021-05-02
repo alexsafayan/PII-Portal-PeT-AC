@@ -24,13 +24,13 @@ export const About = props => {
         <div className = "row d-flex justify-content-center"> 
         <div className="col-lg-4">
         <div className = "row d-flex justify-content-left"> 
-          <h3>How can it help me?</h3>
+          <h3>How it works:</h3>
         </div>
         <div className = "row d-flex justify-content-left"> 
           <ui>
-            <li><b>Discover:</b> Leaked information about you or your loved ones.</li>
-            <li><b>Inform:</b> Subscribe to future breaches to get live privacy monitoring services.</li>
-            <li><b>Act:</b> Gain insight into improving your privacy footprint.</li>
+          <li><b>Data Collection:</b> Over 8 billion records collected from the dark web containing private information from large scale data breaches.</li>
+            <li><b>Real Time Searching</b> through 6 mainstream people search engine.</li>
+            <li><b>AI Identity Matching:</b> State of the art machine learning is used for matching identities across the different sources.</li>
             &nbsp;
           </ui>
         </div>
@@ -41,13 +41,13 @@ export const About = props => {
         <div className = "row d-flex justify-content-center"> 
         <div className="col-lg-4">
         <div className = "row d-flex justify-content-left"> 
-          <h3>How does it work?</h3>
+          <h3>How it can help you:</h3>
         </div>
         <div className = "row d-flex justify-content-left"> 
           <ui>
-            <li><b>Data Collection:</b> Over 8 billion records collected from the dark web containing private information from large scale data breaches.</li>
-            <li><b>Real Time Searching</b> through 6 mainstream people search engine.</li>
-            <li><b>AI Identity Matching:</b> State of the art machine learning is used for matching identities across the different sources.</li>
+            <li><b>Discover:</b> Leaked information about you or your loved ones.</li>
+            <li><b>Inform:</b> Subscribe to future breaches to get live privacy monitoring services.</li>
+            <li><b>Act:</b> Gain insight into improving your privacy footprint.</li>
             &nbsp;
           </ui>
         </div>

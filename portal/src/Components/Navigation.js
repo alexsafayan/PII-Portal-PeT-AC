@@ -1,11 +1,11 @@
 import React from 'react';
-import NavDropdown from './NavDropdown.js'
+// import NavDropdown from './NavDropdown.js'
 import SubscribeModal from './Sub.js'
 import '../App.css'
 
 const NavItem = props => {
     const pageURI = window.location.pathname+window.location.search
-    const liClassName = (props.path === pageURI) ? "nav-item active" : "nav-item";
+    const liClassName = (props.path === pageURI || (props.path === "/Home" && pageURI === "/")) ? "nav-item active" : "nav-item";
     const aClassName = props.disabled ? "nav-link disabled" : "nav-link"
     return (
       <li className={liClassName} onClick={props.onClick}>
@@ -45,7 +45,7 @@ class Navigation extends React.Component {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <img src='UofALogo.png'></img>
+                    <img src='UofALogo.png' alt='university of arizona logo'></img>
                     <ul className="navbar-nav ml-auto w-100 justify-content-center" >
                         <NavItem path="/Home" name="Home" />
                         <NavItem path="/about" name="About" />

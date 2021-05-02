@@ -110,10 +110,11 @@ class BreachList extends React.Component {
   }
 
   switchList(list,event) {
+    var newList;
     if(list === 'all') {
-      var newList = 'recent';
+      newList = 'recent';
     } else if (list === 'recent') {
-      var newList = 'all';
+      newList = 'all';
     }
     this.setState({
       activeList: newList
@@ -135,7 +136,7 @@ class BreachList extends React.Component {
             <div className="col-lg-3"></div>
               <div className="col-lg-3">
                    
-                    {this.state.activeList == 'all' ?
+                    {this.state.activeList === 'all' ?
                       <div className="row justify-content-center" style={{backgroundColor: '#F2F2F2', color:"#222A35"}}>
                         <h2 >Included Breaches</h2>
                       </div>
@@ -147,7 +148,7 @@ class BreachList extends React.Component {
                   
               </div> 
               <div className="col-lg-3">
-                  {this.state.activeList == 'recent' ?
+                  {this.state.activeList === 'recent' ?
                       <div className="row justify-content-center" style={{backgroundColor: '#F2F2F2', color:"#222A35"}}>
                         <h2 >Recent Breaches</h2>
                       </div>
@@ -162,7 +163,7 @@ class BreachList extends React.Component {
           {/* <div className="row justify-content-center">
           <div className="col-lg-6" style={{paddingTop:"5vh", backgroundColor: '#F2F2F2'}}>&nbsp;</div></div> */}
 
-          {this.state.activeList == 'all' ? 
+          {this.state.activeList === 'all' ? 
           <div className='row justify-content-center' style={{overflowY: 'scroll', height:'60vh'}}>
           <div className="col-lg-6" style={{backgroundColor: '#F2F2F2', color:"#222A35"}}>
             {this.state.allBreaches.map((value, index) => {
@@ -170,7 +171,7 @@ class BreachList extends React.Component {
                 return <>
                   <div className="row justify-content-center" style={{marginTop: "3vh"}}>
                     <div className="col-lg-3">
-                        <img src={value.imgPath} style={{height:"15vh"}}></img>
+                        <img src={value.imgPath} style={{height:"15vh"}} alt={value.name}></img>
                     </div>
                     
                     <div className="col-lg-9">
@@ -214,7 +215,7 @@ class BreachList extends React.Component {
                 return <>
                   <div className="row justify-content-center" style={{marginTop: "3vh"}}>
                     <div className="col-lg-3">
-                        <img src={value.imgPath} style={{height:"15vh"}}></img>
+                        <img src={value.imgPath} style={{height:"15vh"}} alt={value.name}></img>
                     </div>
                     
                     <div className="col-lg-9">

@@ -1,10 +1,9 @@
 import React from 'react';
-import DisplayResults, { ResultsTable } from './DisplayResults.js'
+import DisplayResults, { ResultsTable, DatabaseTable } from './DisplayResults.js'
 import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
-import BeatLoader from "react-spinners/BeatLoader";
-import { SiCheckmarx, SiThewashingtonpost } from "react-icons/si";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import '../App.css'
 import Dropdown from 'react-bootstrap/Dropdown'
 import ReactLoading from 'react-loading';
@@ -32,10 +31,6 @@ class Homepage extends React.Component {
           errorMessage: "",
           surfaceSearchComplete: false,
           dbComplete: false,
-          line1: "",
-          line2: "",
-          line3: "",
-          showEntities: false,
           showSearchByName: true,
           showSearch: true,
           showSearchAgain: false,
@@ -76,7 +71,6 @@ class Homepage extends React.Component {
         this.setState({
             errorMessage: "",
             line1: "",
-            showEntities: false,
             showScore: false,
             score: 0
         });
@@ -201,12 +195,12 @@ class Homepage extends React.Component {
                 })
                 EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
                 .then(response => {
-                    // console.log("response.data:");
-                    // console.log(response.data);
+                    console.log("db search response.data:");
+                    console.log(response.data);
                     if(response.status === 202) {
                         var dbResponse = response.data.dbResponse;
                         var es = ""
-                        if(dbResponse.length != 1) {
+                        if(dbResponse.length !== 1) {
                             es = "s"
                         }
                         this.setState({
@@ -216,6 +210,7 @@ class Homepage extends React.Component {
                             dbAmount: 1,
                             dbResponse: dbResponse,
                             uneditedDbResponse: response.data.uneditedResponses,
+                            cleanResponses: response.data.cleanResponses,
                             es: es,
                             showSearchAgain: true
                         })
@@ -260,12 +255,16 @@ class Homepage extends React.Component {
 
     chooseDbResponse(id, event) {
         event.preventDefault();
+        var dbResponse = this.state.dbResponse[id]
         var uneditedDbResponse = this.state.uneditedDbResponse[id]
+        var cleanResponse = this.state.cleanResponses[id]
         this.setState({
             uneditedDbResponse: uneditedDbResponse,
             showDbResponse: false,
             showLoaders: true,
-            showSearchAgain: false
+            showSearchAgain: false,
+            dbResponse: dbResponse,
+            cleanResponse: cleanResponse
         })
         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
         .then(response => {
@@ -279,19 +278,21 @@ class Homepage extends React.Component {
                     surfaceWebResults: surfaceWebResponse,
                     showLoader: true,
                     showLoaders: false,
+                    surfaceWebResponse_clean: response.data.cleanResponses,
                     surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
-                    loaderMessage: "Resolving Entities"
+                    loaderMessage: "Resolving Your Identity"
                 })
                 EmailDataService.resolveEmail(this.state.uneditedDbResponse, response.data.return)
                 .then(finalResponse => {
-                    // console.log("final resp: ")
-                    // console.log(finalResponse)
+                    console.log("db response: ")
+                    console.log(this.state.uneditedDbResponse)
                     var entities = []
                     var sources = []
                     var dates = []
                     var exposedAttributesList = []
                     var exposedAttributesVals = []
                     var predictions = finalResponse.data.predictions
+                    var tfidf_predictions = finalResponse.data.tfidf_predictions
                     //alert("we have your name and zip in database")
                     if(finalResponse.status === 202) {
                         for(var i = 0; i < finalResponse.data.entities.length; i++) {
@@ -302,7 +303,7 @@ class Homepage extends React.Component {
                             exposedAttributesVals.push(finalResponse.data.exposedAttributesVals[i])
                         }
 
-                        this.organizePredictionTable(predictions);
+                        this.organizePredictionTable(predictions, tfidf_predictions);
 
                         this.setState({
                             surfaceSearchComplete5: false,
@@ -310,16 +311,15 @@ class Homepage extends React.Component {
                             showSurfaceWebResponse: false,
                             showLoader: false,
                             showSearchAgain: true,
-                            predictions: predictions
+                            predictions: predictions,
+                            tfidf_predictions: tfidf_predictions,
                         })
                         this.callDisplay(entities[0],sources[0],dates[0],exposedAttributesList[0],exposedAttributesVals[0])
                         return true;
                     } else if(finalResponse.status === 204) {
                         this.setState({
                             showLoader: false,
-                            line1: "We do not have any record of your information being compromised.",
-                            line2: "",
-                            line3: "",
+                            showGoodNews: true,
                             surfaceSearchComplete5: false,
                             showSearchAgain: true,
                             searchAgainClass: "col-5"
@@ -382,7 +382,7 @@ class Homepage extends React.Component {
       }
 
     handleChange(field, event) {
-        if(event.target.value.indexOf(field + ": ") == 0 || 1==1) {
+        if(event.target.value.indexOf(field + ": ") === 0 || 1==1) {
             var newVal = event.target.value.substring(field.length + 2)
             if(field === 'Email') {
                 this.setState({searchValue: event.target.value});
@@ -394,7 +394,7 @@ class Homepage extends React.Component {
             }
             
             event.preventDefault();
-        } else if(event.target.value == ""){
+        } else if(event.target.value === ""){
             if(field === 'Email') {
                 this.setState({searchValue: ""});
             }else if(field === 'Name'){ 
@@ -404,20 +404,6 @@ class Homepage extends React.Component {
                 this.setState({zipValue: ""});
             }
         }
-    }
-
-    chooseEntity(id, event) {
-        event.preventDefault();
-        console.log("selected value: "+id)
-        this.setState({
-            selectedValue: id,
-            entityInd: id,
-            showEntities: false,
-            showSearchAgain: true,
-            searchAgainClass: "col-4"
-        })
-        this.callDisplay(this.state.entities[id],this.state.sources[id],this.state.datesCollected[id])
-        
     }
 
     callDisplay(entity, sources, datesCollected, exposedAttributes, exposedAttributesVals) {
@@ -486,6 +472,7 @@ class Homepage extends React.Component {
         this.setState({
             showPredictionResults: true,
             showScore: false,
+            showProtectYourself: false
         })
         event.preventDefault();
     }
@@ -493,12 +480,13 @@ class Homepage extends React.Component {
     goBack(event){
         this.setState({
             showPredictionResults: false,
-            showScore:true
+            showScore:true, 
+            showProtectYourself: true
         })
         event.preventDefault();
     }
 
-    organizePredictionTable(predictions) {
+    organizePredictionTable(predictions, tfidf_predictions) {
         //gotta create an array of dictionary objects that I can use to populate the predictions results table
         //doesnt necessarily need to be sorted
         //just need two lists, one for matches and one for nonmatches
@@ -507,19 +495,27 @@ class Homepage extends React.Component {
         predictions.map((value, index) => {
             var res = {}
             res['value'] = value;
+            res['tfidf_value'] = tfidf_predictions[index]
             res['surfaceWebResults'] = this.state.surfaceWebResults[index]
             res['surfaceWebAttributesLists'] = this.state.surfaceWebAttributesLists[index]
+            res['attributes'] = this.state.surfaceWebResponse_clean[index].attributes
+
+            console.log("res")
+            console.log(res)
 
             if(value > 0.5){ 
                 matches.push(res)
             } else {
                 nonmatches.push(res)
             }
-            this.setState({
-                predictionMatches: matches,
-                predictionnonMatches: nonmatches
-            })
-            
+        })
+
+        var dbresponse_organized = {}
+
+        this.setState({
+            predictionMatches: matches,
+            predictionnonMatches: nonmatches,
+            dbresponse_organized: dbresponse_organized
         })
 
     }
@@ -542,13 +538,13 @@ class Homepage extends React.Component {
                     </Dropdown.Menu>
                     </Dropdown>
                     </div>
-                    {this.state.fieldName == 'Email' && 
+                    {this.state.fieldName === 'Email' && 
                         <div className="col-lg-4" style={{paddingLeft: 0,paddingRight: 0}}>
                             {/* <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={this.state.fieldName + ": " + this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} /> */}
                             <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Email: " aria-label="Search" value={this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} />
                         </div> 
                     }
-                    {this.state.fieldName == 'Name + Zip' && 
+                    {this.state.fieldName === 'Name + Zip' && 
                         <>
                         <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
                             {/* <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={"Name: " + this.state.nameValue} onChange={(e) => this.handleChange('Name', e)} /> */}
@@ -589,7 +585,7 @@ class Homepage extends React.Component {
                         return <div className="col-4" style={{paddingBottom: "10px"}}>
                             <div className="card" style={{paddingBottom: "10px", backgroundColor:"#7C7C7C", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.chooseDbResponse(index, e)}>
                                 <div className="row justify-content-center">
-                                    <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}}></img>
+                                    <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}} alt={"card profile#" + index }></img>
                                 </div>
                                 <div className="card-body" style={{paddingBottom: "10px"}}>
                                     <h5 className="card-title">{value.name}</h5>
@@ -629,7 +625,7 @@ class Homepage extends React.Component {
                          </h4>
                          <div className="row justify-content-center text-center">
                              <div className="col-lg-6">
-                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white'}}>
+                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}>
                                      What was compromised? {this.state.exposedAttributes}
                                  </Alert>
                              </div>
@@ -655,7 +651,7 @@ class Homepage extends React.Component {
                          </div>
                          <h4>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
                          <h4>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
-                         <p>Find out what this score means&nbsp;<a style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}><u>here.</u></a></p>
+                         <p>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}>here.</u></p>
                          {/* {this.state.showPredictionResults && 
                             <div className="row justify-content-center text-center">
                                 <div className="col-lg-12">
@@ -677,53 +673,41 @@ class Homepage extends React.Component {
 
             //show prediction results
             <div className="container">
+                
                 {this.state.showPredictionResults && 
+                
                 <div className="row justify-content-center text-center">
                     <div className="col-lg-12">
-                    <Alert style={{backgroundColor: "#7C7C7C"}}>
-                        <ResultsTable matches={this.state.predictionMatches} nonmatches={this.state.predictionnonMatches}>    
-                        </ResultsTable>
-                    </Alert>
-                    <button className="btn btn-light" onClick={(e) => this.goBack(e)}>Go back</button>
+
+                        <div className="row"><h2>Result from our database:</h2></div>
+                        <div className="row">
+                            <Alert style={{backgroundColor: "#7C7C7C"}}>
+                                <DatabaseTable dbresponse={this.state.cleanResponse}></DatabaseTable>
+                            </Alert>
+                        </div>
+                        <div className="row"><h2>Results from surface web search engines:</h2></div>
+                        <div className="row">
+                            <Alert style={{backgroundColor: "#7C7C7C"}}>
+                                <ResultsTable matches={this.state.predictionMatches} nonmatches={this.state.predictionnonMatches}>    
+                                </ResultsTable>
+                            </Alert>
+                        </div>
+                        <IoMdArrowRoundBack style={{cursor:'pointer'}} size='5em' onClick={(e) => this.goBack(e)}></IoMdArrowRoundBack>
+
                     </div>
                 </div>
                 }
             </div>,
 
-            //show entities
-                <div className="container">
-                {this.state.showEntities ? 
-                    <div>
-                    <h1 className="text-center">We found {this.state.entities.length} potential match{this.state.es}:</h1>
-                    <div className="row">
-                    {this.state.entities.map((value, index) => {
-                        return <div className="col-4" style={{paddingBottom: "10px"}}>
-                            <div className="card" style={{paddingBottom: "10px"}}>
-                                <div className="card-body" style={{paddingBottom: "10px"}}>
-                                <h5 className="card-title">{value.name}</h5>
-                                <p className="card-text">Phone number: {value.phoneNumber}</p>
-                                <p className="card-text">Birthyear: {value.birthyear}</p>
-                                <a onClick={(e) => this.chooseEntity(index, e)} className="btn btn-secondary">Select</a>
-                                </div>
-                            </div>
-                        </div>
-                    })}
-                    </div>
-
-                    </div>
-                    : null
-                }
-                </div>,
-
             //surface search complete with 5 loaders
                 <div className="container">
                     {this.state.surfaceSearchComplete5 && 
                         <div>
-                            <h2 className="text-center">Searching MyLife.com <img src="successfulSearch.png"></img></h2>
-                            <h2 className="text-center">Searching Peekyou.com <img src="successfulSearch.png"></img></h2>
-                            <h2 className="text-center">Searching Spokeo.com <img src="successfulSearch.png"></img></h2>
-                            <h2 className="text-center">Searching Zabasearch.com <img src="successfulSearch.png"></img></h2>
-                            <h2 className="text-center">Searching Anywho.com <img src="successfulSearch.png"></img></h2>
+                            <h2 className="text-center">Searching MyLife.com <img src="successfulSearch.png" alt="mylife success"></img></h2>
+                            <h2 className="text-center">Searching Peekyou.com <img src="successfulSearch.png" alt="peekyou success"></img></h2>
+                            <h2 className="text-center">Searching Spokeo.com <img src="successfulSearch.png" alt="spokeo success"></img></h2>
+                            <h2 className="text-center">Searching Zabasearch.com <img src="successfulSearch.png" alt="zabasearch success"></img></h2>
+                            <h2 className="text-center">Searching Anywho.com <img src="successfulSearch.png" alt="anywho success"></img></h2>
                         </div>
                     }
                 </div>,
@@ -732,7 +716,7 @@ class Homepage extends React.Component {
                 <div className="container">
                 {this.state.dbComplete && 
                     <div>
-                    <h2 className="text-center">Searching breached records <img src="successfulSearch.png"></img></h2>
+                    <h2 className="text-center">Searching breached records <img src="successfulSearch.png" alt="succesful database response"></img></h2>
                     </div>
                 }
                 </div>,
@@ -741,7 +725,7 @@ class Homepage extends React.Component {
                 <div className="container">
                     {this.state.surfaceSearchComplete && 
                         <div>
-                            <h2 className="text-center">Searching surface web <img src="successfulSearch.png"></img></h2>
+                            <h2 className="text-center">Searching surface web <img src="successfulSearch.png" alt="succesful surface web search"></img></h2>
                         </div>
                     }
                 </div>,

@@ -20,7 +20,7 @@ export const ProtectYourself = props => {
         <div className="row">
         <div className="col-lg-3">
             <div className="row justify-content-center">
-              <img src="useAccountAuthentication.png" height="100px"></img>
+              <img src="useAccountAuthentication.png" height="100px" alt="account authentication"></img>
             </div>
             <div className="row justify-content-center">
               <h3>Use Account Authentication</h3>
@@ -31,7 +31,7 @@ export const ProtectYourself = props => {
         </div>
         <div className="col-lg-3">
             <div className="row justify-content-center">
-              <img src="useStrongPasswords.png" height="100px"></img>
+              <img src="useStrongPasswords.png" height="100px" alt="strong passwords"></img>
             </div>
             <div className="row justify-content-center">
               <h3>Use Strong Passwords</h3>
@@ -42,7 +42,7 @@ export const ProtectYourself = props => {
         </div>
         <div className="col-lg-3">
             <div className="row justify-content-center">
-              <img src="keepSoftwareUpdated.png" height="100px"></img>
+              <img src="keepSoftwareUpdated.png" height="100px" alt="keep software updated"></img>
             </div>
             <div className="row justify-content-center">
               <h3>Keep Software Updated</h3>
@@ -53,7 +53,7 @@ export const ProtectYourself = props => {
         </div>
         <div className="col-lg-3">
             <div className="row justify-content-center">
-              <img src="stayEducatedOnPhishing.png" height="100px"></img>
+              <img src="stayEducatedOnPhishing.png" height="100px" alt="stay educated on phishing"></img>
             </div>
             <div className="row justify-content-center">
               <h3>Stay Educated on Phishing</h3>
@@ -73,13 +73,13 @@ export const ProtectYourself = props => {
           <div className="row justify-content-center">
             
             <div className="col-lg-3">
-                  <img src="cyberSecurityEducation.png" height="100px"></img>
+                  <img src="cyberSecurityEducation.png" height="100px" alt="cse"></img>
             </div>
             <div className="col-lg-3">
-                  <img src="insa.png" height="100px"></img>
+                  <img src="insa.png" height="100px" alt="insa"></img>
             </div>
             <div className="col-lg-3">
-                  <img src="cae.png" height="100px"></img>
+                  <img src="cae.png" height="100px" alt="cae"></img>
             </div>
           </div>
         

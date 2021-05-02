@@ -8,8 +8,9 @@ from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 from script_backend import runEntityResolution
+from tfidf_er import run_tfidf
 
-from backend.DataFunctions import calc_score, combine, combineMultiple, getSources, normalizeAge, checkPhone
+from backend.DataFunctions import calc_score, combine, combineMultiple, getSources, normalizeAge, checkPhone, clean_response
 
 import json
 import time
@@ -158,8 +159,12 @@ def resolve_entitiesEmail(request):
                 right_input.append(surfaceWebVals)
                 # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
                 predictions = runEntityResolution(left_input, right_input) 
-                print("predictions")
+                tfidf_predictions = run_tfidf(left_input, right_input)
+                print('mcan  predictions: ')
                 print(predictions)
+                print('tfidf predictions: ')
+                print(tfidf_predictions)
+
                 predictionsReturn=[]
                 # for each in all_vals:
                 ind = 0
@@ -233,7 +238,7 @@ def resolve_entitiesEmail(request):
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn, "tfidf_predictions": tfidf_predictions},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -271,6 +276,7 @@ def name_detail(request):
         try: 
             dbResponses = []
             uneditedResponses = []
+            cleanResponses = []
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
@@ -280,6 +286,11 @@ def name_detail(request):
                     if val == None:
                         res[key] = str(val)
                 temp = res.copy()
+                # make a copy of the dictionary, clean it so its safe to display on the frontend:
+                cleanResponse = temp.copy()
+                clean_response(cleanResponse)
+
+                cleanResponses.append(cleanResponse)
                 uneditedResponses.append(temp)
                 normalizeAge(res)
                 checkPhone(res)
@@ -291,7 +302,7 @@ def name_detail(request):
             print(dbResponses)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses, "cleanResponses": cleanResponses},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -309,6 +320,7 @@ def searchSurfaceWeb(request):
         name = dic.get('name')
         zip = dic.get('zip')
         surfaceWebResponse = []
+        cleanResponses = []
         try: 
             # item = EmailModel.objects.get(name=name, zip=zip)
             
@@ -329,6 +341,11 @@ def searchSurfaceWeb(request):
             # for each in all_vals:
             for each in all_vals:
                 temp = each.copy()
+
+                cleanResponse = temp.copy()
+                clean_response(cleanResponse)
+                cleanResponses.append(cleanResponse)
+
                 score = calc_score(temp)
                 temp["score"] = score
                 attributesList = ""
@@ -344,7 +361,7 @@ def searchSurfaceWeb(request):
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 

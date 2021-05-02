@@ -1,5 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table'
+import { IoMdCheckmarkCircle, IoIosCloseCircleOutline } from "react-icons/io";
+
 
 
 
@@ -82,21 +84,21 @@ class ResultsTable extends React.Component {
                     <tbody>
                     {this.props.matches.map((value, index) => {
                         return <>
-                            <tr>
+                            <tr style={{backgroundColor:"#E2F0D9", color:"black"}}>
                                 <td>{value.surfaceWebResults.platform}</td>
-                                <td>{value.surfaceWebAttributesLists}</td>
-                                <td>match</td>
-                                <td>Coming soon</td>
+                                <td>{value.attributes}</td>
+                                <td><IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle></td>
+                                <td>{value.tfidf_value >= 0.5 ? <IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle> : <IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline>}</td>
                             </tr>
                         </>
                     })}
                     {this.props.nonmatches.map((value, index) => {
                         return <>
-                            <tr>
+                            <tr style={{backgroundColor:"#ffd4dc", color:"black"}}>
                                 <td>{value.surfaceWebResults.platform}</td>
-                                <td>{value.surfaceWebAttributesLists}</td>
-                                <td>no match</td>
-                                <td>Coming soon</td>
+                                <td>{value.attributes}</td>
+                                <td><IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline></td>
+                                <td>{value.tfidf_value >= 0.5 ? <IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle> : <IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline>}</td>
                             </tr>
                         </>
                     })}
@@ -109,8 +111,42 @@ class ResultsTable extends React.Component {
     
 }
 
+class DatabaseTable extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+      };
+    }
+
+    render() {
+        return (
+            <div>
+                <Table striped bordered hover  style={{fontSize: "large", color:"#F2F2F2"}}>
+                    <thead>
+                        <tr>
+                        <th>Platform</th>
+                        <th>Leaked Attributes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr style={{backgroundColor:"#b4c7e7", color:"black"}}>
+                        <td>{this.props.dbresponse.platform}</td>
+                        <td>{this.props.dbresponse.attributes}</td>
+                    </tr>
+
+                    <tr></tr>
+                    </tbody>
+                </Table>
+            </div>
+        )
+      }
+    
+}
+
 export default DisplayResults;
 
 export {
-    ResultsTable
+    ResultsTable,
+    DatabaseTable
 }

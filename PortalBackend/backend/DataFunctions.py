@@ -1,34 +1,6 @@
 from datetime import datetime
+import json
 
-
-
-def generate_boxplot(score, bucket):
-        #key = "[1.75, 1.75]"
-        key = "[4.33, 4.33]"
-        newKey = "["+str(score)+", "+str(score)+"]"
-        boxplot = "boxplotnew.html"
-        if(bucket == "genz"):
-                boxplot = "boxplotgenz.html"
-        elif(bucket == "millenial"):
-                boxplot = "boxplotmillenial.html"
-        elif(bucket == "genx"):
-                boxplot = "boxplotgenx.html"
-        elif(bucket == "boomer"):
-                boxplot = "boxplotboomer.html"
-        elif(bucket == "silent"):
-                boxplot = "boxplotsilent.html"
-
-        f = open("backend/Boxplots/"+boxplot, "r")
-        #f = open("backend/Boxplots/boxplotnew.html", "r")
-        #w = open("backend/Boxplots/boxplotguy.html","w")
-
-        original = f.read()
-
-        new = original.replace(key,newKey)
-        #w.write(new)
-        f.close()
-        #w.close()
-        return new
 
 #use this guy
 def calc_score(attributes):
@@ -344,3 +316,92 @@ def checkPhone(attributes):
         else:
                 attributes["phoneNum"] = False
                 attributes["phoneNumber"] = "unknown"
+
+def clean_address(response):
+        # clean zip
+        try: 
+                if(not 'none' in str(response['zip']).lower()):
+                        zipcode = response['zip']
+                        zipcode_clean = "{}***".format(zipcode[0:2])
+                        response['zip'] = zipcode_clean
+        except:
+                print('error cleaning zip')
+        try:
+                if(not 'none' in str(response['address']).lower()):
+                        address = response['address']
+                        address_split = address.split(' ')
+                        address_clean = str(address_split[0]) + ' ' + str(address_split[1][0:2]) + '**********'
+                        response['address'] = address_clean
+        except:
+                print('error cleaning address')
+        
+        try:
+                if(not 'none' in str(response['currentTown']).lower()):
+                        currentTown = response['currentTown']
+                        currentTown_clean = str(currentTown[0:2]) + '******'
+                        response['city'] = currentTown_clean
+                        del response['currentTown']
+        except:
+                print('error cleaning current town')
+
+        try:
+                if(not 'none' in str(response['hometown']).lower()):
+                        hometown = response['hometown']
+                        hometown_clean = str(hometown[0:2]) + '******'
+                        response['city'] = hometown_clean
+                        del response['hometown']
+        except:
+                print('error cleaning home town')
+
+        try:
+                if(not 'none' in str(response['city']).lower()):
+                        city = response['city']
+                        city_clean = str(city[0:2]) + '******'
+                        response['city'] = city_clean
+        except:
+                print('error cleaning home town')
+
+
+
+def clean_response(response):
+        normalizeAge(response)
+        checkPhone(response)
+        clean_address(response)
+        delete_cols = []
+        for each in response:
+                if('none' in str(response[each]).lower()):
+                        delete_cols.append(each)
+        for col in delete_cols:
+                del response[col]
+        try:
+                if(response['birthday'] == response['birthyear']):
+                        del response['birthday']
+        except:
+                pass
+
+        #create attribute for easy printing on frontend
+        allAttributes = response.copy()
+        try:
+                del allAttributes['platform']
+        except:
+                pass
+        try:
+                del allAttributes['dateCollected']
+        except:
+                pass
+        try: 
+                del allAttributes['age']
+        except:
+                pass
+        try: 
+                del allAttributes['phoneNum']
+        except:
+                pass
+        attributes = ""
+        for each in allAttributes:
+                attributes += "{0}: {1}, ".format(each,allAttributes[each])
+
+        response['attributes'] = attributes[0:-2]
+
+
+        
