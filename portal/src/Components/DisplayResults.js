@@ -1,6 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table'
-import { IoMdCheckmarkCircle, IoIosCloseCircleOutline } from "react-icons/io";
+import { IoMdCheckmarkCircle, IoIosCloseCircleOutline, IoIosInformationCircleOutline as InfoIcon } from "react-icons/io";
+import ReactTooltip from 'react-tooltip'
 
 
 
@@ -13,7 +14,8 @@ class DisplayResults extends React.Component {
         entity: this.props.entity,
         sources: this.props.sources,
         datesCollected: this.props.datesCollected,
-        score: 0
+        score: 0,
+        mcaDescription: "AI powered entity matching model. Learn more here"
       };
     }
 
@@ -77,7 +79,20 @@ class ResultsTable extends React.Component {
                         <tr>
                         <th>Platform</th>
                         <th>Leaked Attributes</th>
-                        <th>MCA Matching Results</th>
+                        <th>MCA Matching Results
+                            <a data-tip={'dummystring'} data-event={'click focus'}
+                            data-for={'tooltip'}><InfoIcon style={{cursor:"pointer"}} size=".75em" onClick={() => { ReactTooltip.show(this.fooRef) }}></InfoIcon></a>
+                            <ReactTooltip id={'tooltip'} effect="solid"
+                                clickable={true} place="right"
+                                getContent={function() {
+                                return (
+                                        <div>
+                                        <span>AI powered entity matching model. </span>
+                                        <a style={{color:"inherit"}} href="/about#mca"><u>Learn more here.</u></a>
+                                        </div>
+                                )
+                            }}/>
+                        </th>
                         <th>TF/IDF Matching Results</th>
                         </tr>
                     </thead>
@@ -86,7 +101,7 @@ class ResultsTable extends React.Component {
                         return <>
                             <tr style={{backgroundColor:"#E2F0D9", color:"black"}}>
                                 <td>{value.surfaceWebResults.platform}</td>
-                                <td>{value.attributes}</td>
+                                <td  style={{textAlign: 'left'}}>{value.attributes}</td>
                                 <td><IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle></td>
                                 <td>{value.tfidf_value >= 0.5 ? <IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle> : <IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline>}</td>
                             </tr>
@@ -96,7 +111,7 @@ class ResultsTable extends React.Component {
                         return <>
                             <tr style={{backgroundColor:"#ffd4dc", color:"black"}}>
                                 <td>{value.surfaceWebResults.platform}</td>
-                                <td>{value.attributes}</td>
+                                <td  style={{textAlign: 'left'}}>{value.attributes}</td>
                                 <td><IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline></td>
                                 <td>{value.tfidf_value >= 0.5 ? <IoMdCheckmarkCircle style={{fontSize: '2em'}}></IoMdCheckmarkCircle> : <IoIosCloseCircleOutline style={{fontSize: '2em'}}></IoIosCloseCircleOutline>}</td>
                             </tr>

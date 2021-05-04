@@ -374,7 +374,7 @@ def clean_response(response):
         for col in delete_cols:
                 del response[col]
         try:
-                if(response['birthday'] == response['birthyear']):
+                if(str(response['birthyear']) in str(response['birthday'])):
                         del response['birthday']
         except:
                 pass
@@ -399,7 +399,7 @@ def clean_response(response):
                 pass
         attributes = ""
         for each in allAttributes:
-                attributes += "{0}: {1}, ".format(each,allAttributes[each])
+                attributes += "{0}: {1} | ".format(each,allAttributes[each])
 
         response['attributes'] = attributes[0:-2]
 

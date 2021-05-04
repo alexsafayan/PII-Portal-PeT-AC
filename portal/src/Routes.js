@@ -3,8 +3,7 @@ import { About } from './views/about.js';
 import { Faq } from './views/faq.js';
 import { Route, Switch, Redirect } from 'react-router-dom';
 //import Homepage from './Components/Homepage.js'
-import Homepage from './Components/TestGuy.js';
-import Search from './Components/Search.js';
+import Homepage from './Components/Homepage.js';
 import { ProtectYourself } from './views/protectyourself.js';
 import BreachList from './views/breachlist.js';
 
@@ -20,7 +19,6 @@ export const Routes = () => {
         <Route key="faq" exact path="/FAQ" component={Faq} />
         <Route key="protectyourself" exact path="/ProtectYourself" component={ProtectYourself} />
         <Route key="breachlist" exact path="/DataBreachList" component={BreachList} />
-        <Route key="search" exact path="/search" component={Search} />
       </Switch>
     </div>
   );

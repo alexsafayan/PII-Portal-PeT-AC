@@ -45,7 +45,7 @@ class Navigation extends React.Component {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <img src='UofALogo.png' alt='university of arizona logo'></img>
+                    <a style={{cursor:'pointer'}} href="/Home"><img src='UofALogo.png' alt='university of arizona logo'></img></a>
                     <ul className="navbar-nav ml-auto w-100 justify-content-center" >
                         <NavItem path="/Home" name="Home" />
                         <NavItem path="/about" name="About" />

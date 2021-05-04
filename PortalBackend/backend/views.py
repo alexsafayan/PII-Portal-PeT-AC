@@ -96,7 +96,7 @@ def searchSurfaceWebEmail(request):
                 score = calc_score(comboResponse)
                 comboResponse["score"] = score
 
-                exposedAttribute = ""
+                exposedAttribute = "password, "
                 exposedAttributeVals = {}
                 for each in comboResponse:
                     if comboResponse[each] == True:
@@ -113,8 +113,12 @@ def searchSurfaceWebEmail(request):
                 datesCollected.append(dateCollected)
                 exposedAttributesList.append(exposedAttribute)
                 exposedAttributesVals.append(exposedAttributeVals)
-                print("combo response: ")
-                print(comboResponse)
+                print("exposedAttributesList")
+                print(exposedAttributesList)
+                print("exposedAttributesVals")
+                print(exposedAttributesVals)
+                # print("combo response: ")
+                # print(comboResponse)
                 elapsed_time = time.time() - start_time
                 print("it took this long --- " + str(elapsed_time))
                 return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals},status=status.HTTP_202_ACCEPTED)
