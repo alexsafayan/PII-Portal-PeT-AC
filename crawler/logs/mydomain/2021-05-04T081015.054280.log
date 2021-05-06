@@ -1,0 +1,42 @@
+2021-05-04 08:10:15 [scrapy] DEBUG: Crawled (200) <GET https://thatsthem.com/email/lebron@gmail.com> (referer: None)
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Lebron Hixon', 'birthday': '45-54', 'currentTown': 'none', 'address': '195-Neal-Dr-Pompano-Beach-FL-33064', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '954-942-4236954-942-3692706-820-9099', 'zip': '195-Neal-Dr-Pompano-Beach-FL-33064', 'hometown': '195-Neal-Dr-Pompano-Beach-FL-33064', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Mariabel Lebron', 'birthday': '35-44', 'currentTown': 'none', 'address': '89-Naples-Rd-Apt-2-Brookline-MA-02446', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '', 'zip': '89-Naples-Rd-Apt-2-Brookline-MA-02446', 'hometown': '89-Naples-Rd-Apt-2-Brookline-MA-02446', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Alex Bongo', 'birthday': 'none', 'currentTown': 'none', 'address': 'Bloom-St-Reading-PA-19602', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '484-721-9034', 'zip': 'Bloom-St-Reading-PA-19602', 'hometown': 'Bloom-St-Reading-PA-19602', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Latasha Ebron', 'birthday': '35-44', 'currentTown': 'none', 'address': '3931-Light-Arms-Pl-Waldorf-MD-20602', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '240-643-9768240-210-8534', 'zip': '3931-Light-Arms-Pl-Waldorf-MD-20602', 'hometown': '3931-Light-Arms-Pl-Waldorf-MD-20602', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Jeannette Camareno', 'birthday': 'none', 'currentTown': 'none', 'address': '521-Se-Walters-Terrace-Port-Saint-Lucie-FL-34983', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '772-626-8375', 'zip': '521-Se-Walters-Terrace-Port-Saint-Lucie-FL-34983', 'hometown': '521-Se-Walters-Terrace-Port-Saint-Lucie-FL-34983', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Tf Dd', 'birthday': 'none', 'currentTown': 'none', 'address': '3765-Mobile-KY-41071', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '701-269-3492', 'zip': '3765-Mobile-KY-41071', 'hometown': '3765-Mobile-KY-41071', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Lebron James Cavs', 'birthday': 'none', 'currentTown': 'none', 'address': '23133-Brooklyn-NY-11208', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '804-221-3022', 'zip': '23133-Brooklyn-NY-11208', 'hometown': '23133-Brooklyn-NY-11208', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Lebron James', 'birthday': 'none', 'currentTown': 'none', 'address': '5806-S-54th-Ln-Laveen-AZ-85339', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '602-505-8965484-721-9034', 'zip': '5806-S-54th-Ln-Laveen-AZ-85339', 'hometown': '5806-S-54th-Ln-Laveen-AZ-85339', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Lebron Lopez', 'birthday': 'none', 'currentTown': 'none', 'address': 'Chadwick-Rd-Fremont-CA-94538', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '484-722-9034', 'zip': 'Chadwick-Rd-Fremont-CA-94538', 'hometown': 'Chadwick-Rd-Fremont-CA-94538', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] DEBUG: Scraped from <200 https://thatsthem.com/email/lebron@gmail.com>
+{'name': 'Jordie Benn', 'birthday': 'none', 'currentTown': 'none', 'address': '2500-Victory-Ave-Dallas-TX-75219', 'gender': 'none', 'relationshipStatus': 'none', 'phoneNum': '', 'zip': '2500-Victory-Ave-Dallas-TX-75219', 'hometown': '2500-Victory-Ave-Dallas-TX-75219', 'jobDetails': 'none', 'interests': 'none', 'religiousViews': 'none', 'politicalViews': 'none'}
+2021-05-04 08:10:15 [scrapy] INFO: Closing spider (finished)
+2021-05-04 08:10:15 [scrapy] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 310,
+ 'downloader/request_count': 1,
+ 'downloader/request_method_count/GET': 1,
+ 'downloader/response_bytes': 6551,
+ 'downloader/response_count': 1,
+ 'downloader/response_status_count/200': 1,
+ 'elapsed_time_seconds': 0.395129,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2021, 5, 4, 15, 10, 15, 457408),
+ 'item_scraped_count': 10,
+ 'log_count/DEBUG': 11,
+ 'log_count/INFO': 7,
+ 'response_received_count': 1,
+ 'scheduler/dequeued': 1,
+ 'scheduler/dequeued/memory': 1,
+ 'scheduler/enqueued': 1,
+ 'scheduler/enqueued/memory': 1,
+ 'start_time': datetime.datetime(2021, 5, 4, 15, 10, 15, 62279)}
+2021-05-04 08:10:15 [scrapy] INFO: Spider closed (finished)

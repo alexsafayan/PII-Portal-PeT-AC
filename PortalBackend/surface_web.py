@@ -13,8 +13,9 @@ parser_put = reqparse.RequestParser()
 parser_put.add_argument("name", type=str, required=True, help="need full name data")
 parser_put.add_argument("zip", type=str, required=True, help="need zip data")
 ua = UserAgent()
+proxyAPI = "https://api.scrapestack.com/scrape?access_key=8e3fe586244f275ff3b1b6da59b97bc9&url="
 
-us_statesO = {
+us_states = {
     'Alabama': 'AL',
     'Alaska': 'AK',
     'American Samoa': 'AS',
@@ -73,66 +74,6 @@ us_statesO = {
     'Wyoming': 'WY'
 }
 
-us_states = {
-    'AL': 'Alabama',
-    'AK': 'Alaska',
-    'AS': 'American Samoa',
-    'AZ': 'Arizona',
-    'AR': 'Arkansas',
-    'CA': 'California',
-    'CO': 'Colorado',
-    'CT': 'Connecticut',
-    'DE': 'Delaware',
-    'DC': 'District of Columbia',
-    'FL': 'Florida',
-    'GA': 'Georgia',
-    'GU': 'Guam',
-    'HI': 'Hawaii',
-    'ID': 'Idaho',
-    'IL': 'Illinois',
-    'IN': 'Indiana',
-    'IA': 'Iowa',
-    'KS': 'Kansas',
-    'KY': 'Kentucky',
-    'LA': 'Louisiana',
-    'ME': 'Maine',
-    'MD': 'Maryland',
-    'MA': 'Massachusetts',
-    'MI': 'Michigan',
-    'MN': 'Minnesota',
-    'MS': 'Mississippi',
-    'MO': 'Missouri',
-    'MT': 'Montana',
-    'NE': 'Nebraska',
-    'NV': 'Nevada',
-    'NH': 'New Hampshire',
-    'NJ': 'New Jersey',
-    'NM': 'New Mexico',
-    'NY': 'New York',
-    'NC': 'North Carolina',
-    'ND': 'North Dakota',
-    'MP': 'Northern Mariana Islands',
-    'OH': 'Ohio',
-    'OK': 'Oklahoma',
-    'OR': 'Oregon',
-    'PA': 'Pennsylvania',
-    'PR': 'Puerto Rico',
-    'RI': 'Rhode Island',
-    'SC': 'South Carolina',
-    'SD': 'South Dakota',
-    'TN': 'Tennessee',
-    'TX': 'Texas',
-    'UT': 'Utah',
-    'VT': 'Vermont',
-    'VI': 'Virgin Islands',
-    'VA': 'Virginia',
-    'WA': 'Washington',
-    'WV': 'West Virginia',
-    'WI': 'Wisconsin',
-    'WY': 'Wyoming',
-}
-
-
 
 def initial_hearder():
     header = ua.random
@@ -143,53 +84,47 @@ def initial_hearder():
 def distribution(name, zip):
     result_list = []
     zip_info = zipcodes.matching(str(zip))[0]
-    st = zip_info["state"]
-    city = zip_info["city"]
-    state = us_states[st]
+    state = zip_info["state"]
+    state_name = ''
+    for state_full, state_short in us_states.items():
+        if state_short == state:
+            state_name = state_full
     try:
-        peekyoures = peekyou(name, state, city)
-        # print("peekyoures : ")
-        # print(peekyoures)
-        result_list += peekyoures
-    except Exception as e:
-        print("error on peekyou")
-    try:
-        spokeores = spokeo(name, st, city)
-        # print("spokeores : ")
-        # print(spokeores)
-        result_list += spokeores
-    except Exception as e:
-        print("error on spokeo")
-    try:
-        zabares = zabasearch(name, st, city)
-        anywhores = anywho(name, st, city)
-        # print("zabares : ")
-        # print(zabares)
-        # print("anywhores : ")
-        # print(anywhores)
-        result_list += zabares + anywhores
+        result_list += mylife(name, state)
     except:
-        print("error on zaba")
-    # print("result_list : ")
-    # print(result_list)
+        pass
+    try:
+        result_list += peekyou(name, state_name)
+    except:
+        pass
+    try:
+        result_list += spokeo(name, state_name)
+    except:
+        pass
+    try:
+        result_list += zabasearch(name, state)
+    except Exception as e:
+        print("error on zabasearch : {}".format(e))
+    try:
+        result_list += anywho(name, state)
+    except:
+        pass
     return result_list
 
 
-def anywho(name, state, city):
+def anywho(name, state):
     result_list = []
     header = initial_hearder()
     try:
-        
-        for i in range(1, 2):
-            url = 'https://www.anywho.com/people/{0}/{1}+{2}/?page={3}'.format(name.replace(" ", "+"), city.replace(" ", "+"), state,i)
+        for i in range(1, 2000):
+            url = 'https://www.anywho.com/people/{0}/{1}/?page={2}'.format(name.replace(" ", "+"), state, i)
             try:
                 response = requests.get(url, headers=header, timeout=(10, 10))
                 soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
                 title = soup.find('title')
                 if "None" in str(title):
                     break
-                info = save_info_anywho(soup)
-                result_list.append(info)
+                result_list.append(save_info_anywho(soup))
             except Exception as err:
                 header = initial_hearder()
                 print(str(err))
@@ -237,10 +172,10 @@ def save_info_anywho(soup):
         return
 
 
-def zabasearch(name, state, city):
+def zabasearch(name, state):
     header = initial_hearder()
     result_list = []
-    url = 'https://www.zabasearch.com/people/{0}/{1}+{2}/'.format(name.replace(" ", "+"), city.replace(" ", "+"), state)
+    url = 'https://www.zabasearch.com/people/{0}/{1}/'.format(name.replace(" ", "+"), state)
     try:
         response = requests.get(url, headers=header, timeout=(10, 10))
         soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
@@ -306,12 +241,12 @@ def save_info_zabasearch(soup):
         return extractedValues
 
 
-def spokeo(name, state, city):
+def spokeo(name, state):
     result_list = []
     links_list = []
 
-    spokeo_url = 'https://www.spokeo.com'
-    url = 'https://www.spokeo.com/{0}/{1}/{2}'.format(name.replace(" ", "-"), state, city)
+    spokeo_url = proxyAPI+'https://www.spokeo.com'
+    url = proxyAPI+'https://www.spokeo.com/{0}/{1}'.format(name.replace(" ", "-"), state.replace(" ", "-"))
     header = initial_hearder()
 
     try:
@@ -336,7 +271,7 @@ def spokeo(name, state, city):
             header = initial_hearder()
             response = requests.get(link, headers=header, timeout=(10, 10))
             soup = BeautifulSoup(response.text, 'lxml')
-            result_list += save_info_spokeo(soup)
+            result_list.append(save_info_spokeo(soup))
 
         return result_list
     except:
@@ -355,7 +290,7 @@ def save_info_spokeo(soup):
             extractedValues['name'] = name_ageList[0]
             extractedValues['Age'] = name_ageList[1]
         else:
-            extractedValues['Name'] = name_age
+            extractedValues['name'] = name_age
     except Exception as err:
         print(str(err))
         return
@@ -423,15 +358,15 @@ def spokeo_fetchLinks(soup, url):
         records = column_list.findAll('a', href=True)
         for record in records:
             result_links.append(url + str(record['href']))
-        return  result_links
+        return result_links
     except:
         return
 
 
-def peekyou(name, state, city):
+def peekyou(name, state):
     result_list = []
-    url_temp = "https://www.peekyou.com/{}/".format(name.replace(" ", "_"))
-    url = "https://www.peekyou.com/usa/{0}/{1}/{2}".format(state.replace(" ", "_"), city.replace(" ", "_"), name.replace(" ", "_"))
+    url_temp = proxyAPI+"https://www.peekyou.com/{}/".format(name.replace(" ", "_"))
+    url = proxyAPI+"https://www.peekyou.com/usa/{1}/{0}".format(name.replace(" ", "_"), state.replace(" ", "_"))
     header = initial_hearder()
     soups = []
     try:
@@ -455,11 +390,12 @@ def peekyou(name, state, city):
             for page in soups:
                 result_list.append(save_info_peekyou(page))
             return result_list
-        except Exception as err:
-            print("error here : "+str(err))
+        except:
+            pass
 
     except Exception as err:
         print(str(err))
+        pass
 
 
 def peekyou_fetch(url, soup, header):
@@ -535,34 +471,34 @@ def save_info_peekyou(soup):
 
 
 def mylife(name, state):
-    result_list = []
-    url = 'https://www.mylife.com/{}/'.format(name.replace(" ", "-"))
-    header = initial_hearder()
-    try:
-        response = requests.get(url, headers=header, timeout=(10, 10))
-        soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
-        result_list += save_info_mylife(soup, state)
+    for i in range(10):
+        result_list = []
+        url = 'https://www.mylife.com/{}/'.format(name.replace(" ", "-"))
+        header = initial_hearder()
         try:
-            PageSection = soup.find('div', {'class': "pagination"})
-            pages = int(PageSection.find_all('a', href=True)[-2].text)
-        except Exception as err:
-            print(str(err))
-            pages = 1
-            pass
-        if pages >= 2:
-            for page in range(2, pages + 1):
-                url = 'https://www.mylife.com/{0}/{1}'.format(name.replace(" ", "-"), str(page))
-                try:
-                    response = requests.get(url, headers=header, timeout=(10, 10))
-                    soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
-                    result_list += save_info_mylife(soup, state)
-                except Exception as err:
-                    print(str(err))
-                    pass
-        return result_list
-    except Exception as err:
-        print(str(err), "2")
-        pass
+            response = requests.get(url, headers=header, timeout=(3, 3))
+            soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
+            result_list += save_info_mylife(soup, state)
+            try:
+                PageSection = soup.find('div', {'class': "pagination"})
+                pages = int(PageSection.find_all('a', href=True)[-2].text)
+            except Exception as err:
+                print(str(err))
+                pages = 1
+                pass
+            if pages >= 2:
+                for page in range(2, pages + 1):
+                    url = proxyAPI+'https://www.mylife.com/{0}/{1}'.format(name.replace(" ", "-"), str(page))
+                    try:
+                        response = requests.get(url, headers=header, timeout=(10, 10))
+                        soup = BeautifulSoup(response.text, 'lxml', from_encoding='utf8')
+                        result_list += save_info_mylife(soup, state)
+                    except Exception as err:
+                        print(str(err))
+                        pass
+            return result_list
+        except:
+            continue
 
 
 def save_info_mylife(soup, state):
@@ -578,13 +514,18 @@ def save_info_mylife(soup, state):
         result_list = []
         header = initial_hearder()
         for link in url_list:
-            extractedValues = {'name': 'None', 'platform': 'Mylife', 'age': 'None', 'birthday': 'None', 
+            extractedValues = {'name': 'None', 'platform': 'Mylife', 'age': 'None', 'birthday': 'None',
                                 'currentTown': 'None', 'gender': 'none', 'state': 'None', 'address': 'None', 'phoneNum': 'None',
                                'Relatives': 'None', 'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
-                               'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None', 'NetWorth': 'none', 
+                               'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None', 'NetWorth': 'none',
                                'Summary': 'None', 'hometown': 'none', 'interests': 'none'}
 
-            response = requests.get(link, headers=header, timeout=(30, 30))
+            for i in range(10):
+                try:
+                    response = requests.get(link, headers=header, timeout=(3, 3))
+                    break
+                except:
+                    continue
             try:
                 soup = BeautifulSoup(response.text, 'html.parser')
                 body = soup.find('div', {'class': 'body-wrapper'})

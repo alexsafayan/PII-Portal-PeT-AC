@@ -8,13 +8,19 @@ from backend.models import EmailModel, Subscription
 from backend.serializers import EmailSerializer
 from rest_framework.decorators import api_view
 from script_backend import runEntityResolution
+from tfidf_er import run_tfidf
 
-from backend.CalculateScore import calc_score, combine, combineMultiple, getSources
+from backend.DataFunctions import calc_score, combine, combineMultiple, getSources, normalizeAge, checkPhone, clean_response
 
 import json
 import time
 import requests
 
+
+attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
 
 # Create your views here.
 @api_view(['GET', 'POST', 'DELETE'])
@@ -52,10 +58,19 @@ def searchSurfaceWebEmail(request):
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
-
+        dbResponse = dic.get('dbResponse')
         email = dic.get('email')
         surfaceWebResponse = []
+        entities = []
+        sourceList = []
+        datesCollected = []
+        exposedAttributesList = []
+        exposedAttributesVals = []
         try: 
+            attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
             # item = EmailModel.objects.get(name=name, zip=zip)
             
             spider_url = 'https://thatsthem.com/email/' + email
@@ -66,16 +81,51 @@ def searchSurfaceWebEmail(request):
             #print(results.json()['items'][0])
             res = results.json()['items']
             print("total amount of results is {}".format(len(res)))
-            crawlerResponse = results.json()['items'][0]
-            crawlerResponse["email"] = email
-            crawlerResponse["platform"] = "that's them"
-            crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
-            print("crawlerresponse is ")
-            print(crawlerResponse)
+            if(len(res) > 0):
+                crawlerResponse = results.json()['items'][0]
+                crawlerResponse["email"] = email
+                crawlerResponse["platform"] = "that's them"
+                crawlerResponse["zip"] = crawlerResponse["hometown"].split('-')[-1]
+                print("crawlerresponse is ")
+                print(crawlerResponse)
+                comboResponse = crawlerResponse
+                sources, dateCollected = getSources(crawlerResponse)
 
-            elapsed_time = time.time() - start_time
-            print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":crawlerResponse},status=status.HTTP_202_ACCEPTED)
+                comboResponseCopy = comboResponse.copy()
+
+                score = calc_score(comboResponse)
+                comboResponse["score"] = score
+
+                exposedAttribute = "password, "
+                exposedAttributeVals = {}
+                for each in comboResponse:
+                    if comboResponse[each] == True:
+                        try: 
+                            attr = attributeKey[each]
+                        except:
+                            attr = each
+                        exposedAttribute += "{}, ".format(attr)
+                        exposedAttributeVals[each] = comboResponseCopy[each]
+                exposedAttribute = exposedAttribute[0:-2]
+
+                entities.append(comboResponse)
+                sourceList.append(sources)
+                datesCollected.append(dateCollected)
+                exposedAttributesList.append(exposedAttribute)
+                exposedAttributesVals.append(exposedAttributeVals)
+                print("exposedAttributesList")
+                print(exposedAttributesList)
+                print("exposedAttributesVals")
+                print(exposedAttributesVals)
+                # print("combo response: ")
+                # print(comboResponse)
+                elapsed_time = time.time() - start_time
+                print("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals},status=status.HTTP_202_ACCEPTED)
+            else:
+                elapsed_time = time.time() - start_time
+                print("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"dbResponse":dbResponse},status=status.HTTP_204_NO_CONTENT)
 
 
         except Exception as e: 
@@ -86,53 +136,113 @@ def searchSurfaceWebEmail(request):
 def resolve_entitiesEmail(request):
     print("in resolve_entities EMAILLL")
     start_time = time.time()
+
     if request.method == 'POST':
         req = request.body.decode()
         dic = eval(req)
         dbResponse = dic.get("dbResponse")
-        surfaceWebVals = []
-        surfaceWebVals.append(dic.get("surfaceWebResponse"))
+        if(isinstance(dic.get("surfaceWebResponse"),list)):
+            surfaceWebVals = dic.get("surfaceWebResponse")
+        else:
+            surfaceWebVals = []
+            surfaceWebVals.append(dic.get("surfaceWebResponse"))
         entities = []
         sourceList = []
         datesCollected = []
+        exposedAttributesList = []
+        exposedAttributesVals = []
         try: 
-            left_input = []
-            right_input = []
-            left_input.append(dbResponse)
-            right_input.append(surfaceWebVals)
-            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
-            predictions = runEntityResolution(left_input, right_input) 
-            # print("predictions")
-            # print(predictions)
-            # for each in all_vals:
-            ind = 0
-            for dbResponse in left_input:
-                nonMatches = []
-                matches = []
-                for each in surfaceWebVals:
-                    
-                    prediction = predictions[ind][1]
-                    #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
-                    if (prediction) > 0.01:
-                        matches.append(each)
-                    else:
-                        nonMatches.append(each)
+            attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "email": "email", "address": "address", "birthdate": "birthday",
+                            "birthday": "birthday", "birthyear": "birthyear",
+                            "hometown": "home town", "currentTown": "current town", "jobDetails":"job details", "relationshipStatus": "relationship status", 
+                            "interests": "interests", "religiousViews": "religious views", "politicalViews": "political views"}
+            if(len(surfaceWebVals) > 0):
+                left_input = []
+                right_input = []
+                left_input.append(dbResponse)
+                right_input.append(surfaceWebVals)
+                # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
+                predictions = runEntityResolution(left_input, right_input) 
+                tfidf_predictions = run_tfidf(left_input, right_input)
+                print('mcan  predictions: ')
+                print(predictions)
+                print('tfidf predictions: ')
+                print(tfidf_predictions)
 
-                    ind+=1
-                if(len(matches)>0):
-                    comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
-                else:
-                    comboResponse = dbResponse
-                    sources, dateCollected = getSources(dbResponse)
+                predictionsReturn=[]
+                # for each in all_vals:
+                ind = 0
+                for dbResponse in left_input:
+                    nonMatches = []
+                    matches = []
+                    for each in surfaceWebVals:
+                        
+                        prediction = predictions[ind][1]
+                        predictionsReturn.append(prediction)
+                        #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
+                        if (prediction) > 0.5:
+                            matches.append(each)
+                        else:
+                            nonMatches.append(each)
+
+                        ind+=1
+                    if(len(matches)>0):
+                        print("combining multiple")
+                        comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
+                    else:
+                        comboResponse = dbResponse
+                        sources, dateCollected = getSources(dbResponse)
+                    
+                    comboResponseCopy = comboResponse.copy()
+
+                    score = calc_score(comboResponse)
+                    comboResponse["score"] = score
+
+                    exposedAttribute = ""
+                    exposedAttributeVals = {}
+                    for each in comboResponse:
+                        if comboResponse[each] == True:
+                            try: 
+                                attr = attributeKey[each]
+                            except:
+                                attr = each
+                            exposedAttribute += "{}, ".format(attr)
+                            exposedAttributeVals[each] = comboResponseCopy[each]
+                    exposedAttribute = exposedAttribute[0:-2]
+
+                    entities.append(comboResponse)
+                    sourceList.append(sources)
+                    datesCollected.append(dateCollected)
+                    exposedAttributesList.append(exposedAttribute)
+                    exposedAttributesVals.append(exposedAttributeVals)
+            else:
+                predictionsReturn = []
+                comboResponse = dbResponse.copy()
+                sources, dateCollected = getSources(dbResponse)
                 score = calc_score(comboResponse)
                 comboResponse["score"] = score
+
+                exposedAttribute = ""
+                exposedAttributeVals = []
+                for each in comboResponse:
+                    if comboResponse[each] == True:
+                        exposedAttribute += "{}, ".format(each)
+                        try: 
+                            val = attributeKey[dbResponse[each]]
+                        except:
+                            val = dbResponse[each]
+                        exposedAttributeVals.append(val)
+                exposedAttribute = exposedAttribute[0:-2]
+
                 entities.append(comboResponse)
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)
+                exposedAttributesList.append(exposedAttribute)
+                exposedAttributesVals.append(exposedAttributeVals)
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn, "tfidf_predictions": tfidf_predictions},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -162,24 +272,41 @@ def name_detail(request):
         req = request.body.decode()
         dic = eval(req)
 
-        name = dic.get('name')
+        name = dic.get('name').lower()
         zip = dic.get('zip')
         entities = []
         sourceList = []
         datesCollected = []
         try: 
             dbResponses = []
+            uneditedResponses = []
+            cleanResponses = []
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
-                dbResponses.append(email_serializer.data)
+                res = email_serializer.data
+                for key in res:
+                    val = res[key]
+                    if val == None:
+                        res[key] = str(val)
+                temp = res.copy()
+                # make a copy of the dictionary, clean it so its safe to display on the frontend:
+                cleanResponse = temp.copy()
+                clean_response(cleanResponse)
+
+                cleanResponses.append(cleanResponse)
+                uneditedResponses.append(temp)
+                normalizeAge(res)
+                checkPhone(res)
+                
+                dbResponses.append(res)
             if len(dbResponses) == 0:
                 return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
             print("db response: ")
             print(dbResponses)
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"dbResponse":dbResponses},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses, "cleanResponses": cleanResponses},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -190,12 +317,14 @@ def name_detail(request):
 def searchSurfaceWeb(request):
     start_time = time.time()
     if request.method == 'POST':
+        surfaceWebAttributesLists = []
         req = request.body.decode()
         dic = eval(req)
 
         name = dic.get('name')
         zip = dic.get('zip')
         surfaceWebResponse = []
+        cleanResponses = []
         try: 
             # item = EmailModel.objects.get(name=name, zip=zip)
             
@@ -216,13 +345,27 @@ def searchSurfaceWeb(request):
             # for each in all_vals:
             for each in all_vals:
                 temp = each.copy()
+
+                cleanResponse = temp.copy()
+                clean_response(cleanResponse)
+                cleanResponses.append(cleanResponse)
+
                 score = calc_score(temp)
                 temp["score"] = score
+                attributesList = ""
+                for item in temp:
+                    if temp[item] == True:
+                        try: 
+                            attr = attributeKey[item]
+                        except:
+                            attr = item
+                        attributesList+='{}, '.format(attr)
+                surfaceWebAttributesLists.append(attributesList[0:-2])
                 surfaceWebResponse.append(temp)
 
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
@@ -239,6 +382,8 @@ def resolve_entities(request):
         name = dic.get('name')
         zip = dic.get('zip')
         surfaceWebVals = dic.get("surfaceWebResponse")
+        for each in surfaceWebVals:
+            normalizeAge(each)
         entities = []
         sourceList = []
         datesCollected = []
@@ -247,14 +392,13 @@ def resolve_entities(request):
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
-                dbResponses.append(email_serializer.data)
-            
+                res = email_serializer.data
+                normalizeAge(res)
+                dbResponses.append(res)
             right_input = []
             left_input = dbResponses
-            # left_input = []
-            # left_input.append(dbResponses[1])
             right_input.append(surfaceWebVals)
-            print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
+            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
             predictions = runEntityResolution(left_input, right_input) 
             print("predictions")
             print(predictions)
@@ -284,6 +428,7 @@ def resolve_entities(request):
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)
 
+                
             # for each in nonMatches:
             #     sources, dateCollected = getSources(each)
             #     score = calc_score(each)

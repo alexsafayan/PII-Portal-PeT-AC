@@ -21,9 +21,10 @@ class EmailDataService {
     })
   }
 
-  searchSurfaceWebEmail(email) {
+  searchSurfaceWebEmail(email, dbResponse) {
     return http.post('/crawlEmail', {
-      email: email
+      email: email,
+      dbResponse: dbResponse
     })
   }
 
