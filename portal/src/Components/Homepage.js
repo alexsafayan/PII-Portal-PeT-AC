@@ -3,12 +3,11 @@ import DisplayResults, { ResultsTable, DatabaseTable } from './DisplayResults.js
 import EmailDataService from "../services/email.service";
 import Alert from 'react-bootstrap/Alert'
 import GaugeChart from 'react-gauge-chart'
-import { IoMdArrowRoundBack, IoIosInformationCircleOutline as InfoIcon } from "react-icons/io";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import '../App.css'
 import Dropdown from 'react-bootstrap/Dropdown'
 import ReactLoading from 'react-loading';
 import SubscribeModal from './Sub.js';
-import ReactTooltip from 'react-tooltip'
 
 
 
@@ -90,7 +89,6 @@ class Homepage extends React.Component {
         //email search
         if(this.state.fieldName === 'Email') {
             if(this.validateEmail(this.state.searchValue)) {
-
                 console.log("email is valid")
                 this.setState({
                     // showSearch: false,
@@ -247,8 +245,6 @@ class Homepage extends React.Component {
                         showGoodNews: true,
                         showSearchAgain: true,
                     })
-                    //alert("we do not have your name and zip stored in the database")
-                    
                 });
             }
             else {
@@ -290,7 +286,7 @@ class Homepage extends React.Component {
                     surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
                     loaderMessage: "Resolving Your Identity"
                 })
-                EmailDataService.resolveEmail(this.state.uneditedDbResponse, response.data.return)
+                EmailDataService.resolve(this.state.uneditedDbResponse, response.data.return)
                 .then(finalResponse => {
                     console.log("db response: ")
                     console.log(this.state.uneditedDbResponse)
@@ -345,8 +341,6 @@ class Homepage extends React.Component {
                         surfaceSearchComplete5: false,
                         searchAgainClass: "col-5"
                     })
-                    //alert("we do not have your name and zip stored in the database")
-                    
                 });
                 return true;
             } else if(response.status === 204) {
@@ -370,8 +364,6 @@ class Homepage extends React.Component {
                 surfaceSearchComplete5: false,
                 searchAgainClass: "col-5"
             })
-            //alert("we do not have your name and zip stored in the database")
-            
         });
         
     }
@@ -381,7 +373,7 @@ class Homepage extends React.Component {
         this.setState({
             selectedValue: event.target.value
         });
-      }
+    }
 
     handleChange(field, event) {
         if(event.target.value.indexOf(field + ": ") === 0 || 1==1) {
@@ -410,13 +402,6 @@ class Homepage extends React.Component {
 
     callDisplay(entity, sources, datesCollected, exposedAttributes, exposedAttributesVals) {
         this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
-        //display returned results
-        // this.DisplayResults.current.setState({
-        //     entity: entity,
-        //     sources: sources,
-        //     datesCollected: datesCollected,
-        //     score: entity.score
-        // })
         var dbresponse = this.state.dbResponse
         var scoreAlertVariant, privacyRisk, amountBreached;
         var breaches = []
@@ -475,7 +460,6 @@ class Homepage extends React.Component {
                 dbResponse: dbresponse,
             })
         }
-        
     }
 
     validateEmail(email) {
@@ -506,7 +490,6 @@ class Homepage extends React.Component {
         console.log(this.state.predictions)
         console.log("surfacewebresults")
         console.log(this.state.surfaceWebResults)
-
         this.setState({
             showPredictionResults: true,
             showScore: false,
