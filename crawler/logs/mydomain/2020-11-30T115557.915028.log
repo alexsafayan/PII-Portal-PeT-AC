@@ -1,8 +1,0 @@
-2020-11-30 11:55:57 [scrapy] INFO: Closing spider (finished)
-2020-11-30 11:55:57 [scrapy] INFO: Dumping Scrapy stats:
-{'elapsed_time_seconds': 0.002,
- 'finish_reason': 'finished',
- 'finish_time': datetime.datetime(2020, 11, 30, 19, 55, 57, 927033),
- 'log_count/INFO': 7,
- 'start_time': datetime.datetime(2020, 11, 30, 19, 55, 57, 925033)}
-2020-11-30 11:55:57 [scrapy] INFO: Spider closed (finished)
