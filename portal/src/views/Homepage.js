@@ -1,15 +1,17 @@
 import React from 'react';
-import DisplayResults, { ResultsTable, DatabaseTable } from './DisplayResults.js'
-import EmailDataService from "../services/email.service";
-import Alert from 'react-bootstrap/Alert'
-import GaugeChart from 'react-gauge-chart'
+import GaugeChart from 'react-gauge-chart';
 import { IoMdArrowRoundBack } from "react-icons/io";
-import '../App.css'
-import Dropdown from 'react-bootstrap/Dropdown'
+import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
-import SubscribeModal from './Sub.js';
 
-
+import '../App.css'
+import DisplayResults, { ResultsTable, DatabaseTable } from '../Components/DisplayResults.js';
+import EmailDataService from "../services/email.service";
+import SubscribeModal from '../Components/Sub.js';
+import Searchbar from "../Components/Searchbar";
+import GoodNews from "../Components/GoodNews";
+import BadNewsEmail from "../Components/BadNewsEmail";
+import DatabaseResponse from "../Components/DatabaseResponse";
 
 
 
@@ -51,9 +53,9 @@ class Homepage extends React.Component {
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        // this.handleChange = this.handleChange.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
-        this.selectField = this.selectField.bind(this);
+        // this.selectField = this.selectField.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
         this.showPredictions = this.showPredictions.bind(this);
@@ -70,7 +72,7 @@ class Homepage extends React.Component {
         )
     }
     
-    handleSubmit(event) {
+    handleSubmit(fieldName,searchValue,nameValue,zipValue, event) {
         this.setState({
             errorMessage: "",
             line1: "",
@@ -80,15 +82,16 @@ class Homepage extends React.Component {
             showGoodNews: false,
             showBadNews: false,
             showPredictions: false,
-            showScore: false,
             showEmail: false,
-            searchState: this.state.fieldName
+            searchState: fieldName,
+            fieldName: fieldName,
+            searchValue: searchValue,
+            nameValue:nameValue,
+            zipValue: zipValue,
         });
-
-
         //email search
-        if(this.state.fieldName === 'Email') {
-            if(this.validateEmail(this.state.searchValue)) {
+        if(fieldName === 'Email') {
+            if(this.validateEmail(searchValue)) {
                 console.log("email is valid")
                 this.setState({
                     // showSearch: false,
@@ -98,7 +101,7 @@ class Homepage extends React.Component {
                     showBreachTotals: false,
                     showProtectYourself: false,
                 })
-                EmailDataService.getByEmail(this.state.searchValue)
+                EmailDataService.getByEmail(searchValue)
                 .then(response => {
                     if(response.status === 202) {
                         console.log("response:")
@@ -109,7 +112,7 @@ class Homepage extends React.Component {
                             dbResponse: response.data.dbResponse,
                             
                         })
-                        EmailDataService.searchSurfaceWebEmail(this.state.searchValue, response.data.dbResponse)
+                        EmailDataService.searchSurfaceWebEmail(searchValue, response.data.dbResponse)
                         .then(response2 => {
                             console.log("response2: ")
                             console.log(response2)
@@ -194,8 +197,8 @@ class Homepage extends React.Component {
         }
 
         //name and zip search
-        else if(this.state.fieldName === 'Name + Zip') {
-            if(this.state.nameValue.length > 0 && this.state.zipValue.length >=5){
+        else if(fieldName === 'Name + Zip') {
+            if(nameValue.length > 0 && zipValue.length >=5){
                 this.setState({
                     // showSearch: false,
                     showLoader: true,
@@ -204,7 +207,7 @@ class Homepage extends React.Component {
                     loaderMessage: "Searching breached records ",
                     showSearchByEmail: false,
                 })
-                EmailDataService.getByName(this.state.nameValue, this.state.zipValue)
+                EmailDataService.getByName(nameValue, zipValue)
                 .then(response => {
                     console.log("db search response.data:");
                     console.log(response.data);
@@ -375,31 +378,6 @@ class Homepage extends React.Component {
         });
     }
 
-    handleChange(field, event) {
-        if(event.target.value.indexOf(field + ": ") === 0 || 1==1) {
-            var newVal = event.target.value.substring(field.length + 2)
-            if(field === 'Email') {
-                this.setState({searchValue: event.target.value});
-            }else if(field === 'Name'){ 
-                this.setState({nameValue: event.target.value});
-            }
-            else if(field === 'Zip') {
-                this.setState({zipValue: event.target.value});
-            }
-            
-            event.preventDefault();
-        } else if(event.target.value === ""){
-            if(field === 'Email') {
-                this.setState({searchValue: ""});
-            }else if(field === 'Name'){ 
-                this.setState({nameValue: ""});
-            }
-            else if(field === 'Zip') {
-                this.setState({zipValue: ""});
-            }
-        }
-    }
-
     callDisplay(entity, sources, datesCollected, exposedAttributes, exposedAttributesVals) {
         this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
         var dbresponse = this.state.dbResponse
@@ -464,16 +442,8 @@ class Homepage extends React.Component {
 
     validateEmail(email) {
         console.log("in validate email")
-        //const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         var re = /\S+@\S+\.\S+/;
         return re.test(String(email).toLowerCase());
-    }
-
-    selectField(field, event) {
-        event.preventDefault();
-        this.setState({
-            fieldName:field
-        })
     }
 
     displayGoodNews(event) {
@@ -546,41 +516,12 @@ class Homepage extends React.Component {
         return [
             //searching functionality
                 <div>
-                {this.state.showSearch ? 
-                <div className='form-group row justify-content-center' style={{height:'75px'}}>
-                    <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
-                    <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}>
-                    <Dropdown.Toggle style={{width: '100%', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%', fontSize: 'x-large'}} id="dropdown-basic">
-                        Search By
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        <Dropdown.Item onClick={(e) => this.selectField('Email', e)}>Email</Dropdown.Item>
-                        <Dropdown.Item onClick={(e) => this.selectField('Name + Zip', e)}>Name &amp; Zip</Dropdown.Item>
-                    </Dropdown.Menu>
-                    </Dropdown>
-                    </div>
-                    {this.state.fieldName === 'Email' && 
-                        <div className="col-lg-4" style={{paddingLeft: 0,paddingRight: 0}}>
-                            {/* <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={this.state.fieldName + ": " + this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} /> */}
-                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Email: " aria-label="Search" value={this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} />
-                        </div> 
-                    }
-                    {this.state.fieldName === 'Name + Zip' && 
-                        <>
-                        <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
-                            {/* <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Search different fields by changing field name." aria-label="Search" value={"Name: " + this.state.nameValue} onChange={(e) => this.handleChange('Name', e)} /> */}
-                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Name: " aria-label="Search" value={this.state.nameValue} onChange={(e) => this.handleChange('Name', e)} />
-                        </div> 
-                        <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
-                            <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Zip: " aria-label="Search" value={this.state.zipValue} onChange={(e) => this.handleChange('Zip', e)} />
-                        </div> 
-                        </>
-                    }
-                    
-                    <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
-                    <button style={{width: '100%', height:'100%',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} className="btn" onClick={this.handleSubmit}>Search</button>
-                    </div>
-                </div> : null}
+                {this.state.showSearch && 
+                    <Searchbar 
+                        handleSubmit={this.handleSubmit} searchValue={this.state.searchValue} 
+                        zipValue={this.state.zipValue} nameValue={this.state.nameValue} 
+                        fieldName={this.state.fieldName} >
+                    </Searchbar>}
                 </div>,
 
             //error message
@@ -598,35 +539,38 @@ class Homepage extends React.Component {
                 <>
                 <div className="row justify-content-center">
                 <div className="col-lg-6">
-                {this.state.showDbResponse ? 
+                {this.state.showDbResponse && 
+                    // <DatabaseResponse 
+                    //     dbResponse={this.state.dbResponse} es={this.state.es} 
+                    //     chooseDbResponse={this.chooseDbResponse} displayGoodNews={this.displayGoodNews}>
+                    // </DatabaseResponse>
                     <div>
-                    <h1 className="text-center">We found {this.state.dbResponse.length} result{this.state.es} in our breached records:</h1>
-                    <div className="row">
-                    {this.state.dbResponse.map((value, index) => {
-                        return <div className="col-4" style={{paddingBottom: "10px"}}>
-                            <div className="card" style={{paddingBottom: "10px", backgroundColor:"#7C7C7C", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.chooseDbResponse(index, e)}>
-                                <div className="row justify-content-center">
-                                    <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}} alt={"card profile#" + index }></img>
-                                </div>
-                                <div className="card-body" style={{paddingBottom: "10px"}}>
-                                    <h5 className="card-title">{value.name}</h5>
-                                    <p className="card-text">Phone number: {value.phoneNumber}</p>
-                                    <p className="card-text">Birthyear: {value.birthyear}</p>
-                                    <p className="card-text">Source: {value.platform}</p>
+                        <h1 className="text-center">We found {this.state.dbResponse.length} result{this.state.es} in our breached records:</h1>
+                        <div className="row">
+                        {this.state.dbResponse.map((value, index) => {
+                            return <div className="col-4" style={{paddingBottom: "10px"}}>
+                                <div className="card" style={{paddingBottom: "10px", backgroundColor:"#7C7C7C", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.chooseDbResponse(index, e)}>
+                                    <div className="row justify-content-center">
+                                        <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}} alt={"card profile#" + index }></img>
+                                    </div>
+                                    <div className="card-body" style={{paddingBottom: "10px"}}>
+                                        <h5 className="card-title">{value.name}</h5>
+                                        <p className="card-text">Phone number: {value.phoneNumber}</p>
+                                        <p className="card-text">Birthyear: {value.birthyear}</p>
+                                        <p className="card-text">Source: {value.platform}</p>
+                                    </div>
                                 </div>
                             </div>
+                        })}
                         </div>
-                    })}
+                        <div className="row justify-content-center">
+                        <div className="col-4">
+                            <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor:'pointer', textAlign: 'center'}} onClick={(e) => this.displayGoodNews(e)}>
+                                None of these profiles match.
+                            </Alert>
+                        </div>
+                        </div>
                     </div>
-                    <div className="row justify-content-center">
-                    <div className="col-4">
-                        <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor:'pointer', textAlign: 'center'}} onClick={(e) => this.displayGoodNews(e)}>
-                            None of these profiles match.
-                        </Alert>
-                    </div>
-                    </div>
-                    </div>
-                    : null
                 }
                 </div>
                 </div>
@@ -638,7 +582,7 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center text-center">
                     <div className="col-lg-12">
                      <Alert variant={this.state.scoreAlertVariant}>
-                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached == 1 ? null : <>es</>}:</h4>
+                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
                          <h4 style={{fontSize: "xx-large"}}>
                          {this.state.breaches.map((value, index) => {
                              return <p>{value}</p>
@@ -669,18 +613,6 @@ class Homepage extends React.Component {
                          <h4 style={{fontSize: "xx-large"}}>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
                          <h4 style={{fontSize: "xx-large"}}>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
                          <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}>here.</u></p>
-                         {/* {this.state.showPredictionResults && 
-                            <div className="row justify-content-center text-center">
-                                <div className="col-lg-12">
-                                <Alert variant='dark'>
-                                    <ResultsTable predictions={this.state.predictions} surfaceWebResults={this.state.surfaceWebResults}
-                                    surfaceWebAttributesLists={this.state.surfaceWebAttributesLists}
-                                    >    
-                                    </ResultsTable>
-                                </Alert>
-                                </div>
-                            </div>
-                            } */}
                          </Alert>
                      </div>
                      
@@ -694,7 +626,7 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center text-center">
                     <div className="col-lg-12">
                      <Alert variant={this.state.scoreAlertVariant}>
-                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached == 1 ? null : <>es</>}:</h4>
+                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
                          <h4 style={{fontSize: "xx-large"}}>
                          {this.state.breaches.map((value, index) => {
                              return <p>{value}</p>
@@ -725,18 +657,6 @@ class Homepage extends React.Component {
                          <h4 style={{fontSize: "xx-large"}}>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
                          <h4 style={{fontSize: "xx-large"}}>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
                          <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<a style={{color: "inherit", cursor: 'pointer'}} href="/about"><u>here.</u></a></p>
-                         {/* {this.state.showPredictionResults && 
-                            <div className="row justify-content-center text-center">
-                                <div className="col-lg-12">
-                                <Alert variant='dark'>
-                                    <ResultsTable predictions={this.state.predictions} surfaceWebResults={this.state.surfaceWebResults}
-                                    surfaceWebAttributesLists={this.state.surfaceWebAttributesLists}
-                                    >    
-                                    </ResultsTable>
-                                </Alert>
-                                </div>
-                            </div>
-                            } */}
                          </Alert>
                      </div>
                      
@@ -858,14 +778,6 @@ class Homepage extends React.Component {
                     {this.state.showBreachTotals && 
                     <>
                     <div className='row justify-content-center'>
-                        {/* <div className="col-lg-2 ">
-                            <div className="row justify-content-center"> 
-                                {this.state.numBreaches}
-                            </div>
-                            <div className="row justify-content-center"> 
-                                breaches
-                            </div>
-                        </div>  */}
                         <div className="col-lg-2">
                             <div className="row justify-content-center"> 
                                 {this.state.numEmails}
@@ -890,27 +802,7 @@ class Homepage extends React.Component {
             //show bad news, email breached but no surface web response
                 <div>
                     {this.state.showBadNews && 
-                    <div className="row justify-content-center">
-                        <div className="col-lg-6">
-                        <div className="row justify-content-center" style={{color:"white"}}>
-                        <Alert style={{backgroundColor:'#ff8d88', color:'white'}}>
-                            <h2>Your email has been<span style={{color:"#cc0000"}}> compromised!</span></h2>
-                            <h4>
-                                {this.state.breaches.map((value, index) => {
-                                    return <p>{value}</p>
-                                })}
-                            </h4>
-                            <div className="row justify-content-center text-center">
-                                <div className="col-lg-8">
-                                    <Alert style={{backgroundColor:'#7C7C7C', color:'white'}}>
-                                        What was compromised? password
-                                    </Alert>
-                                </div>
-                            </div>
-                        </Alert>
-                        </div>
-                        </div>
-                    </div>
+                    <BadNewsEmail breaches={this.state.breaches}></BadNewsEmail>
                     }
 
                 </div>,
@@ -918,27 +810,8 @@ class Homepage extends React.Component {
             //show good news, no breached data
                 <div>
                     {this.state.showGoodNews && 
-                    <div className="row justify-content-center">
-                        <div className="col justify-content-center">
-                        <div className="row justify-content-center" style={{color:"white"}}>
-                        <Alert style={{backgroundColor: "#b4c7e7", color:"white"}}>
-                            <h2>Good news! Your information has <span style={{color:"#222A35"}}>not been compromised!</span></h2>
-                            <div className="row justify-content-center">
-                            <h2>BROWSE SAFELY!</h2>
-                        </div>
-                        </Alert>
-                        </div>
-                        
-                        <div className="row justify-content-center" style={{paddingTop:"30px"}}>
-                        <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor:'pointer'}} onClick={this.subscribe}>
-                                Sign up to get notified if your information is involved in a future data breach.
-                        </Alert>
-                        <SubscribeModal ref={this.Modal}/>
-                        </div>
-                        </div>
-                    </div>
+                    <GoodNews></GoodNews>
                     }
-
                 </div>,
 
             //show protect yourself
@@ -951,13 +824,6 @@ class Homepage extends React.Component {
                 </>
                 }
             </div>,
-
-            //show search again
-            // <div className="container d-flex justify-content-center" style={{marginTop: "30px"}}>
-            //     {this.state.showSearchAgain ? <a href="/Home"><button className="btn btn-light">Search Again</button></a> 
-            //     : null
-            //     }
-            // </div>
                     
 
         ]

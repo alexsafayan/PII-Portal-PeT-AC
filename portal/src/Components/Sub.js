@@ -16,9 +16,6 @@ class SubscribeModal extends React.Component  {
         this.handleEmailInput = this.handleEmailInput.bind(this);
         this.handleSubscribe = this.handleSubscribe.bind(this);
     }
-    // alertEmail() {
-    //   alert("Notifications will be sent to "+this.state.email+" if a breach occurs.")
-    // }
     handleEmailInput(event) {
       this.setState({email: event.target.value});
       event.preventDefault();

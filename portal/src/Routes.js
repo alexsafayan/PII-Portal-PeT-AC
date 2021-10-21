@@ -2,8 +2,7 @@ import React from 'react';
 import { About } from './views/about.js';
 import { Faq } from './views/faq.js';
 import { Route, Switch, Redirect } from 'react-router-dom';
-//import Homepage from './Components/Homepage.js'
-import Homepage from './Components/Homepage.js';
+import Homepage from './views/Homepage.js';
 import { ProtectYourself } from './views/protectyourself.js';
 import BreachList from './views/breachlist.js';
 
