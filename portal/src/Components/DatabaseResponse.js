@@ -19,7 +19,7 @@ class DatabaseResponse extends React.Component {
             <div className="row">
             {this.props.dbResponse.map((value, index) => {
                 return <div className="col-4" style={{paddingBottom: "10px"}}>
-                    <div className="card" style={{paddingBottom: "10px", backgroundColor:"#7C7C7C", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.props.chooseDbResponse(index, e)}>
+                    <div className="card" style={{paddingBottom: "10px", backgroundColor:"#609cd4", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.props.chooseDbResponse(index, e)}>
                         <div className="row justify-content-center">
                             <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}} alt={"card profile#" + index }></img>
                         </div>

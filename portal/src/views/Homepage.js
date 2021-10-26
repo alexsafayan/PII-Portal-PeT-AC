@@ -515,7 +515,7 @@ class Homepage extends React.Component {
     render() {
         return [
             //searching functionality
-                <div>
+                <div style={{backgroundColor:"#222A35", paddingBottom:"40px", paddingTop:"40px", marginTop:"-30px"}}>
                 {this.state.showSearch && 
                     <Searchbar 
                         handleSubmit={this.handleSubmit} searchValue={this.state.searchValue} 
@@ -549,24 +549,35 @@ class Homepage extends React.Component {
                         <div className="row">
                         {this.state.dbResponse.map((value, index) => {
                             return <div className="col-4" style={{paddingBottom: "10px"}}>
-                                <div className="card" style={{paddingBottom: "10px", backgroundColor:"#7C7C7C", cursor: 'pointer', height:'100%', width: '100%'}} onClick={(e) => this.chooseDbResponse(index, e)}>
-                                    <div className="row justify-content-center">
-                                        <img src='cardProfileImage.png' style={{height:'100px', width: '100px'}} alt={"card profile#" + index }></img>
+                                <div className="card" onClick={(e) => this.chooseDbResponse(index, e)}
+                                    style= {{paddingBottom: "2rem", paddingRight: "1rem", paddingLeft: "1rem", borderRadius: "2rem",
+                                            backgroundColor:"#609cd4", cursor: 'pointer', height:'100%', width: '100%'}}
+                                >
+                                    <div style={{marginBottom: "1rem"}} className="row justify-content-center">
+                                        <img src='cardProfileImage.png' style={{height:'50px', width: '50px'}} alt={"card profile#" + index }></img>
                                     </div>
-                                    <div className="card-body" style={{paddingBottom: "10px"}}>
-                                        <h5 className="card-title">{value.name}</h5>
-                                        <p className="card-text">Phone number: {value.phoneNumber}</p>
-                                        <p className="card-text">Birthyear: {value.birthyear}</p>
-                                        <p className="card-text">Source: {value.platform}</p>
-                                    </div>
+                                    <table style={{border: "3px solid black"}}>
+                                        <tr style={{border: "3px solid black"}}>
+                                            <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;Name</th>
+                                            <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;{value.name}</th>
+                                        </tr>
+                                        <tr style={{border: "3px solid black"}}>
+                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;Phone Number</td>
+                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;{value.phoneNumber}</td>
+                                        </tr>
+                                        <tr style={{border: "3px solid black"}}>
+                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;Birth Year</td>
+                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;{value.birthyear}</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         })}
                         </div>
                         <div className="row justify-content-center">
-                        <div className="col-4">
-                            <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor:'pointer', textAlign: 'center'}} onClick={(e) => this.displayGoodNews(e)}>
-                                None of these profiles match.
+                        <div className="col-6">
+                            <Alert style={{backgroundColor:'#609cd4', color:'white', cursor:'pointer', textAlign: 'center', fontSize: "1.5rem"}} onClick={(e) => this.displayGoodNews(e)}>
+                                None of these records are mine.
                             </Alert>
                         </div>
                         </div>
@@ -769,7 +780,7 @@ class Homepage extends React.Component {
                 </div>,
 
             //display results component
-                <div className="container d-flex justify-content-center">
+                <div style={{backgroundColor:"#222A35"}} className="container d-flex justify-content-center">
                     <DisplayResults ref={this.DisplayResults}/>
                 </div>,
 
@@ -808,9 +819,9 @@ class Homepage extends React.Component {
                 </div>,
 
             //show good news, no breached data
-                <div>
+                <div className="container d-flex justify-content-center">
                     {this.state.showGoodNews && 
-                    <GoodNews></GoodNews>
+                    <h1>No compromised data found!</h1>
                     }
                 </div>,
 

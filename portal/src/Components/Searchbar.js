@@ -22,35 +22,23 @@ class Searchbar extends React.Component {
     }
 
     handleChange(field, event) {
-        if(event.target.value.indexOf(field + ": ") === 0 || 1==1) {
-            //var newVal = event.target.value.substring(field.length + 2)
-            if(field === 'Email') {
-                this.setState({searchValue: event.target.value});
-            }else if(field === 'Name'){ 
-                this.setState({nameValue: event.target.value});
-            }
-            else if(field === 'Zip') {
-                this.setState({zipValue: event.target.value});
-            }
-            
-            event.preventDefault();
-        } else if(event.target.value === ""){
-            if(field === 'Email') {
-                this.setState({searchValue: ""});
-            }else if(field === 'Name'){ 
-                this.setState({nameValue: ""});
-            }
-            else if(field === 'Zip') {
-                this.setState({zipValue: ""});
-            }
+        if(field === 'Email') {
+            this.setState({searchValue: event.target.value});
+        }else if(field === 'Name'){ 
+            this.setState({nameValue: event.target.value});
         }
+        else if(field === 'Zip') {
+            this.setState({zipValue: event.target.value});
+        }
+        
+        event.preventDefault();
     }
     render() {
       return (
         <div className='form-group row justify-content-center' style={{height:'75px'}}>
             <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
             <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}>
-            <Dropdown.Toggle style={{width: '100%', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%', fontSize: 'x-large'}} id="dropdown-basic">
+            <Dropdown.Toggle style={{width: '10.2rem', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}} id="dropdown-basic">
                 Search By
             </Dropdown.Toggle>
             <Dropdown.Menu>
@@ -76,7 +64,7 @@ class Searchbar extends React.Component {
             }
             <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
                 <button 
-                    style={{width: '100%', height:'100%',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} 
+                    style={{width: '10rem', height:'5rem',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} 
                     className="btn" onClick={(e) => this.props.handleSubmit(this.state.fieldName,this.state.searchValue,this.state.nameValue,this.state.zipValue, e)}>
                     Search
                 </button>
