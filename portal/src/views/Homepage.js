@@ -61,7 +61,6 @@ class Homepage extends React.Component {
         this.showPredictions = this.showPredictions.bind(this);
         this.organizePredictionTable = this.organizePredictionTable.bind(this);
         this.Modal = React.createRef()
-        this.DisplayResults = React.createRef();
       }
 
     subscribe() {
@@ -379,7 +378,6 @@ class Homepage extends React.Component {
     }
 
     callDisplay(entity, sources, datesCollected, exposedAttributes, exposedAttributesVals) {
-        this.DisplayResults.current.setState({entity: null, sources:null,datesCollected:null})
         var dbresponse = this.state.dbResponse
         var scoreAlertVariant, privacyRisk, amountBreached;
         var breaches = []
@@ -777,11 +775,6 @@ class Homepage extends React.Component {
                             </div>
                         </div>
                     }
-                </div>,
-
-            //display results component
-                <div style={{backgroundColor:"#222A35"}} className="container d-flex justify-content-center">
-                    <DisplayResults ref={this.DisplayResults}/>
                 </div>,
 
             //show breach stats
