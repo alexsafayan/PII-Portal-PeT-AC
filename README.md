@@ -10,6 +10,7 @@
     3. Windows: 
         1. run "%mypath%\venv\scripts\activate.bat
     3. pip install -r requirements.txt
+    
 ## To start the portal
 
 ### Windows: 

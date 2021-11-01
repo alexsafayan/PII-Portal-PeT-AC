@@ -53,6 +53,7 @@ class Homepage extends React.Component {
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleAgeCheck = this.handleAgeCheck.bind(this);
         // this.handleChange = this.handleChange.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         // this.selectField = this.selectField.bind(this);
@@ -216,16 +217,25 @@ class Homepage extends React.Component {
                         if(dbResponse.length !== 1) {
                             es = "s"
                         }
+                        // this.setState({
+                        //     showDbResponse: true,
+                        //     showLoader: false,
+                        //     loaderMessage: "Searching surfaceweb",
+                        //     dbAmount: 1,
+                        //     dbResponse: dbResponse,
+                        //     uneditedDbResponse: response.data.uneditedResponses,
+                        //     cleanResponses: response.data.cleanResponses,
+                        //     es: es,
+                        //     showSearchAgain: true
+                        // })
                         this.setState({
-                            showDbResponse: true,
                             showLoader: false,
-                            loaderMessage: "Searching surfaceweb",
-                            dbAmount: 1,
+                            dbAmount: dbResponse.length,
                             dbResponse: dbResponse,
                             uneditedDbResponse: response.data.uneditedResponses,
                             cleanResponses: response.data.cleanResponses,
                             es: es,
-                            showSearchAgain: true
+                            showAgeCheck: true
                         })
                         return true
                     } else if(response.status === 204) {
@@ -509,6 +519,49 @@ class Homepage extends React.Component {
 
     }
 
+    handleChange(field, event) {
+        if(field === 'Email') {
+            this.setState({searchValue: event.target.value});
+        }else if(field === 'Name'){ 
+            this.setState({nameValue: event.target.value});
+        }
+        else if(field === 'Zip') {
+            this.setState({zipValue: event.target.value});
+        }
+        else if(field === 'birthyearInput') {
+            this.setState({birthyearInput: event.target.value});
+        }
+    }
+
+    handleAgeCheck(event) {
+        var newDBResponse = [];
+        var newUneditedDbResponse = [];
+        var newCleanResponses = [];
+        for(var i = 0; i < this.state.dbResponse.length; i++) {
+            var curr = this.state.dbResponse[i]
+            if (curr["birthyear"] === this.state.birthyearInput) {
+                newDBResponse.push(curr)
+                newUneditedDbResponse.push(this.state.uneditedDbResponse[i])
+                newCleanResponses.push(this.state.cleanResponses[i])
+            }
+        }
+        if(newDBResponse.length > 0) {
+            this.setState({
+                showDbResponse: true,
+                dbAmount: newDBResponse.length,
+                dbResponse: newDBResponse,
+                uneditedDbResponse: newUneditedDbResponse,
+                cleanResponses: newCleanResponses,
+                showSearchAgain: true,
+                showAgeCheck: false
+            })
+        }else {
+            console.log("that aint it")
+        }
+        
+        event.preventDefault();
+
+    }
 
     render() {
         return [
@@ -522,6 +575,29 @@ class Homepage extends React.Component {
                     </Searchbar>}
                 </div>,
 
+            //birthyear check
+            <div className="container d-flex justify-content-center">
+                {this.state.showAgeCheck &&
+                    <Alert className="" style={{paddingBottom: "2rem", paddingRight: "3rem", paddingLeft: "3rem", backgroundColor: "#609cd4", borderRadius: "2rem"}}>
+                        <div className="row" style={{textAlign:"center", marginBottom:"1rem"}}>
+                        <h1>Please enter your <b>birth year</b> to verify your identity:</h1>
+                        </div>
+                        <div className="row justify-content-center" style={{}}>
+                            <input style={{height:'100%',  fontSize: 'xx-large', width:'20%', marginBottom: ".1rem"}} 
+                            id="agecheck" className="form-control" type="search" aria-label="Search" 
+                            value={this.state.birthyearInput || ''} onChange={(e) => this.handleChange('birthyearInput', e)} />
+                        </div> 
+                        <div className="row justify-content-center" style={{}}>
+                            <button 
+                                style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', width: '20%', height:'60%', fontSize: 'x-large'}} 
+                                className="btn" onClick={(e) => this.handleAgeCheck(e)}>
+                                Submit
+                            </button>
+                        </div> 
+                    </Alert>
+                }
+            </div>,   
+
             //error message
                 <div className="container d-flex justify-content-center">
                     {this.state.errorMessage.length === 0 ? 
@@ -532,6 +608,8 @@ class Homepage extends React.Component {
                     </Alert>
                     }
                 </div>,   
+
+            
 
             //show db Response
                 <>
@@ -555,6 +633,7 @@ class Homepage extends React.Component {
                                         <img src='cardProfileImage.png' style={{height:'50px', width: '50px'}} alt={"card profile#" + index }></img>
                                     </div>
                                     <table style={{border: "3px solid black"}}>
+                                        <tbody>
                                         <tr style={{border: "3px solid black"}}>
                                             <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;Name</th>
                                             <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;{value.name}</th>
@@ -567,6 +646,7 @@ class Homepage extends React.Component {
                                             <td style={{border: "3px solid black"}}>&nbsp;&nbsp;Birth Year</td>
                                             <td style={{border: "3px solid black"}}>&nbsp;&nbsp;{value.birthyear}</td>
                                         </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
