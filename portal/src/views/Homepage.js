@@ -1,6 +1,7 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { GoArrowRight } from "react-icons/go";
 import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 
@@ -32,7 +33,6 @@ class Homepage extends React.Component {
           nameValue: "",
           zipValue: "",
           errorMessage: "",
-          surfaceSearchComplete: false,
           dbComplete: false,
           showSearchByName: true,
           showSearch: true,
@@ -49,7 +49,13 @@ class Homepage extends React.Component {
           breaches: [],
           fieldName: 'Name + Zip',
           loaderType: 'spokes',
-          mcaDescription: "AI powered entity matching model."
+          mcaDescription: "AI powered entity matching model.",
+          searchEngineLoaders: {
+                'Anywho': {'color': "#78ac44", 'text': '1 record found', 'hasArrow': true}, 
+                'Zabasearch': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
+                'Mylife': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
+                'Peekyou': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
+                'Spokeo': {'color': "#609cd4", 'text': '', 'hasArrow': false}}
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -87,7 +93,7 @@ class Homepage extends React.Component {
             fieldName: fieldName,
             searchValue: searchValue,
             nameValue:nameValue,
-            zipValue: zipValue,
+            zipValue: zipValue
         });
         //email search
         if(fieldName === 'Email') {
@@ -131,7 +137,6 @@ class Homepage extends React.Component {
                                     exposedAttributesVals.push(response2.data.exposedAttributesVals[i])
                                 }
                                 this.setState({
-                                    surfaceSearchComplete: false,
                                     dbComplete: false,
                                     showSurfaceWebResponse: false,
                                     showLoader: false,
@@ -144,7 +149,6 @@ class Homepage extends React.Component {
                             } else if(response2.status === 204) {
                                 this.setState({
                                     showLoader: false,
-                                    surfaceSearchComplete: false,
                                     dbComplete: false,
                                     showBadNews: true,
                                     showProtectYourself: true,
@@ -163,7 +167,6 @@ class Homepage extends React.Component {
                     } else if(response.status === 204) {
                         this.setState({
                             showLoader: false,
-                            surfaceSearchComplete: false,
                             dbComplete: false,
                             showGoodNews: true,
                             showSearchAgain: true
@@ -290,7 +293,6 @@ class Homepage extends React.Component {
                 var surfaceWebResponse = response.data.return
                 this.setState({
                     showSurfaceWebResponse: false,
-                    surfaceSearchComplete5: true,
                     surfaceWebResults: surfaceWebResponse,
                     showLoader: true,
                     showLoaders: false,
@@ -322,7 +324,6 @@ class Homepage extends React.Component {
                         this.organizePredictionTable(predictions, tfidf_predictions);
 
                         this.setState({
-                            surfaceSearchComplete5: false,
                             dbComplete: false,
                             showSurfaceWebResponse: false,
                             showLoader: false,
@@ -336,7 +337,6 @@ class Homepage extends React.Component {
                         this.setState({
                             showLoader: false,
                             showGoodNews: true,
-                            surfaceSearchComplete5: false,
                             showSearchAgain: true,
                             searchAgainClass: "col-5"
                         })
@@ -350,7 +350,6 @@ class Homepage extends React.Component {
                         showSurfaceWebResponse: false,
                         showGoodNews: true,
                         showSearchAgain: true,
-                        surfaceSearchComplete5: false,
                         searchAgainClass: "col-5"
                     })
                 });
@@ -359,7 +358,6 @@ class Homepage extends React.Component {
                 this.setState({
                     showLoader: false,
                     showGoodNews: true,
-                    surfaceSearchComplete5: false,
                     showSearchAgain: true,
                     searchAgainClass: "col-5"
                 })
@@ -373,7 +371,6 @@ class Homepage extends React.Component {
                 showSurfaceWebResponse: false,
                 showGoodNews: true,
                 showSearchAgain: true,
-                surfaceSearchComplete5: false,
                 searchAgainClass: "col-5"
             })
         });
@@ -781,19 +778,6 @@ class Homepage extends React.Component {
                 }
             </div>,
 
-            //surface search complete with 5 loaders
-                <div className="container">
-                    {this.state.surfaceSearchComplete5 && 
-                        <div>
-                            <h2 className="text-center">Searching MyLife.com <img src="successfulSearch.png" alt="mylife success"></img></h2>
-                            <h2 className="text-center">Searching Peekyou.com <img src="successfulSearch.png" alt="peekyou success"></img></h2>
-                            <h2 className="text-center">Searching Spokeo.com <img src="successfulSearch.png" alt="spokeo success"></img></h2>
-                            <h2 className="text-center">Searching Zabasearch.com <img src="successfulSearch.png" alt="zabasearch success"></img></h2>
-                            <h2 className="text-center">Searching Anywho.com <img src="successfulSearch.png" alt="anywho success"></img></h2>
-                        </div>
-                    }
-                </div>,
-
             //db searching breached records complete
                 <div className="container">
                 {this.state.dbComplete && 
@@ -803,46 +787,31 @@ class Homepage extends React.Component {
                 }
                 </div>,
 
-            //surface search complete with 1 loader
-                <div className="container">
-                    {this.state.surfaceSearchComplete && 
-                        <div>
-                            <h2 className="text-center">Searching surface web <img src="successfulSearch.png" alt="succesful surface web search"></img></h2>
-                        </div>
-                    }
-                </div>,
 
             //show 5 surface web searching loaders 
-                <div className="row justify-content-center">
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
                     {this.state.showLoaders && 
-                        <div> 
-                            <div className="row" style={{marginBottom:"-40px"}}>
-                                <h2><ReactLoading type={this.state.loaderType} color={"white"} height={'10%'} width={'10%'} />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Searching MyLife.com 
-                                </h2>
-                            </div>
-                            <div className="row" style={{marginBottom:"-40px"}} >
-                                <h2><ReactLoading type={this.state.loaderType} color={"white"} height={'10%'} width={'10%'} />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Searching Peekyou.com 
-                                </h2>
-                            </div>
-                            <div className="row" style={{marginBottom:"-40px"}}>
-                                <h2><ReactLoading type={this.state.loaderType} color={"white"} height={'10%'} width={'10%'} />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Searching Spokeo.com 
-                                </h2>
-                            </div>
-                            <div className="row" style={{marginBottom:"-40px"}}>
-                                <h2><ReactLoading type={this.state.loaderType} color={"white"} height={'10%'} width={'10%'} />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Searching Zabasearch.com 
-                                </h2>
-                            </div>
-                            <div className="row" style={{marginBottom:"-40px"}}>
-                                <h2><ReactLoading type={this.state.loaderType} color={"white"} height={'10%'} width={'10%'} />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Searching Anywho.com 
-                                </h2>
-                            </div>
-                        </div>
+                        <> 
+                            {Object.entries(this.state.searchEngineLoaders).map( ([key, value]) => {
+                                return <div className="">
+                                <div className="row" style={{paddingBottom: "10px", paddingLeft: "1rem", paddingRight:'1rem', alignItems:'center'}}>
+                                    <div className="card"
+                                        style= {{paddingBottom: "2rem", paddingRight: "1rem", paddingLeft: "1rem", borderRadius: "1rem", borderColor: 'white',
+                                                backgroundColor:value.color, height:'5rem', width: '7.5rem', textAlign:'center', alignItems:'center', lineHeight:'5rem'}}
+                                    >
+                                        <p>{key}</p>
+                                    </div>
+                                    {value.hasArrow && <GoArrowRight size={'2em'}></GoArrowRight>}
+                                </div>
+                                &nbsp;{value.text}
+                                </div>
+                            })}
+                        </>
                     }
+                        </div>
+                    </div>
                 </div>,
 
             //show one loader with customizable message
