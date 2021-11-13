@@ -8,11 +8,11 @@ import ReactLoading from 'react-loading';
 import '../App.css'
 import DisplayResults, { ResultsTable, DatabaseTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
-import SubscribeModal from '../Components/Sub.js';
+// import SubscribeModal from '../Components/Sub.js';
 import Searchbar from "../Components/Searchbar";
-import GoodNews from "../Components/GoodNews";
+// import GoodNews from "../Components/GoodNews";
 import BadNewsEmail from "../Components/BadNewsEmail";
-import DatabaseResponse from "../Components/DatabaseResponse";
+// import DatabaseResponse from "../Components/DatabaseResponse";
 
 
 
@@ -50,12 +50,14 @@ class Homepage extends React.Component {
           fieldName: 'Name + Zip',
           loaderType: 'spokes',
           mcaDescription: "AI powered entity matching model.",
-          searchEngineLoaders: {
-                'Anywho': {'color': "#78ac44", 'text': '1 record found', 'hasArrow': true}, 
-                'Zabasearch': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
-                'Mylife': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
-                'Peekyou': {'color': "#609cd4", 'text': '', 'hasArrow': true}, 
-                'Spokeo': {'color': "#609cd4", 'text': '', 'hasArrow': false}}
+          red: "#ff9c9c",
+          green: "#78ac44",
+          searchEngines: {
+                'Anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'Zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'Mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'Peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'Spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false}}
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -238,7 +240,13 @@ class Homepage extends React.Component {
                             uneditedDbResponse: response.data.uneditedResponses,
                             cleanResponses: response.data.cleanResponses,
                             es: es,
-                            showAgeCheck: true
+                            showDbResponse: true,
+                            // dbAmount: newDBResponse.length,
+                            // dbResponse: newDBResponse,
+                            // uneditedDbResponse: newUneditedDbResponse,
+                            // cleanResponses: newCleanResponses,
+                            showSearchAgain: true,
+                            // showAgeCheck: true
                         })
                         return true
                     } else if(response.status === 204) {
@@ -285,21 +293,117 @@ class Homepage extends React.Component {
             dbResponse: dbResponse,
             cleanResponse: cleanResponse
         })
-        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue)
+        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho")
         .then(response => {
-            console.log("response2: ")
+            console.log("response1: ")
             console.log(response)
             if(response.status === 202) {
+                // update loaders:
+                var loaders = this.state.searchEngines;
+                var anywho_loader = loaders['Anywho']
+                anywho_loader['color'] = this.state.green
+                var len = response.data.cleanResponses.length
+                if (len === 1) {
+                    anywho_loader['text'] = len + " record found"
+                } else {
+                    anywho_loader['text'] = len + " records found"
+                }
+                loaders['Anywho'] = anywho_loader;
+                console.log(' anywho loader is '+loaders['Anywho'])
+
+                
                 var surfaceWebResponse = response.data.return
                 this.setState({
                     showSurfaceWebResponse: false,
                     surfaceWebResults: surfaceWebResponse,
-                    showLoader: true,
-                    showLoaders: false,
+                    // showLoader: true,
+                    // showLoaders: false,
+                    // loaderMessage: "Resolving Your Identity",
                     surfaceWebResponse_clean: response.data.cleanResponses,
                     surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
-                    loaderMessage: "Resolving Your Identity"
+                    searchEngines: loaders
                 })
+                EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "zabasearch")
+                .then(response2 => {
+                    console.log("response2: ")
+                    console.log(response2)
+                    // var loaders = this.state.searchEngines;
+                    var zabasearch_loader = loaders['Zabasearch']
+                    zabasearch_loader['color'] = this.state.green
+                    var len = response2.data.num_records
+                    if (len === 1) {
+                        zabasearch_loader['text'] = len + " record found"
+                    } else {
+                        zabasearch_loader['text'] = len + " records found"
+                    }
+                    // loaders['Zabasearch'] = zabasearch_loader;
+                    if(response2.status === 202) {
+                        // append results to surfaceweb response and attributes list bs
+                        this.setState({
+                            searchEngines: loaders
+                        })
+                    }
+                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "mylife")
+                    .then(response3 => {
+                        console.log("response3: ")
+                        console.log(response3)
+                        var mylife_loader = loaders['Mylife']
+                        mylife_loader['color'] = this.state.green
+                        var len = response3.data.num_records
+                        if (len === 1) {
+                            mylife_loader['text'] = len + " record found"
+                        } else {
+                            mylife_loader['text'] = len + " records found"
+                        }
+                        if(response3.status === 202) {
+                            // append results to surfaceweb response and attributes list bs
+                            this.setState({
+                                searchEngines: loaders
+                            })
+                        }
+
+                        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "peekyou")
+                        .then(response4 => {
+                            console.log("response4: ")
+                            console.log(response4)
+                            var peekyou_loader = loaders['Peekyou']
+                            peekyou_loader['color'] = this.state.green
+                            var len = response4.data.num_records
+                            if (len === 1) {
+                                peekyou_loader['text'] = len + " record found"
+                            } else {
+                                peekyou_loader['text'] = len + " records found"
+                            }
+                            if(response4.status === 202) {
+                                // append results to surfaceweb response and attributes list bs
+                                this.setState({
+                                    searchEngines: loaders
+                                })
+                            }
+
+                            EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "spokeo")
+                            .then(response5 => {
+                                console.log("response5: ")
+                                console.log(response5)
+                                var spokeo_loader = loaders['Spokeo']
+                                spokeo_loader['color'] = this.state.green
+                                var len = response5.data.num_records
+                                if (len === 1) {
+                                    spokeo_loader['text'] = len + " record found"
+                                } else {
+                                    spokeo_loader['text'] = len + " records found"
+                                }
+                                if(response5.status === 202) {
+                                    // append results to surfaceweb response and attributes list bs
+                                    this.setState({
+                                        searchEngines: loaders,
+                                        showLoader: true,
+                                        showLoaders: false,
+                                        loaderMessage: "Resolving Your Identity",
+                                    })
+                                }
+
+
                 EmailDataService.resolve(this.state.uneditedDbResponse, response.data.return)
                 .then(finalResponse => {
                     console.log("db response: ")
@@ -343,7 +447,7 @@ class Homepage extends React.Component {
                         return false
                     }
                 }).catch(e => {
-                    console.log("error on third api call")
+                    console.log("error on resolve api call")
                     console.log(e);
                     this.setState({
                         showLoader: false,
@@ -353,7 +457,58 @@ class Homepage extends React.Component {
                         searchAgainClass: "col-5"
                     })
                 });
-                return true;
+
+
+
+                // return true;
+            }).catch(e => {
+                console.log("error on spokeo api call")
+                console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    showGoodNews: true,
+                    showSearchAgain: true,
+                    searchAgainClass: "col-5"
+                })
+            })
+
+            }).catch(e => {
+                console.log("error on peekyou api call")
+                console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    showGoodNews: true,
+                    showSearchAgain: true,
+                    searchAgainClass: "col-5"
+                })
+            })
+
+            }).catch(e => {
+                console.log("error on mylife api call")
+                console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    showGoodNews: true,
+                    showSearchAgain: true,
+                    searchAgainClass: "col-5"
+                })
+            })
+
+            }).catch(e => {
+                console.log("error on zabasearch api call")
+                console.log(e);
+                this.setState({
+                    showLoader: false,
+                    showSurfaceWebResponse: false,
+                    showGoodNews: true,
+                    showSearchAgain: true,
+                    searchAgainClass: "col-5"
+                })
+            })
+
             } else if(response.status === 204) {
                 this.setState({
                     showLoader: false,
@@ -363,8 +518,10 @@ class Homepage extends React.Component {
                 })
                 return false
             }
+
+
         }).catch(e => {
-            console.log("error on second api call")
+            console.log("error on anywho api call")
             console.log(e);
             this.setState({
                 showLoader: false,
@@ -631,7 +788,7 @@ class Homepage extends React.Component {
                                     </div>
                                     <table style={{border: "3px solid black"}}>
                                         <tbody>
-                                        <tr style={{border: "3px solid black"}}>
+                                        <tr style={{border: "3px solid black", backgroundColor: "#283c64"}}>
                                             <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;Name</th>
                                             <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;{value.name}</th>
                                         </tr>
@@ -794,14 +951,14 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center">
                     {this.state.showLoaders && 
                         <> 
-                            {Object.entries(this.state.searchEngineLoaders).map( ([key, value]) => {
+                            {Object.entries(this.state.searchEngines).map( ([key, value]) => {
                                 return <div className="">
                                 <div className="row" style={{paddingBottom: "10px", paddingLeft: "1rem", paddingRight:'1rem', alignItems:'center'}}>
                                     <div className="card"
                                         style= {{paddingBottom: "2rem", paddingRight: "1rem", paddingLeft: "1rem", borderRadius: "1rem", borderColor: 'white',
                                                 backgroundColor:value.color, height:'5rem', width: '7.5rem', textAlign:'center', alignItems:'center', lineHeight:'5rem'}}
                                     >
-                                        <p>{key}</p>
+                                        <p><b>{key}</b></p>
                                     </div>
                                     {value.hasArrow && <GoArrowRight size={'2em'}></GoArrowRight>}
                                 </div>
