@@ -24,15 +24,15 @@ def calc_score(attributes):
         if(not 'none' in str(attributes["email"]).lower()):
             score+= sc["email"]
             #print("adding score for email")
-            attributes["email"] = True
+            attributes["email"] = 1
         else:
-                attributes["email"] = False
+                attributes["email"] = 0
         if(not 'none' in str(attributes["address"]).lower()):
                 score+= sc["address"]
              #   print("adding score for address")
-                attributes["address"] = True
+                attributes["address"] = 1
         else:
-                attributes["address"] = False
+                attributes["address"] = 0
         if(not 'none' in str(attributes["phoneNum"]).lower()):
                 score+= sc["phoneNumber"]
               #  print("adding score for phoneNumber")
@@ -52,18 +52,18 @@ def calc_score(attributes):
                 if(len(numberPrefix)==3):
                         #attributes["phoneNumber"] = pn.split('-')[0]+'-***-****'
                         attributes["phoneNumber"] = numberPrefix+'-***-****'
-                        attributes["phoneNum"] = True
+                        attributes["phoneNum"] = 1
                 else:
-                        attributes["phoneNum"] = False
+                        attributes["phoneNum"] = 0
                         attributes["phoneNumber"] = "unknown"
         else:
-                attributes["phoneNum"] = False
+                attributes["phoneNum"] = 0
                 attributes["phoneNumber"] = "unknown"
         if(not 'none' in str(attributes["birthday"]).lower()):
                 score+= sc["birthdate"]
                # print("adding score for birthday")
                 bday = str(attributes["birthday"])
-                attributes["birthday"] = True
+                attributes["birthday"] = 1
                 today = datetime.today()
                 curryear = today.year
                 age = -1
@@ -108,53 +108,53 @@ def calc_score(attributes):
                         attributes["medianscore"] = 3.6
 
         else:
-                attributes["birthday"] = False
+                attributes["birthday"] = 0
                 attributes["birthyear"] = "unknown"
         if(not 'none' in str(attributes["hometown"]).lower() or not 'none' in str(attributes["zip"]).lower()):
                 score+= sc["hometown"]
                 #print("adding score for hometown")
-                attributes["hometown"] = True
+                attributes["hometown"] = 1
                 if(not 'none' in str(attributes["zip"]).lower()):
                         attributes["zip"] = attributes["zip"][0:2]+'***'
         else:
-                attributes["hometown"] = False
-                attributes["zip"] = False
+                attributes["hometown"] = 0
+                attributes["zip"] = 0
         if(not 'none' in str(attributes["currentTown"]).lower()):
                 score+= sc["currentTown"]
                 #print("adding score for currentTown")
-                attributes["currentTown"] = True
+                attributes["currentTown"] = 1
         else:
-                attributes["currentTown"] = False
+                attributes["currentTown"] = 0
         if(not 'none' in str(attributes["jobDetails"]).lower()):
                 score+= sc["jobDetails"]
                 #print("adding score for jobDetails")
-                attributes["jobDetails"] = True
+                attributes["jobDetails"] = 1
         else:
-                attributes["jobDetails"] = False
+                attributes["jobDetails"] = 0
         if(not 'none' in str(attributes["relationshipStatus"]).lower()):
                 score+= sc["relationshipStatus"]
                 #print("adding score for relationshipStatus")
-                attributes["relationshipStatus"] = True
+                attributes["relationshipStatus"] = 1
         else:
-                attributes["relationshipStatus"] = False
+                attributes["relationshipStatus"] = 0
         if(not 'none' in str(attributes["interests"]).lower()):
                 score+= sc["interests"]
                 #print("adding score for interests")
-                attributes["interests"] = True
+                attributes["interests"] = 1
         else:
-                attributes["interests"] = False
+                attributes["interests"] = 0
         if(not 'none' in str(attributes["politicalViews"]).lower()):
                 score+= sc["politicalViews"]
                 #print("adding score for politicalViews")
-                attributes["politicalViews"] = True
+                attributes["politicalViews"] = 1
         else:
-                attributes["politicalViews"] = False
+                attributes["politicalViews"] = 0
         if(not 'none' in str(attributes["religiousViews"]).lower()):
                 score+= sc["religiousViews"]
                 #print("adding score for religiousViews")
-                attributes["religiousViews"] = True
+                attributes["religiousViews"] = 1
         else:
-                attributes["religiousViews"] = False
+                attributes["religiousViews"] = 0
     except Exception as e:
         print(e)
 
@@ -171,20 +171,20 @@ def combine(crawlerResponse, dbResponse):
         
         for key, value in dbResponse.items():
                 try:
-                        found = False
+                        found = 0
                         sources[key] = []
                         if(not 'none' in str(value).lower()):
                                 sources[key].append(dbResponse["platform"])
                                 dateCollected[key] = dbResponse["dateCollected"].split(' ')[0]
                                 comboResponse[key] = value
-                                found = True
+                                found = 1
                         
                         if(not 'none' in str(crawlerResponse[key]).lower()):
                                 sources[key].append(crawlerResponse["platform"])
                                 # if(not key in comboResponse):
                                 comboResponse[key] = crawlerResponse[key]
                                 dateCollected[key] = currDate
-                                found = True
+                                found = 1
                         if(not found):
                                 comboResponse[key] = 'none'
                 except Exception as e:
@@ -309,12 +309,12 @@ def checkPhone(attributes):
                 if(len(numberPrefix)==3):
                         #attributes["phoneNumber"] = pn.split('-')[0]+'-***-****'
                         attributes["phoneNumber"] = numberPrefix+'-***-****'
-                        attributes["phoneNum"] = True
+                        attributes["phoneNum"] = 1
                 else:
-                        attributes["phoneNum"] = False
+                        attributes["phoneNum"] = 0
                         attributes["phoneNumber"] = "unknown"
         else:
-                attributes["phoneNum"] = False
+                attributes["phoneNum"] = 0
                 attributes["phoneNumber"] = "unknown"
 
 def clean_address(response):

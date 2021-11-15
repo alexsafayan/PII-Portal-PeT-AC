@@ -23,6 +23,9 @@ class Homepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+          surfaceWebResults: [],
+          surfaceWebResponse_clean: [],
+          surfaceWebAttributesLists: [],
           numBreaches: "",
           numEmails: "2,730,903,926",
           numNames: "11,068,457",
@@ -53,11 +56,11 @@ class Homepage extends React.Component {
           red: "#ff9c9c",
           green: "#78ac44",
           searchEngines: {
-                'Anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'Zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'Mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'Peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'Spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false}}
+                'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
+                'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false}}
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -293,14 +296,14 @@ class Homepage extends React.Component {
             dbResponse: dbResponse,
             cleanResponse: cleanResponse
         })
-        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho")
+        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho", this.state.surfaceWebResults, this.state.surfaceWebResponse_clean, this.state.surfaceWebAttributesLists)
         .then(response => {
             console.log("response1: ")
             console.log(response)
             if(response.status === 202) {
                 // update loaders:
                 var loaders = this.state.searchEngines;
-                var anywho_loader = loaders['Anywho']
+                var anywho_loader = loaders['anywho']
                 anywho_loader['color'] = this.state.green
                 var len = response.data.cleanResponses.length
                 if (len === 1) {
@@ -308,103 +311,162 @@ class Homepage extends React.Component {
                 } else {
                     anywho_loader['text'] = len + " records found"
                 }
-                loaders['Anywho'] = anywho_loader;
-                console.log(' anywho loader is '+loaders['Anywho'])
+                loaders['anywho'] = anywho_loader;
+                console.log(' anywho loader is '+loaders['anywho'])
 
                 
-                var surfaceWebResponse = response.data.return
+                // var surfaceWebResponse = response.data.return
                 this.setState({
                     showSurfaceWebResponse: false,
-                    surfaceWebResults: surfaceWebResponse,
+                    surfaceWebResults: response.data.return,
+                    surfaceWebResponse_clean: response.data.cleanResponses,
+                    surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
+                    searchEngines: loaders,
                     // showLoader: true,
                     // showLoaders: false,
                     // loaderMessage: "Resolving Your Identity",
-                    surfaceWebResponse_clean: response.data.cleanResponses,
-                    surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
-                    searchEngines: loaders
                 })
-                EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "zabasearch")
+                EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "zabasearch", response.data.return, response.data.cleanResponses, response.data.surfaceWebAttributesLists)
                 .then(response2 => {
                     console.log("response2: ")
                     console.log(response2)
                     // var loaders = this.state.searchEngines;
-                    var zabasearch_loader = loaders['Zabasearch']
+                    var zabasearch_loader = loaders['zabasearch']
                     zabasearch_loader['color'] = this.state.green
-                    var len = response2.data.num_records
-                    if (len === 1) {
-                        zabasearch_loader['text'] = len + " record found"
-                    } else {
-                        zabasearch_loader['text'] = len + " records found"
-                    }
-                    // loaders['Zabasearch'] = zabasearch_loader;
                     if(response2.status === 202) {
+                        len = response2.data.cleanResponses.length - response.data.cleanResponses.length
+                        if (len === 1) {
+                            zabasearch_loader['text'] = len + " record found"
+                        } else {
+                            zabasearch_loader['text'] = len + " records found"
+                        }
+                        // loaders['zabasearch'] = zabasearch_loader;
+                    
                         // append results to surfaceweb response and attributes list bs
                         this.setState({
+                            surfaceWebResults: response2.data.return,
+                            surfaceWebResponse_clean: response2.data.cleanResponses,
+                            surfaceWebAttributesLists: response2.data.surfaceWebAttributesLists,
+                            searchEngines: loaders
+                        })
+                    } else {
+                        zabasearch_loader['text'] = "0 records found"
+                        this.setState({
+                            surfaceWebResults: response2.data.return,
+                            surfaceWebResponse_clean: response2.data.cleanResponses,
+                            surfaceWebAttributesLists: response2.data.surfaceWebAttributesLists,
                             searchEngines: loaders
                         })
                     }
-                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "mylife")
+                    console.log('sending as parameters for mylife: ')
+                    console.log(response2.data.return.length)
+                    console.log(response2.data.cleanResponses.length)
+                    console.log(response2.data.surfaceWebAttributesLists.length)
+                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "mylife", response2.data.return, response2.data.cleanResponses, response2.data.surfaceWebAttributesLists)
                     .then(response3 => {
                         console.log("response3: ")
                         console.log(response3)
-                        var mylife_loader = loaders['Mylife']
+                        var mylife_loader = loaders['mylife']
                         mylife_loader['color'] = this.state.green
-                        var len = response3.data.num_records
-                        if (len === 1) {
-                            mylife_loader['text'] = len + " record found"
-                        } else {
-                            mylife_loader['text'] = len + " records found"
-                        }
                         if(response3.status === 202) {
+                            len = response3.data.cleanResponses.length - response2.data.cleanResponses.length
+                            if (len === 1) {
+                                mylife_loader['text'] = len + " record found"
+                            } else {
+                                mylife_loader['text'] = len + " records found"
+                            }
+                        
                             // append results to surfaceweb response and attributes list bs
                             this.setState({
+                                surfaceWebResults: response3.data.return,
+                                surfaceWebResponse_clean: response3.data.cleanResponses,
+                                surfaceWebAttributesLists: response3.data.surfaceWebAttributesLists,
+                                searchEngines: loaders
+                            })
+                        } else {
+                            mylife_loader['text'] = "0 records found"
+                            this.setState({
+                                surfaceWebResults: response3.data.return,
+                                surfaceWebResponse_clean: response3.data.cleanResponses,
+                                surfaceWebAttributesLists: response3.data.surfaceWebAttributesLists,
                                 searchEngines: loaders
                             })
                         }
-
-                        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "peekyou")
+                        console.log('sending as parameters for peekyou: ')
+                        console.log(response3.data.return.length)
+                        console.log(response3.data.cleanResponses.length)
+                        console.log(response3.data.surfaceWebAttributesLists.length)
+                        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "peekyou", response3.data.return, response3.data.cleanResponses, response3.data.surfaceWebAttributesLists)
                         .then(response4 => {
                             console.log("response4: ")
                             console.log(response4)
-                            var peekyou_loader = loaders['Peekyou']
+                            var peekyou_loader = loaders['peekyou']
                             peekyou_loader['color'] = this.state.green
-                            var len = response4.data.num_records
-                            if (len === 1) {
-                                peekyou_loader['text'] = len + " record found"
-                            } else {
-                                peekyou_loader['text'] = len + " records found"
-                            }
                             if(response4.status === 202) {
+                                len = response4.data.cleanResponses.length - response3.data.cleanResponses.length
+
+                                if (len === 1) {
+                                    peekyou_loader['text'] = len + " record found"
+                                } else {
+                                    peekyou_loader['text'] = len + " records found"
+                                }
+                                
                                 // append results to surfaceweb response and attributes list bs
                                 this.setState({
+                                    surfaceWebResults: response4.data.return,
+                                    surfaceWebResponse_clean: response4.data.cleanResponses,
+                                    surfaceWebAttributesLists: response4.data.surfaceWebAttributesLists,
+                                    searchEngines: loaders
+                                })
+                            } else {
+                                peekyou_loader['text'] = "0 records found"
+                                this.setState({
+                                    surfaceWebResults: response4.data.return,
+                                    surfaceWebResponse_clean: response4.data.cleanResponses,
+                                    surfaceWebAttributesLists: response4.data.surfaceWebAttributesLists,
                                     searchEngines: loaders
                                 })
                             }
-
-                            EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "spokeo")
+                            console.log('sending as parameters for spokeo: ')
+                            console.log(response4.data.return.length)
+                            console.log(response4.data.cleanResponses.length)
+                            console.log(response4.data.surfaceWebAttributesLists.length)
+                            EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "spokeo", response4.data.return, response4.data.cleanResponses, response4.data.surfaceWebAttributesLists)
                             .then(response5 => {
                                 console.log("response5: ")
                                 console.log(response5)
-                                var spokeo_loader = loaders['Spokeo']
+                                var spokeo_loader = loaders['spokeo']
                                 spokeo_loader['color'] = this.state.green
-                                var len = response5.data.num_records
-                                if (len === 1) {
-                                    spokeo_loader['text'] = len + " record found"
-                                } else {
-                                    spokeo_loader['text'] = len + " records found"
-                                }
                                 if(response5.status === 202) {
+                                    len = response5.data.cleanResponses.length - response4.data.cleanResponses.length
+                                    if (len === 1) {
+                                        spokeo_loader['text'] = len + " record found"
+                                    } else {
+                                        spokeo_loader['text'] = len + " records found"
+                                    }
+                                
                                     // append results to surfaceweb response and attributes list bs
                                     this.setState({
+                                        surfaceWebResults: response5.data.return,
+                                        surfaceWebResponse_clean: response5.data.cleanResponses,
+                                        surfaceWebAttributesLists: response5.data.surfaceWebAttributesLists,
                                         searchEngines: loaders,
                                         showLoader: true,
                                         showLoaders: false,
                                         loaderMessage: "Resolving Your Identity",
                                     })
+                                } else {
+                                    spokeo_loader['text'] = "0 records found"
+                                    this.setState({
+                                        surfaceWebResults: response5.data.return,
+                                        surfaceWebResponse_clean: response5.data.cleanResponses,
+                                        surfaceWebAttributesLists: response5.data.surfaceWebAttributesLists,
+                                        searchEngines: loaders
+                                    })
                                 }
 
 
-                EmailDataService.resolve(this.state.uneditedDbResponse, response.data.return)
+                EmailDataService.resolve(this.state.uneditedDbResponse, response5.data.return)
                 .then(finalResponse => {
                     console.log("db response: ")
                     console.log(this.state.uneditedDbResponse)

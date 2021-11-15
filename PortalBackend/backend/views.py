@@ -200,71 +200,97 @@ def get_nameAndZip(request):
 def search_surfaceWeb_nameAndZip(request):
     start_time = time.time()
     if request.method == 'POST':
-        surfaceWebAttributesLists = []
+        # surfaceWebAttributesLists = []
+        # surfaceWebResponse = []
+        # cleanResponses = []
         req = request.body.decode()
         dic = eval(req)
         
         search_engine = dic.get('search_engine')
-        if search_engine != 'anywho':
-            print("not anywho")
+        platforms = ["mylife", "peekyou", "spokeo", "zabasearch", "anywho"]
+        if search_engine not in platforms:
+            print("invalid platform")
             time.sleep(3)
             return JsonResponse({"num_records":2},status=status.HTTP_202_ACCEPTED)
-
+        surfaceWebAttributesLists = dic.get('surfaceWebAttributesLists')
+        surfaceWebResponse = dic.get('surfaceWebResponse')
+        cleanResponses = dic.get('cleanResponses')
+        print('views starts with surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
+        print('views starts with surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
+        print('views starts with cleanResponses: {}'.format(len(cleanResponses)))
         name = dic.get('name')
         zip = dic.get('zip')
-        surfaceWebResponse = []
-        cleanResponses = []
+
         try: 
             # item = EmailModel.objects.get(name=name, zip=zip)
             
-            data = {"name": name, "zip": zip}
+            data = {"name": name, "zip": zip, "platform":search_engine}
+            print('searching with data: {}'.format(data))
             response = requests.post("http://127.0.0.1:5000/users", data)
-            res = response.json()
-            all_vals = []
-            for values in res['info']:
-                if type(values) != dict:
-                    print("type not dict!!")
-                    continue
-                else:
-                    if not "none" in str(values['name']).lower():
-                        all_vals.append(values)
-            # print("crawlers response: ")
-            # print(all_vals)
             
-            # for each in all_vals:
-            for each in all_vals:
-                temp = each.copy()
+            res = response.json()
+            # print('views received response: {}\n\n\n'.format(res))
+            all_vals = []
+            
+            if res['info']:
+                for values in res['info']:
+                    if type(values) != dict:
+                        print("type not dict!!")
+                        continue
+                    else:
+                        if not "none" in str(values['name']).lower():
+                            all_vals.append(values)
+                # print("crawlers response: ")
+                # print(all_vals)
+                
+                # for each in all_vals:
+                temp_surfaceWebResponse = surfaceWebResponse.copy()
+                for each in all_vals:
+                    temp = each.copy()
 
-                cleanResponse = temp.copy()
-                clean_response(cleanResponse)
-                cleanResponses.append(cleanResponse)
+                    cleanResponse = temp.copy()
+                    clean_response(cleanResponse)
+                    cleanResponses.append(cleanResponse)
 
-                score = calc_score(temp)
-                temp["score"] = score
-                attributesList = ""
-                for item in temp:
-                    if temp[item] == True:
-                        try: 
-                            attr = attributeKey[item]
-                        except:
-                            attr = item
-                        attributesList+='{}, '.format(attr)
-                surfaceWebAttributesLists.append(attributesList[0:-2])
-                surfaceWebResponse.append(temp)
+                    score = calc_score(temp)
+                    temp["score"] = score
+                    attributesList = ""
+                    for item in temp:
+                        if temp[item] == True:
+                            try: 
+                                attr = attributeKey[item]
+                            except:
+                                attr = item
+                            attributesList+='{}, '.format(attr)
+                    surfaceWebAttributesLists.append(attributesList[0:-2])
+                    surfaceWebResponse.append(temp)
+            else:
+                print('info was empty')
+                print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
+                print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
+                print('returning cleanResponses: {}'.format(len(cleanResponses)))
+                elapsed_time = time.time() - start_time
+                print("it took this long --- " + str(elapsed_time))
+                return JsonResponse({'message': 'nothing was returned', "surfaceWebResponse":surfaceWebResponse, "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists}, status=status.HTTP_202_ACCEPTED) 
 
+            
+            print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
+            print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
+            print('returning cleanResponses: {}'.format(len(cleanResponses)))
+            print('returning all_vals: {}'.format(len(all_vals)))
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":temp_surfaceWebResponse + all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
             print("ran into error : "+str(e))
-            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+            return JsonResponse({'message': 'This name and zip does not exist', "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists}, status=status.HTTP_204_NO_CONTENT) 
 
 @api_view(['GET', 'POST'])
 def resolve_entities(request):
     #3rd call for name+zip search
-    logger.info("in resolve_entities EMAILLL")
+    logger.info("in resolve_entities")
     start_time = time.time()
 
     if request.method == 'POST':
@@ -342,6 +368,9 @@ def resolve_entities(request):
                     datesCollected.append(dateCollected)
                     exposedAttributesList.append(exposedAttribute)
                     exposedAttributesVals.append(exposedAttributeVals)
+                elapsed_time = time.time() - start_time
+                logger.info("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn, "tfidf_predictions": tfidf_predictions},status=status.HTTP_202_ACCEPTED)
             else:
                 predictionsReturn = []
                 comboResponse = dbResponse.copy()
@@ -367,9 +396,9 @@ def resolve_entities(request):
                 exposedAttributesList.append(exposedAttribute)
                 exposedAttributesVals.append(exposedAttributeVals)
 
-            elapsed_time = time.time() - start_time
-            logger.info("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn, "tfidf_predictions": tfidf_predictions},status=status.HTTP_202_ACCEPTED)
+                elapsed_time = time.time() - start_time
+                logger.info("it took this long --- " + str(elapsed_time))
+                return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected, "exposedAttributesList": exposedAttributesList, "exposedAttributesVals": exposedAttributesVals, "predictions": predictionsReturn, "tfidf_predictions": predictionsReturn},status=status.HTTP_202_ACCEPTED)
         except Exception as e: 
             logger.error("error occurred on resolve email entities :")
             logger.error(e)

@@ -27,11 +27,14 @@ class EmailDataService {
 
   //search #2 in name+zip db search
   //calls surface web crawlers api
-  searchSurfaceWeb(name, other, search_engine) {
+  searchSurfaceWeb(name, other, search_engine, surfaceWebResults, surfaceWebResponse_clean, surfaceWebAttributesLists) {
     return http.post('/crawl', {
       name: name,
       zip: other,
-      search_engine: search_engine
+      search_engine: search_engine,
+      surfaceWebResponse: surfaceWebResults,
+      cleanResponses: surfaceWebResponse_clean,
+      surfaceWebAttributesLists: surfaceWebAttributesLists
     })
   }
 
