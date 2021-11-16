@@ -154,11 +154,6 @@ def save_info_anywho(soup):
     try:
         records_soup = soup.find_all("div", {"class": 'person result-item'})
         for record in records_soup:
-            # extractedValues = {'Name': None, 'Platform': "Anywho", 'BirthDate/Age': None, 'Gender': None,
-            #                    'address': None, 'PhoneNumber': None, 'Relatives/Friends': None, "School": None,
-            #                    'Email': None, 'Job': None, "Alias": None, 'PoliticalView': None, "Description": None,
-            #                    'Ethnicity': None, 'Religious': None, 'MaritalStatus': None, 'AnnualIncome': None,
-            #                    'NetWorth': None}
 
             extractedValues = {'name': 'None', 'platform': 'Anywho', 'birthday': 'None', 'currentTown': 'None', 'gender': 'none',
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
@@ -186,7 +181,9 @@ def save_info_anywho(soup):
             except:
                 pass
             result_list.append(extractedValues)
-        print('returning from anywho: {}'.format(result_list))
+        # print('returning from anywho: {}'.format(result_list))
+        if len(result_list) > 5:
+            return result_list[0:5]
         return result_list
     except:
         pass
@@ -248,7 +245,9 @@ def save_info_zabasearch(soup):
                     continue
         except:
             pass
-    print('returning from zabasearch: {}'.format(result_list))
+    # print('returning from zabasearch: {}'.format(result_list))
+    if len(result_list) > 5:
+        return result_list[0:5]
     return result_list
 
 
@@ -308,7 +307,9 @@ def save_info_spokeo(soup):
             if "address" in record.text:
                 extractedValues["Relatives"] = record.text.strip()
         result_list.append(extractedValues)
-    print('returning from spokeo: {}'.format(result_list))
+    # print('returning from spokeo: {}'.format(result_list))
+    if len(result_list) > 5:
+        return result_list[0:5]
     return result_list
 
 
@@ -338,6 +339,8 @@ def peekyou(name, state):
                     pass
             for page in soups:
                 result_list.append(save_info_peekyou(page))
+            if len(result_list) > 5:
+                return result_list[0:5]
             return result_list
         except:
             pass
@@ -363,7 +366,9 @@ def peekyou_fetch(url, soup, header):
                     except Exception as err:
                         print(str(err))
                         pass
-        print('returning from peekyou: {}'.format(pages))
+        # print('returning from peekyou: {}'.format(pages))
+        if len(pages) > 5:
+            return pages[0:5]
         return pages
     except:
         pass
@@ -392,10 +397,10 @@ def save_info_peekyou(soup):
             " ")[0].strip()
     except:
         pass
-    try:
-        extractedValues["description"] = soup.find("span", {"id": "prof_bio_s"}).text.strip()
-    except:
-        pass
+    # try:
+    #     extractedValues["description"] = soup.find("span", {"id": "prof_bio_s"}).text.strip()
+    # except:
+    #     pass
     try:
         for tag in soup.find_all("ul", {"id": "profile_tags"}):
             for li_class in tag.find("li"):
@@ -438,7 +443,9 @@ def mylife(name, state):
                     except Exception as err:
                         print(str(err))
                         pass
-            print('returning from mylife: {}'.format(result_list))
+            # print('returning from mylife: {}'.format(result_list))
+            if len(result_list) > 5:
+                return result_list[0:5]
             return result_list
         except:
             continue
@@ -472,10 +479,10 @@ def save_info_mylife(soup, state):
                         extractedValues["name"] = mylife_record["name"]
                     except:
                         pass
-                    try:
-                        extractedValues["description"] = mylife_record["description"]
-                    except:
-                        pass
+                    # try:
+                    #     extractedValues["description"] = mylife_record["description"]
+                    # except:
+                    #     pass
                     try:
                         extractedValues["Alias"] = mylife_record["alternateName"]
                     except:

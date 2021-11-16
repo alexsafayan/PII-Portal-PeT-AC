@@ -2,6 +2,8 @@ import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { GoArrowRight } from "react-icons/go";
+// import { BsFillFilePersonFill } from "react-icons/bs";
+
 import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 
@@ -55,12 +57,20 @@ class Homepage extends React.Component {
           mcaDescription: "AI powered entity matching model.",
           red: "#ff9c9c",
           green: "#78ac44",
+          initial_searchEngines: {
+            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
+        },
           searchEngines: {
-                'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true}, 
-                'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false}}
+            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
+            }
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -98,7 +108,8 @@ class Homepage extends React.Component {
             fieldName: fieldName,
             searchValue: searchValue,
             nameValue:nameValue,
-            zipValue: zipValue
+            zipValue: zipValue,
+            searchEngines: this.state.initial_searchEngines
         });
         //email search
         if(fieldName === 'Email') {
@@ -294,7 +305,7 @@ class Homepage extends React.Component {
             showLoaders: true,
             showSearchAgain: false,
             dbResponse: dbResponse,
-            cleanResponse: cleanResponse
+            cleanResponse: cleanResponse,
         })
         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho", this.state.surfaceWebResults, this.state.surfaceWebResponse_clean, this.state.surfaceWebAttributesLists)
         .then(response => {
@@ -305,13 +316,14 @@ class Homepage extends React.Component {
                 var loaders = this.state.searchEngines;
                 var anywho_loader = loaders['anywho']
                 anywho_loader['color'] = this.state.green
+                anywho_loader['platform_attributes'] = anywho_loader['platform_attributes'].concat(response.data.platform_attributes);
                 var len = response.data.cleanResponses.length
                 if (len === 1) {
                     anywho_loader['text'] = len + " record found"
                 } else {
                     anywho_loader['text'] = len + " records found"
                 }
-                loaders['anywho'] = anywho_loader;
+                
                 console.log(' anywho loader is '+loaders['anywho'])
 
                 
@@ -322,6 +334,7 @@ class Homepage extends React.Component {
                     surfaceWebResponse_clean: response.data.cleanResponses,
                     surfaceWebAttributesLists: response.data.surfaceWebAttributesLists,
                     searchEngines: loaders,
+                    showPSETable: true,
                     // showLoader: true,
                     // showLoaders: false,
                     // loaderMessage: "Resolving Your Identity",
@@ -333,6 +346,7 @@ class Homepage extends React.Component {
                     // var loaders = this.state.searchEngines;
                     var zabasearch_loader = loaders['zabasearch']
                     zabasearch_loader['color'] = this.state.green
+                    zabasearch_loader['platform_attributes'] = zabasearch_loader['platform_attributes'].concat(response2.data.platform_attributes);
                     if(response2.status === 202) {
                         len = response2.data.cleanResponses.length - response.data.cleanResponses.length
                         if (len === 1) {
@@ -358,16 +372,17 @@ class Homepage extends React.Component {
                             searchEngines: loaders
                         })
                     }
-                    console.log('sending as parameters for mylife: ')
-                    console.log(response2.data.return.length)
-                    console.log(response2.data.cleanResponses.length)
-                    console.log(response2.data.surfaceWebAttributesLists.length)
+                    // console.log('sending as parameters for mylife: ')
+                    // console.log(response2.data.return.length)
+                    // console.log(response2.data.cleanResponses.length)
+                    // console.log(response2.data.surfaceWebAttributesLists.length)
                     EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "mylife", response2.data.return, response2.data.cleanResponses, response2.data.surfaceWebAttributesLists)
                     .then(response3 => {
                         console.log("response3: ")
                         console.log(response3)
                         var mylife_loader = loaders['mylife']
                         mylife_loader['color'] = this.state.green
+                        mylife_loader['platform_attributes'] = mylife_loader['platform_attributes'].concat(response3.data.platform_attributes);
                         if(response3.status === 202) {
                             len = response3.data.cleanResponses.length - response2.data.cleanResponses.length
                             if (len === 1) {
@@ -375,7 +390,7 @@ class Homepage extends React.Component {
                             } else {
                                 mylife_loader['text'] = len + " records found"
                             }
-                        
+                            
                             // append results to surfaceweb response and attributes list bs
                             this.setState({
                                 surfaceWebResults: response3.data.return,
@@ -392,16 +407,17 @@ class Homepage extends React.Component {
                                 searchEngines: loaders
                             })
                         }
-                        console.log('sending as parameters for peekyou: ')
-                        console.log(response3.data.return.length)
-                        console.log(response3.data.cleanResponses.length)
-                        console.log(response3.data.surfaceWebAttributesLists.length)
+                        // console.log('sending as parameters for peekyou: ')
+                        // console.log(response3.data.return.length)
+                        // console.log(response3.data.cleanResponses.length)
+                        // console.log(response3.data.surfaceWebAttributesLists.length)
                         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "peekyou", response3.data.return, response3.data.cleanResponses, response3.data.surfaceWebAttributesLists)
                         .then(response4 => {
                             console.log("response4: ")
                             console.log(response4)
                             var peekyou_loader = loaders['peekyou']
                             peekyou_loader['color'] = this.state.green
+                            peekyou_loader['platform_attributes'] = peekyou_loader['platform_attributes'].concat(response4.data.platform_attributes);
                             if(response4.status === 202) {
                                 len = response4.data.cleanResponses.length - response3.data.cleanResponses.length
 
@@ -427,16 +443,17 @@ class Homepage extends React.Component {
                                     searchEngines: loaders
                                 })
                             }
-                            console.log('sending as parameters for spokeo: ')
-                            console.log(response4.data.return.length)
-                            console.log(response4.data.cleanResponses.length)
-                            console.log(response4.data.surfaceWebAttributesLists.length)
+                            // console.log('sending as parameters for spokeo: ')
+                            // console.log(response4.data.return.length)
+                            // console.log(response4.data.cleanResponses.length)
+                            // console.log(response4.data.surfaceWebAttributesLists.length)
                             EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "spokeo", response4.data.return, response4.data.cleanResponses, response4.data.surfaceWebAttributesLists)
                             .then(response5 => {
                                 console.log("response5: ")
                                 console.log(response5)
                                 var spokeo_loader = loaders['spokeo']
                                 spokeo_loader['color'] = this.state.green
+                                spokeo_loader['platform_attributes'] = spokeo_loader['platform_attributes'].concat(response5.data.platform_attributes);
                                 if(response5.status === 202) {
                                     len = response5.data.cleanResponses.length - response4.data.cleanResponses.length
                                     if (len === 1) {
@@ -444,7 +461,7 @@ class Homepage extends React.Component {
                                     } else {
                                         spokeo_loader['text'] = len + " records found"
                                     }
-                                
+                                    
                                     // append results to surfaceweb response and attributes list bs
                                     this.setState({
                                         surfaceWebResults: response5.data.return,
@@ -454,6 +471,7 @@ class Homepage extends React.Component {
                                         showLoader: true,
                                         showLoaders: false,
                                         loaderMessage: "Resolving Your Identity",
+                                        showPSETable: false
                                     })
                                 } else {
                                     spokeo_loader['text'] = "0 records found"
@@ -461,7 +479,8 @@ class Homepage extends React.Component {
                                         surfaceWebResults: response5.data.return,
                                         surfaceWebResponse_clean: response5.data.cleanResponses,
                                         surfaceWebAttributesLists: response5.data.surfaceWebAttributesLists,
-                                        searchEngines: loaders
+                                        searchEngines: loaders,
+                                        showPSETable: false
                                     })
                                 }
 
@@ -1033,6 +1052,46 @@ class Homepage extends React.Component {
                     </div>
                 </div>,
 
+            //show PSE tables
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showPSETable && 
+                        <> 
+                            <h1>You can find your PII on the following platforms: </h1>
+                            <table width="100%" style={{border: "3px solid white"}}>
+                                <tbody>
+                                <tr style={{border: "3px solid white", backgroundColor: "#282c34"}}>
+                                    <th style={{border: "3px solid white", width:"15%", textAlign: 'center'}}>&nbsp;&nbsp;Platform</th>
+                                    <th style={{border: "3px solid white", width:"85%", textAlign: 'center'}}>&nbsp;&nbsp;Available PII</th>
+                                </tr>
+                                
+                                {Object.entries(this.state.searchEngines).map( ([key, value]) => {
+                                    if(value.platform_attributes.length > 1) {
+                                        return <>
+                                        <tr style={{border: "3px solid white", backgroundColor: "#283c64"}}>
+                                            
+                                            <td style={{border: "3px solid white", width:"15%"}}><img src={key+'.jpg'} style={{width:'273px'}} alt='nada'></img></td>
+                                            <td style={{border: "3px solid white", width:"85%"}}>&nbsp;&nbsp;
+                                                {value.platform_attributes.map((value, index) => {
+                                                    return <span style={{marginRight:'15px'}}className=""> <figure style={{display: "inline-block"}}> <img src={value+'.png'} style={{marginTop: '25px', width: '65px', height: '65px'}} alt='nada'></img> <figcaption> {value} </figcaption> </figure> </span>
+                                                })}
+                                            </td>
+                                            {/* <td style={{border: "3px solid white", width:"15%"}}>&nbsp;&nbsp;{key}</td> */}
+                                            {/* <td style={{border: "3px solid white", width:"85%"}}>&nbsp;&nbsp;{value.platform_attributes}</td> */}
+                                        </tr>
+                                        </>
+                                    }
+                                })}
+                                
+                                </tbody>
+                            </table>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
             //show one loader with customizable message
                 <div className="row justify-content-center">
                     {this.state.showLoader && 
@@ -1095,6 +1154,9 @@ class Homepage extends React.Component {
                 </div>
                 </>
                 }
+            </div>,
+
+            <div style={{marginTop:'100px'}}>
             </div>,
                     
 

@@ -200,27 +200,26 @@ def get_nameAndZip(request):
 def search_surfaceWeb_nameAndZip(request):
     start_time = time.time()
     if request.method == 'POST':
-        # surfaceWebAttributesLists = []
-        # surfaceWebResponse = []
-        # cleanResponses = []
         req = request.body.decode()
         dic = eval(req)
         
         search_engine = dic.get('search_engine')
         platforms = ["mylife", "peekyou", "spokeo", "zabasearch", "anywho"]
+        if search_engine == 'spokeo':
+            time.sleep(5)
         if search_engine not in platforms:
             print("invalid platform")
-            time.sleep(3)
             return JsonResponse({"num_records":2},status=status.HTTP_202_ACCEPTED)
         surfaceWebAttributesLists = dic.get('surfaceWebAttributesLists')
         surfaceWebResponse = dic.get('surfaceWebResponse')
         cleanResponses = dic.get('cleanResponses')
-        print('views starts with surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
-        print('views starts with surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
-        print('views starts with cleanResponses: {}'.format(len(cleanResponses)))
+        platform_attributes = set()
+        # print('views starts with surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
+        # print('views starts with surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
+        # print('views starts with cleanResponses: {}'.format(len(cleanResponses)))
         name = dic.get('name')
         zip = dic.get('zip')
-
+        applicable_attributes = ['phoneNumber', 'phone number', 'email', 'gender', 'name', 'birthday', 'city']
         try: 
             # item = EmailModel.objects.get(name=name, zip=zip)
             
@@ -247,7 +246,8 @@ def search_surfaceWeb_nameAndZip(request):
                 temp_surfaceWebResponse = surfaceWebResponse.copy()
                 for each in all_vals:
                     temp = each.copy()
-
+                    if 'gender' in temp:
+                        platform_attributes.add('gender')
                     cleanResponse = temp.copy()
                     clean_response(cleanResponse)
                     cleanResponses.append(cleanResponse)
@@ -261,31 +261,29 @@ def search_surfaceWeb_nameAndZip(request):
                                 attr = attributeKey[item]
                             except:
                                 attr = item
+                            
+                            if attr in applicable_attributes:
+                                platform_attributes.add(attr.split(' ')[0])
                             attributesList+='{}, '.format(attr)
                     surfaceWebAttributesLists.append(attributesList[0:-2])
                     surfaceWebResponse.append(temp)
             else:
                 print('info was empty')
-                print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
-                print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
-                print('returning cleanResponses: {}'.format(len(cleanResponses)))
                 elapsed_time = time.time() - start_time
                 print("it took this long --- " + str(elapsed_time))
-                return JsonResponse({'message': 'nothing was returned', "surfaceWebResponse":surfaceWebResponse, "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists}, status=status.HTTP_202_ACCEPTED) 
-
-            
-            print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
-            print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
-            print('returning cleanResponses: {}'.format(len(cleanResponses)))
-            print('returning all_vals: {}'.format(len(all_vals)))
+                return JsonResponse({'message': 'nothing was returned', "surfaceWebResponse":surfaceWebResponse, "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists, "platform_attributes": list(platform_attributes)}, status=status.HTTP_202_ACCEPTED) 
+            # print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
+            # print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
+            # print('returning cleanResponses: {}'.format(len(cleanResponses)))
+            # print('returning all_vals: {}'.format(len(all_vals)))
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":temp_surfaceWebResponse + all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":temp_surfaceWebResponse + all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists, "platform_attributes": list(platform_attributes)},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 
             print("ran into error : "+str(e))
-            return JsonResponse({'message': 'This name and zip does not exist', "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists}, status=status.HTTP_204_NO_CONTENT) 
+            return JsonResponse({'message': 'This name and zip does not exist', "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists, "platform_attributes": list(platform_attributes)}, status=status.HTTP_204_NO_CONTENT) 
 
 @api_view(['GET', 'POST'])
 def resolve_entities(request):
