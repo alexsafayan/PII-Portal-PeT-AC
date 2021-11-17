@@ -37,11 +37,12 @@ class Searchbar extends React.Component {
       return (
         <div className='form-group row justify-content-center' style={{height:'75px'}}>
             <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
-            <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}>
-            <Dropdown.Toggle style={{width: '10.2rem', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}} id="dropdown-basic">
+            {/* <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}> */}
+            <Dropdown>
+            <Dropdown.Toggle style={{width: '10.2rem', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}}>
                 Search By
             </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu variant='dark'>
                 <Dropdown.Item onClick={(e) => this.selectField('Email', e)}>Email</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => this.selectField('Name + Zip', e)}>Name &amp; Zip</Dropdown.Item>
             </Dropdown.Menu>

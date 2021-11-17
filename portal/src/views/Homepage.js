@@ -32,7 +32,7 @@ class Homepage extends React.Component {
           numEmails: "2,730,903,926",
           numNames: "11,068,457",
           showBreachTotals: true,
-          showProtectYourself: true,
+          showProtectYourself: false,
           results: "",
           searchValue: "",
           nameValue: "",
@@ -1111,18 +1111,23 @@ class Homepage extends React.Component {
                     <div className='row justify-content-center'>
                         <div className="col-lg-2">
                             <div className="row justify-content-center"> 
-                                {this.state.numEmails}
-                            </div>
-                            <div className="row justify-content-center"> 
-                                emails
+                                Our Collection:
                             </div>
                         </div> 
                         <div className="col-lg-2">
                             <div className="row justify-content-center"> 
-                                {this.state.numNames}
+                                Leaked Emails
                             </div>
                             <div className="row justify-content-center"> 
-                                names
+                                {this.state.numEmails}
+                            </div>
+                        </div> 
+                        <div className="col-lg-2">
+                            <div className="row justify-content-center"> 
+                                Leaked Names
+                            </div>
+                            <div className="row justify-content-center"> 
+                                {this.state.numNames}
                             </div>
                         </div> 
                     </div>
