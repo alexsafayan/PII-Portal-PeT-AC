@@ -1,6 +1,5 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown'
-import '../App.css'
 
 class Searchbar extends React.Component {
     constructor(props) {
@@ -9,7 +8,18 @@ class Searchbar extends React.Component {
             fieldName: this.props.fieldName,
             searchValue: "",
             nameValue: "",
-            zipValue: ""
+            zipValue: "",
+            css:    `.my-dropdown-menu{
+                        background-color: #203864; 
+                        border-color: #5d9ad1;
+                        font-size: x-large;
+                        
+                    }
+                    
+                    .my-dropdown-menu-item{
+                        color: #B9BDC5;
+                    }
+                    `
         };
       }
 
@@ -36,15 +46,18 @@ class Searchbar extends React.Component {
     render() {
       return (
         <div className='form-group row justify-content-center' style={{height:'75px'}}>
+            <style>
+                {this.state.css}
+            </style>
             <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
             {/* <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}> */}
-            <Dropdown>
+            <Dropdown className="my-dropdown">
             <Dropdown.Toggle style={{width: '10.2rem', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}}>
                 Search By
             </Dropdown.Toggle>
-            <Dropdown.Menu variant='dark'>
-                <Dropdown.Item onClick={(e) => this.selectField('Email', e)}>Email</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.selectField('Name + Zip', e)}>Name &amp; Zip</Dropdown.Item>
+            <Dropdown.Menu className="my-dropdown-menu">
+                <Dropdown.Item className="my-dropdown-menu-item" onClick={(e) => this.selectField('Email', e)}>Email</Dropdown.Item>
+                <Dropdown.Item className="my-dropdown-menu-item" onClick={(e) => this.selectField('Name + Zip', e)}>Name &amp; Zip</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown>
             </div>

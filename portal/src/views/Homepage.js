@@ -7,7 +7,7 @@ import { GoArrowRight } from "react-icons/go";
 import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 
-import '../App.css'
+// import '../App.css'
 import DisplayResults, { ResultsTable, DatabaseTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
 // import SubscribeModal from '../Components/Sub.js';
@@ -856,7 +856,8 @@ class Homepage extends React.Component {
                     //     chooseDbResponse={this.chooseDbResponse} displayGoodNews={this.displayGoodNews}>
                     // </DatabaseResponse>
                     <div>
-                        <h1 className="text-center">We found {this.state.dbResponse.length} result{this.state.es} in our breached records:</h1>
+                        <h1 className="text-center">We found {this.state.dbResponse.length} record{this.state.es} in our collections.</h1>
+                        <h1 className="text-center">Please select yours:</h1>
                         <div className="row">
                         {this.state.dbResponse.map((value, index) => {
                             return <div className="col-4" style={{paddingBottom: "10px"}}>
@@ -1026,11 +1027,13 @@ class Homepage extends React.Component {
                 </div>,
 
 
-            //show 5 surface web searching loaders 
+            //show PSE loaders 
                 <div className="container d-flex justify-content-center">
+                {this.state.showLoaders && 
                     <div className="col-lg-10">
+                        <h1>Searching...</h1>
                     <div className="row justify-content-center">
-                    {this.state.showLoaders && 
+                   
                         <> 
                             {Object.entries(this.state.searchEngines).map( ([key, value]) => {
                                 return <div className="">
@@ -1047,9 +1050,10 @@ class Homepage extends React.Component {
                                 </div>
                             })}
                         </>
-                    }
+                    
                         </div>
                     </div>
+                }
                 </div>,
 
             //show PSE tables
