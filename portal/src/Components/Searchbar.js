@@ -13,7 +13,7 @@ class Searchbar extends React.Component {
                         background-color: #203864; 
                         border-color: #5d9ad1;
                         font-size: x-large;
-                        
+                        width: 100%;
                     }
                     
                     .my-dropdown-menu-item{
@@ -49,10 +49,10 @@ class Searchbar extends React.Component {
             <style>
                 {this.state.css}
             </style>
-            <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
+            <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
             {/* <Dropdown style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'100%'}}> */}
             <Dropdown className="my-dropdown">
-            <Dropdown.Toggle style={{width: '10.2rem', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}}>
+            <Dropdown.Toggle style={{width: '100%', backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', height:'5rem', fontSize: 'x-large'}}>
                 Search By
             </Dropdown.Toggle>
             <Dropdown.Menu className="my-dropdown-menu">
@@ -63,7 +63,7 @@ class Searchbar extends React.Component {
             </div>
             {this.state.fieldName === 'Email' && 
                 <div className="col-lg-4" style={{paddingLeft: 0,paddingRight: 0}}>
-                    <input style={{height:'100%',  fontSize: 'large', width:'100%'}} id="search" className="form-control" type="search" placeholder="Email: " aria-label="Search" value={this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} />
+                    <input style={{height:'100%',  fontSize: 'large', width:'150%'}} id="search" className="form-control" type="search" placeholder="Email: " aria-label="Search" value={this.state.searchValue} onChange={(e) => this.handleChange('Email', e)} />
                 </div> 
             }
             {this.state.fieldName === 'Name + Zip' && 
@@ -76,9 +76,9 @@ class Searchbar extends React.Component {
                 </div> 
                 </>
             }
-            <div className="col-lg-1" style={{paddingLeft: 0,paddingRight: 0}}>
+            <div className="col-lg-2" style={{paddingLeft: 0,paddingRight: 0}}>
                 <button 
-                    style={{width: '10rem', height:'5rem',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} 
+                    style={{width: '100%', height:'5rem',  backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', fontSize: 'x-large'}} 
                     className="btn" onClick={(e) => this.props.handleSubmit(this.state.fieldName,this.state.searchValue,this.state.nameValue,this.state.zipValue, e)}>
                     Search
                 </button>
