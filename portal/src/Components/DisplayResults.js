@@ -227,7 +227,10 @@ class SurfaceWebTable extends React.Component {
             {Object.entries(this.props.searchEngines).map( ([key, value]) => {
                 return <>
                     {value.results.length > 0 &&
+                    <>
+                    <img src={value.results[0].surfaceWebResults.platform+'.jpg'} style={{width:'250px',marginBottom:'0.5rem'}} alt='nada'></img>
                         <table style={{fontSize: "large", color:"#F2F2F2", border: '2px solid black',marginBottom:'1rem'}}>
+                            
                             <thead style={{backgroundColor:'#282c34'}}>
                                 <tr>
                                 <th style={{border: '2px solid black', width:'20%'}}>Name</th>
@@ -242,19 +245,27 @@ class SurfaceWebTable extends React.Component {
 
 
                             {value.results.map((entry, index) => {
-                                return <>
-                                    <tr style={{backgroundColor:"white", color:"black", border: '2px solid black'}}>
-                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.name}</td>
+                                return <tr style={{backgroundColor:"white", color:"black", border: '2px solid black'}}>
+                                        <td className="text-capitalize" style={{border: '2px solid black'}}>{entry.surfaceWebResults.name}</td>
                                         <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.birthday}</td>
                                         <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.address}</td>
                                         <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.zip}</td>
+                                        {typeof(entry.surfaceWebResults.phoneNum) === typeof(['1','2']) ? 
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.phoneNum[0]}</td>
+                                        :
                                         <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.phoneNum}</td>
-                                        <td style={{border: '2px solid black'}}>{entry.match}</td>
+                                        }
+                                        {entry.match==='yes' ? 
+                                        <td className="text-capitalize" style={{border: '2px solid black', backgroundColor:'#78ac44'}}>{entry.match}</td>
+                                        :
+                                        <td className="text-capitalize" style={{border: '2px solid black', backgroundColor:'#ff9c9c'}}>{entry.match}</td>
+                                        }
+                                        
                                     </tr>
-                                </>
                             })}
                             </tbody>   
                     </table>
+                </>
             }
             </>
             })}
