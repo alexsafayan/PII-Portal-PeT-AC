@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 
 // import '../App.css'
-import DisplayResults, { ResultsTable, DatabaseTable } from '../Components/DisplayResults.js';
+import DisplayResults, { ResultsTable, DatabaseTable, DarkWebTable, SurfaceWebTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
 // import SubscribeModal from '../Components/Sub.js';
 import Searchbar from "../Components/Searchbar";
@@ -25,6 +25,23 @@ class Homepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+          sample_cleanRecords: {
+                'address': "1234 Ma**********",
+                'age': 73,
+                'attributes': "name: lee katchen | zip: 16*** | address: 1234 Ma********** | jobDetails: carpenter | relationshipStatus: married | politicalViews: moderate | religiousViews: buddhist | birthyear: 1948 | phoneNumber: 631-***-**** | city: er****** ",
+                'birthyear': "1948",
+                'city': "er******",
+                'dateCollected': "2018-07-07 17:56:15",
+                'jobDetails': "carpenter",
+                'name': "lee katchen",
+                'phoneNum': 1,
+                'phoneNumber': "631-***-****",
+                'platform': "TorMarket",
+                'politicalViews': "moderate",
+                'relationshipStatus': "married",
+                'religiousViews': "buddhist",
+                'zip': "16***"
+            },
           surfaceWebResults: [],
           surfaceWebResponse_clean: [],
           surfaceWebAttributesLists: [],
@@ -64,13 +81,72 @@ class Homepage extends React.Component {
             'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
             'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
         },
-          searchEngines: {
-            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
-            }
+        //   searchEngines: {
+        //     'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+        //     'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+        //     'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+        //     'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
+        //     'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
+        //     },
+            searchEngines: {
+                'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [
+                {
+                'surfaceWebResults': {
+                'address': "None",
+                'birthday': "01/04/1968",
+                'currentTown': "None",
+                'email': ['****@gmail.com', '****@neo.rr.com', '****@neo.rr.com', '****@gmail.com'],
+                'gender': "Female",
+                'hometown': "none",
+                'name': "Lee Katchen",
+                'phoneNum': ['814-***-****', '814-***-****'],
+                'platform': "Anywho",
+                'politicalViews': "none",
+                'relationshipStatus': "none",
+                'religiousViews': "None",
+                'state': "None"},
+                'match':'yes'
+                },
+                {
+                    'surfaceWebResults': {
+                    'address': "None",
+                    'birthday': "01/04/1968",
+                    'currentTown': "None",
+                    'email': ['****@gmail.com', '****@neo.rr.com', '****@neo.rr.com', '****@gmail.com'],
+                    'gender': "Female",
+                    'hometown': "none",
+                    'name': "Lee Katchen",
+                    'phoneNum': ['814-***-****', '814-***-****'],
+                    'platform': "Anywho",
+                    'politicalViews': "none",
+                    'relationshipStatus': "none",
+                    'religiousViews': "None",
+                    'state': "None"},
+                    'match':'no'
+                    },
+                    ]
+                    }, 
+                'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [{
+                    'surfaceWebResults': {
+                    'address': "None",
+                    'birthday': "01/04/1968",
+                    'currentTown': "None",
+                    'email': ['****@gmail.com', '****@neo.rr.com', '****@neo.rr.com', '****@gmail.com'],
+                    'gender': "Female",
+                    'hometown': "none",
+                    'name': "Lee Katchen",
+                    'phoneNum': ['814-***-****', '814-***-****'],
+                    'platform': "Zabasearch",
+                    'politicalViews': "none",
+                    'relationshipStatus': "none",
+                    'religiousViews': "None",
+                    'state': "None"},
+                    'match':'yes'
+                    },]}, 
+                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': []}, 
+                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': []}, 
+                'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'results': []}
+                }
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -649,7 +725,7 @@ class Homepage extends React.Component {
 
         if(this.state.searchState === 'Name + Zip') {
             this.setState({
-                showScore: true,
+                showPredictionResults: true,
                 entity: entity,
                 source: sources,
                 dates: datesCollected,
@@ -703,6 +779,8 @@ class Homepage extends React.Component {
         console.log(this.state.predictions)
         console.log("surfacewebresults")
         console.log(this.state.surfaceWebResults)
+        console.log('clean response:')
+        console.log(this.state.cleanResponse)
         this.setState({
             showPredictionResults: true,
             showScore: false,
@@ -726,6 +804,11 @@ class Homepage extends React.Component {
         //just need two lists, one for matches and one for nonmatches
         var matches = []
         var nonmatches = []
+        var anywho_records = []
+        var zabasearch_records = []
+        var mylife_records = []
+        var peekyou_records = []
+        var spokeo_records = []
         predictions.map((value, index) => {
             var res = {}
             res['value'] = value;
@@ -744,12 +827,49 @@ class Homepage extends React.Component {
             }
         })
 
+        matches.map((value, index) => {
+            value['match'] = 'yes'
+            if(value.surfaceWebResults.platform=="Anywho" ){ 
+                anywho_records.push(value)
+            } else if (value.surfaceWebResults.platform=="Zabasearch" ){
+                zabasearch_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Mylife" ){
+                mylife_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Peekyou" ){
+                peekyou_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Spokeo" ){
+                spokeo_records.push(value)
+            }
+        })
+
+        nonmatches.map((value, index) => {
+            value['match'] = 'no'
+            if(value.surfaceWebResults.platform=="Anywho" ){ 
+                anywho_records.push(value)
+            } else if (value.surfaceWebResults.platform=="Zabasearch" ){
+                zabasearch_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Mylife" ){
+                mylife_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Peekyou" ){
+                peekyou_records.push(value)
+            }else if (value.surfaceWebResults.platform=="Spokeo" ){
+                spokeo_records.push(value)
+            }
+        })
+
         var dbresponse_organized = {}
+        var PSEs = this.state.searchEngines
+        PSEs.anywho['results'] = anywho_records
+        PSEs.zabasearch['results'] = zabasearch_records
+        PSEs.mylife['results'] = mylife_records
+        PSEs.peekyou['results'] = peekyou_records
+        PSEs.spokeo['results'] = spokeo_records
 
         this.setState({
             predictionMatches: matches,
             predictionnonMatches: nonmatches,
-            dbresponse_organized: dbresponse_organized
+            dbresponse_organized: dbresponse_organized,
+            searchEngines: PSEs,
         })
 
     }
@@ -989,29 +1109,21 @@ class Homepage extends React.Component {
                  }
                 </div>,
 
-            //show prediction results
-            <div className="container">
-                
+                //show prediction results
+                <div className="container">
+        
                 {this.state.showPredictionResults && 
                 
-                <div className="row justify-content-center text-center">
+                <div className="row justify-content-center">
                     <div className="col-lg-12">
 
-                        <div className="row"><h2>Result from our database:</h2></div>
-                        <div className="row">
-                            <Alert style={{backgroundColor: "#7C7C7C"}}>
-                                <DatabaseTable dbresponse={this.state.cleanResponse}></DatabaseTable>
-                            </Alert>
+                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="#" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
+                        <div className="row" style={{marginBottom:'1rem'}}>
+                            <DarkWebTable dbresponse={this.state.sample_cleanRecords}></DarkWebTable>
                         </div>
-                        <div className="row"><h2>Results from surface web search engines:</h2></div>
                         <div className="row">
-                            <Alert style={{backgroundColor: "#7C7C7C"}}>
-                                <ResultsTable matches={this.state.predictionMatches} nonmatches={this.state.predictionnonMatches}>    
-                                </ResultsTable>
-                            </Alert>
+                            <SurfaceWebTable searchEngines={this.state.searchEngines}></SurfaceWebTable>
                         </div>
-                        <IoMdArrowRoundBack style={{cursor:'pointer'}} size='5em' onClick={(e) => this.goBack(e)}></IoMdArrowRoundBack>
-
                     </div>
                 </div>
                 }

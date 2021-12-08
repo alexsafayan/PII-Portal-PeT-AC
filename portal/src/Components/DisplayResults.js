@@ -159,9 +159,119 @@ class DatabaseTable extends React.Component {
     
 }
 
+class DarkWebTable extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+      };
+    }
+
+    render() {
+        return (
+            <div className='container d-flex justify-content-center' style={{borderRadius: "2rem", backgroundColor:"#609cd4", height:'200%', width: '100%'}}>
+                
+                <div className="card"
+                    style= {{ backgroundColor:"#609cd4", height:'80%', width: '90%',paddingBottom:'1rem',paddingTop:'1rem', border: '0px'}}
+                >
+                    <h2 className="text-left"><u>Dark Web: Our Breached Data Collection</u></h2>
+                    <h2 className="text-left"><u>Sources: {this.props.dbresponse.platform}</u></h2>
+                    <table style={{fontSize: "large", color:"#F2F2F2", border: '2px solid black'}}>
+                        <thead style={{backgroundColor:'#282c34'}}>
+                            <tr>
+                            <th style={{border: '2px solid black'}}>Name</th>
+                            <th style={{border: '2px solid black'}}>YOB</th>
+                            <th style={{border: '2px solid black'}}>City</th>
+                            <th style={{border: '2px solid black'}}>Address</th>
+                            <th style={{border: '2px solid black'}}>ZIP Code</th>
+                            </tr>
+                        </thead>
+                        <tbody style={{backgroundColor:'white'}}>
+
+                        <tr style={{backgroundColor:"white", color:"black", border: '2px solid black'}}>
+                            <td className="text-capitalize"  style={{border: '2px solid black'}}>{this.props.dbresponse.name}</td>
+                            <td style={{border: '2px solid black'}}>{this.props.dbresponse.birthyear}</td>
+                            <td className="text-capitalize"  style={{border: '2px solid black'}}>{this.props.dbresponse.city}</td>
+                            <td style={{border: '2px solid black'}}>{this.props.dbresponse.address}</td>
+                            <td style={{border: '2px solid black'}}>{this.props.dbresponse.zip}</td>
+                        </tr>
+
+                        <tr></tr>
+                        </tbody>
+                </table>
+                </div>
+                
+            </div>
+        )
+      }
+    
+}
+
+class SurfaceWebTable extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+      };
+    }
+
+    render() {
+        return (
+            <>
+            <div className='container d-flex justify-content-center' style={{borderRadius: "2rem", backgroundColor:"#609cd4", height:'200%', width: '100%', marginBottom:'1rem'}}>
+                    
+                    <div className="card"
+                        style= {{ backgroundColor:"#609cd4", height:'80%', width: '90%',paddingBottom:'1rem',paddingTop:'1rem', border: '0px'}}
+                    >
+            <h2 className="text-left"><u>Surface Web: People Search Engines</u></h2>
+
+
+            {Object.entries(this.props.searchEngines).map( ([key, value]) => {
+                return <>
+                    {value.results.length > 0 &&
+                        <table style={{fontSize: "large", color:"#F2F2F2", border: '2px solid black',marginBottom:'1rem'}}>
+                            <thead style={{backgroundColor:'#282c34'}}>
+                                <tr>
+                                <th style={{border: '2px solid black', width:'20%'}}>Name</th>
+                                <th style={{border: '2px solid black', width:'10%'}}>DOB</th>
+                                <th style={{border: '2px solid black', width:'25%'}}>Address</th>
+                                <th style={{border: '2px solid black', width:'10%'}}>ZIP Code</th>
+                                <th style={{border: '2px solid black', width:'25%'}}>Phone Number</th>
+                                <th style={{border: '2px solid black', width:'10%'}}>Match</th>
+                                </tr>
+                            </thead>
+                            <tbody style={{backgroundColor:'white', border: '2px solid black'}}>
+
+
+                            {value.results.map((entry, index) => {
+                                return <>
+                                    <tr style={{backgroundColor:"white", color:"black", border: '2px solid black'}}>
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.name}</td>
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.birthday}</td>
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.address}</td>
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.zip}</td>
+                                        <td style={{border: '2px solid black'}}>{entry.surfaceWebResults.phoneNum}</td>
+                                        <td style={{border: '2px solid black'}}>{entry.match}</td>
+                                    </tr>
+                                </>
+                            })}
+                            </tbody>   
+                    </table>
+            }
+            </>
+            })}
+
+            </div> 
+            </div>
+            </>
+        )
+      }
+    
+}
+
 export default DisplayResults;
 
 export {
     ResultsTable,
-    DatabaseTable
+    DatabaseTable,
+    DarkWebTable,
+    SurfaceWebTable
 }

@@ -159,7 +159,7 @@ def save_info_anywho(soup):
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
                        'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
                        'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
-                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none', 'zip': 'None'}
             try:
                 extractedValues["Name"] = record.find('a').text.strip()
             except:
@@ -225,7 +225,7 @@ def save_info_zabasearch(soup):
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
                        'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
                        'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
-                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none', 'zip': 'None'}
         try:
             extractedValues["name"] = record.find("a", {"class": "name-link"}).text.strip()
         except:
@@ -289,7 +289,7 @@ def save_info_spokeo(soup):
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
                        'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
                        'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
-                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none', 'zip': 'None'}
 
         name_age = result.find("a", {"class": 'single-column-list-item'}).find_all('div')[1].text.strip()
         try:
@@ -379,7 +379,7 @@ def save_info_peekyou(soup):
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
                        'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
                        'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
-                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none', 'zip': 'None'}
     try:
         extractedValues["name"] = soup.find("div", {"class": "profileName"}).find("div",
                                                                                   {"id": "nameProfCont"}).text.strip(
@@ -468,7 +468,7 @@ def save_info_mylife(soup, state):
                        'state': 'None', 'address': 'None', 'phoneNum': 'None', 'Relatives': 'None',
                        'email': 'None', 'jobDetails': 'None', 'Alias': 'None', 'politicalViews': 'none',
                        'Ethnicity': 'None', 'religiousViews': 'None', 'relationshipStatus': 'none', 'AnnualIncome': 'None',
-                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none'}
+                       'NetWorth': 'none', 'hometown': 'none', 'interests': 'none', 'zip': 'None'}
             for i in range(10):
                 try:
                     response = requests.get(link, headers=header, timeout=(3, 3))
