@@ -42,6 +42,9 @@ class Homepage extends React.Component {
                 'religiousViews': "buddhist",
                 'zip': "16***"
             },
+          privacyAttributesDict: {"phoneNumber": "Phone Number", "email": "Email", "address": "Address", "birthdate": "Birthdate", 
+          "hometown": "Hometown", "currentTown": "Current Town", "jobDetails": "Job Details", "relationshipStatus": "Relationship Status", 
+          "interests": "Interests", "religiousViews": "Religious Views", "politicalViews": "Political Views"},
           surfaceWebResults: [],
           surfaceWebResponse_clean: [],
           surfaceWebAttributesLists: [],
@@ -156,7 +159,9 @@ class Homepage extends React.Component {
         // this.selectField = this.selectField.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
-        this.showPredictions = this.showPredictions.bind(this);
+        this.showER = this.showER.bind(this);
+        this.showScoreCalculation = this.showScoreCalculation.bind(this);
+        this.showRemovalProcess = this.showRemovalProcess.bind(this);
         this.organizePredictionTable = this.organizePredictionTable.bind(this);
         this.Modal = React.createRef()
       }
@@ -178,14 +183,18 @@ class Homepage extends React.Component {
             score: 0,
             showGoodNews: false,
             showBadNews: false,
-            showPredictions: false,
+            showER: false,
             showEmail: false,
             searchState: fieldName,
             fieldName: fieldName,
             searchValue: searchValue,
             nameValue:nameValue,
             zipValue: zipValue,
-            searchEngines: this.state.initial_searchEngines
+            searchEngines: this.state.initial_searchEngines,
+            showProfile: false,
+            showERResults: false,
+            showRemovalProcess: false,
+            showRemovalProcess: false
         });
         //email search
         if(fieldName === 'Email') {
@@ -725,7 +734,8 @@ class Homepage extends React.Component {
 
         if(this.state.searchState === 'Name + Zip') {
             this.setState({
-                showPredictionResults: true,
+                showProfile: true,
+                // showERResults: true,
                 entity: entity,
                 source: sources,
                 dates: datesCollected,
@@ -774,25 +784,48 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
-    showPredictions(event) {
-        console.log("predictions")
-        console.log(this.state.predictions)
-        console.log("surfacewebresults")
-        console.log(this.state.surfaceWebResults)
-        console.log('clean response:')
-        console.log(this.state.cleanResponse)
+    showER(event) {
+        console.log("in show ER")
+        // console.log(this.state.predictions)
+        // console.log("surfacewebresults")
+        // console.log(this.state.surfaceWebResults)
+        // console.log('clean response:')
+        // console.log(this.state.cleanResponse)
         this.setState({
-            showPredictionResults: true,
+            showERResults: true,
             showScore: false,
-            showProtectYourself: false
+            showProtectYourself: false,
+            showProfile: false
+        })
+        event.preventDefault();
+    }
+
+    showScoreCalculation(event) {
+        console.log("in show score calculation")
+        this.setState({
+            showScoreCalculation: true,
+            showProtectYourself: false,
+            showProfile: false
+        })
+        event.preventDefault();
+    }
+
+    showRemovalProcess(event) {
+        console.log("in show removal process")
+        this.setState({
+            showRemovalProcess: true,
+            showProtectYourself: false,
+            showProfile: false
         })
         event.preventDefault();
     }
 
     goBack(event){
         this.setState({
-            showPredictionResults: false,
-            showScore:true, 
+            showERResults: false,
+            showScoreCalculation: false,
+            showRemovalProcess: false,
+            showProfile:true, 
             showProtectYourself: true
         })
         event.preventDefault();
@@ -1035,7 +1068,7 @@ class Homepage extends React.Component {
                          </h4>
                          <div className="row justify-content-center text-center">
                              <div className="col-lg-8">
-                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor: 'pointer', fontSize:"x-large"}} onClick={(e) => this.showPredictions(e)}>
+                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor: 'pointer', fontSize:"x-large"}} onClick={(e) => this.showER(e)}>
                                      What was compromised? {this.state.exposedAttributes}
                                  </Alert>
                              </div>
@@ -1057,7 +1090,7 @@ class Homepage extends React.Component {
                          </div>
                          <h4 style={{fontSize: "xx-large"}}>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
                          <h4 style={{fontSize: "xx-large"}}>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
-                         <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showPredictions(e)}>here.</u></p>
+                         <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showER(e)}>here.</u></p>
                          </Alert>
                      </div>
                      
@@ -1109,15 +1142,15 @@ class Homepage extends React.Component {
                  }
                 </div>,
 
-                //show prediction results
+                //show entity resolution results
                 <div className="container">
         
-                {this.state.showPredictionResults && 
+                {this.state.showERResults && 
                 
                 <div className="row justify-content-center">
                     <div className="col-lg-12">
 
-                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="#" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
+                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="https://doi.org/10.1145/3366423.3380017" target="_blank" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
                         <div className="row" style={{marginBottom:'1rem'}}>
                             <DarkWebTable dbresponse={this.state.sample_cleanRecords}></DarkWebTable>
                         </div>
@@ -1125,6 +1158,7 @@ class Homepage extends React.Component {
                             <SurfaceWebTable searchEngines={this.state.searchEngines}></SurfaceWebTable>
                         </div>
                     </div>
+                    <u style={{cursor:"pointer"}} onClick={(e) => this.goBack(e)}><p>Go back</p></u>
                 </div>
                 }
             </div>,
@@ -1147,7 +1181,7 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center">
                    
                         <> 
-                            {Object.entries(this.state.searchEngines).map( ([key, value]) => {
+                            {Object.entries(this.state.searchEngines).map(([key, value]) => {
                                 return <div className="">
                                 <div className="row" style={{paddingBottom: "10px", paddingLeft: "1rem", paddingRight:'1rem', alignItems:'center'}}>
                                     <div className="card"
@@ -1202,6 +1236,63 @@ class Homepage extends React.Component {
                                 
                                 </tbody>
                             </table>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
+                //show user profile
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showProfile && 
+                        <> 
+                            <u style={{cursor:"pointer"}} onClick={(e) => this.showER(e)}><h1>Click here to see entity resolution.</h1></u>
+                            <u style={{cursor:"pointer"}} onClick={(e) => this.showScoreCalculation(e)}><h1>Click here to view your score is calculated.</h1></u>
+                            <u style={{cursor:"pointer"}} onClick={(e) => this.showRemovalProcess(e)}><h1>Click here to view the removing process.</h1></u>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
+                //show user score calculation
+                <div className="container justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showScoreCalculation && 
+                        <> 
+                            <figure className="row justify-content-center">
+                                <img src='score_weights.png' style={{width:"75%"}} alt={"score_weights"}></img>
+                                <figcaption><a style={{color:"white"}} href="https://doi.org/10.1109/ICACCI.2013.6637504" target="_blank">(Srivastava, A., and Geethakumari, G. 2013. "Measuring Privacy Leaks in Online Social Networks")</a></figcaption>
+                            </figure>
+                            <h2 className="text-center" style={{width:"100%"}}>Your privacy risk score is <b>{this.state.entity['score']}</b>. </h2>
+                            <h2 className="text-center" style={{width:"100%"}}>The following attributes have been leaked:</h2>
+                            <br></br>
+                            <div className="text-center" style={{width:"100%"}}>
+                                {Object.entries(this.state.entity['scored_attributes']).map( ([key, value]) => {
+                                        return <>
+                                        {this.state.privacyAttributesDict[key]},&nbsp;
+                                        </>
+                                })}
+                            </div>
+                            <br></br>
+                            <div style={{width:"100%"}}><u style={{cursor:"pointer"}} onClick={(e) => this.goBack(e)}>Go back</u></div>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
+                //show removal process
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showRemovalProcess && 
+                        <> 
+                            <h1 className="text-center" style={{width:"100%"}}>How to remove your data from PSEs:</h1>
+                            <div style={{width:"100%"}}><u style={{cursor:"pointer"}} onClick={(e) => this.goBack(e)}>Go back</u></div>
                         </>
                     }
                         </div>

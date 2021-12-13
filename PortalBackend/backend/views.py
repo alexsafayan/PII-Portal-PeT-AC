@@ -111,7 +111,7 @@ def search_surfaceWeb_email(request):
 
                 comboResponseCopy = comboResponse.copy()
 
-                score = calc_score(comboResponse)
+                score, scored_attributes = calc_score(comboResponse)
                 comboResponse["score"] = score
 
                 exposedAttribute = "password, "
@@ -206,7 +206,7 @@ def search_surfaceWeb_nameAndZip(request):
         search_engine = dic.get('search_engine')
         platforms = ["mylife", "peekyou", "spokeo", "zabasearch", "anywho"]
         if search_engine == 'spokeo':
-            time.sleep(5)
+            time.sleep(2)
         if search_engine not in platforms:
             print("invalid platform")
             return JsonResponse({"num_records":2},status=status.HTTP_202_ACCEPTED)
@@ -214,9 +214,6 @@ def search_surfaceWeb_nameAndZip(request):
         surfaceWebResponse = dic.get('surfaceWebResponse')
         cleanResponses = dic.get('cleanResponses')
         platform_attributes = set()
-        # print('views starts with surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
-        # print('views starts with surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
-        # print('views starts with cleanResponses: {}'.format(len(cleanResponses)))
         name = dic.get('name')
         zip = dic.get('zip')
         applicable_attributes = ['phoneNumber', 'phone number', 'email', 'gender', 'name', 'birthday', 'city']
@@ -252,8 +249,9 @@ def search_surfaceWeb_nameAndZip(request):
                     clean_response(cleanResponse)
                     cleanResponses.append(cleanResponse)
 
-                    score = calc_score(temp)
+                    score, scored_attributes = calc_score(temp)
                     temp["score"] = score
+                    temp["scored_attributes"] = scored_attributes
                     attributesList = ""
                     for item in temp:
                         if temp[item] == True:
@@ -272,10 +270,6 @@ def search_surfaceWeb_nameAndZip(request):
                 elapsed_time = time.time() - start_time
                 print("it took this long --- " + str(elapsed_time))
                 return JsonResponse({'message': 'nothing was returned', "surfaceWebResponse":surfaceWebResponse, "return":surfaceWebResponse, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists, "platform_attributes": list(platform_attributes)}, status=status.HTTP_202_ACCEPTED) 
-            # print('returning surfaceWebAttributesLists: {}'.format(len(surfaceWebAttributesLists)))
-            # print('returning surfaceWebResponse: {}'.format(len(surfaceWebResponse)))
-            # print('returning cleanResponses: {}'.format(len(cleanResponses)))
-            # print('returning all_vals: {}'.format(len(all_vals)))
             elapsed_time = time.time() - start_time
             print("it took this long --- " + str(elapsed_time))
             return JsonResponse({"surfaceWebResponse":surfaceWebResponse, "return":temp_surfaceWebResponse + all_vals, "cleanResponses": cleanResponses, "surfaceWebAttributesLists": surfaceWebAttributesLists, "platform_attributes": list(platform_attributes)},status=status.HTTP_202_ACCEPTED)
@@ -346,9 +340,9 @@ def resolve_entities(request):
                     
                     comboResponseCopy = comboResponse.copy()
 
-                    score = calc_score(comboResponse)
+                    score, scored_attributes = calc_score(comboResponse)
                     comboResponse["score"] = score
-
+                    comboResponse["scored_attributes"] = scored_attributes
                     exposedAttribute = ""
                     exposedAttributeVals = {}
                     for each in comboResponse:
@@ -373,9 +367,9 @@ def resolve_entities(request):
                 predictionsReturn = []
                 comboResponse = dbResponse.copy()
                 sources, dateCollected = getSources(dbResponse)
-                score = calc_score(comboResponse)
+                score, scored_attributes = calc_score(comboResponse)
                 comboResponse["score"] = score
-
+                comboResponse["scored_attributes"] = scored_attributes
                 exposedAttribute = ""
                 exposedAttributeVals = []
                 for each in comboResponse:
@@ -469,8 +463,9 @@ def resolve_entitiesEmail(request):
                 else:
                     comboResponse = dbResponse
                     sources, dateCollected = getSources(dbResponse)
-                score = calc_score(comboResponse)
+                score, scored_attributes = calc_score(comboResponse)
                 comboResponse["score"] = score
+                comboResponse["scored_attributes"] = scored_attributes
                 entities.append(comboResponse)
                 sourceList.append(sources)
                 datesCollected.append(dateCollected)

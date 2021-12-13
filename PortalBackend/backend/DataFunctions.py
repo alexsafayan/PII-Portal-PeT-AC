@@ -10,31 +10,35 @@ def calc_score(attributes):
     if not "zip" in attributes:
             print("setting zip")
             attributes['zip'] = "none"
-    sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
-    "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
-    "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
+#     sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
+#     "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
+#     "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
 
-#     sc = {"phoneNumber": 0.6, "email": 0.1833, "address": 0.85, "birthdate": 0.1166, 
-#     "hometown": 0.15, "currentTown": 0.1166, "jobDetails": 0.2, "relationshipStatus": 0.4166, 
-#     "interests": 0.3, "religiousViews": 0.5666, "politicalViews": 0.6833}
+    sc = {"phoneNumber": 0.6, "email": 0.1833, "address": 0.85, "birthdate": 0.1166, 
+    "hometown": 0.15, "currentTown": 0.1166, "jobDetails": 0.2, "relationshipStatus": 0.4166, 
+    "interests": 0.3, "religiousViews": 0.5666, "politicalViews": 0.6833}
+    scored_attributes = {}
 
     try:
         attributes["agebucket"] = "none"
         attributes["medianscore"] = "tot"
         if(not 'none' in str(attributes["email"]).lower()):
             score+= sc["email"]
+            scored_attributes["email"] = sc["email"]
             #print("adding score for email")
             attributes["email"] = 1
         else:
                 attributes["email"] = 0
         if(not 'none' in str(attributes["address"]).lower()):
                 score+= sc["address"]
+                scored_attributes["address"] = sc["address"]
              #   print("adding score for address")
                 attributes["address"] = 1
         else:
                 attributes["address"] = 0
         if(not 'none' in str(attributes["phoneNum"]).lower()):
                 score+= sc["phoneNumber"]
+                scored_attributes["phoneNumber"] = sc["phoneNumber"]
               #  print("adding score for phoneNumber")
                 pn = ''
                 if(isinstance(attributes["phoneNum"],list)):
@@ -61,6 +65,7 @@ def calc_score(attributes):
                 attributes["phoneNumber"] = "unknown"
         if(not 'none' in str(attributes["birthday"]).lower()):
                 score+= sc["birthdate"]
+                scored_attributes["birthdate"] = sc["birthdate"]
                # print("adding score for birthday")
                 bday = str(attributes["birthday"])
                 attributes["birthday"] = 1
@@ -112,6 +117,7 @@ def calc_score(attributes):
                 attributes["birthyear"] = "unknown"
         if(not 'none' in str(attributes["hometown"]).lower() or not 'none' in str(attributes["zip"]).lower()):
                 score+= sc["hometown"]
+                scored_attributes["hometown"] = sc["hometown"]
                 #print("adding score for hometown")
                 attributes["hometown"] = 1
                 if(not 'none' in str(attributes["zip"]).lower()):
@@ -121,36 +127,42 @@ def calc_score(attributes):
                 attributes["zip"] = 0
         if(not 'none' in str(attributes["currentTown"]).lower()):
                 score+= sc["currentTown"]
+                scored_attributes["currentTown"] = sc["currentTown"]
                 #print("adding score for currentTown")
                 attributes["currentTown"] = 1
         else:
                 attributes["currentTown"] = 0
         if(not 'none' in str(attributes["jobDetails"]).lower()):
                 score+= sc["jobDetails"]
+                scored_attributes["jobDetails"] = sc["jobDetails"]
                 #print("adding score for jobDetails")
                 attributes["jobDetails"] = 1
         else:
                 attributes["jobDetails"] = 0
         if(not 'none' in str(attributes["relationshipStatus"]).lower()):
                 score+= sc["relationshipStatus"]
+                scored_attributes["relationshipStatus"] = sc["relationshipStatus"]
                 #print("adding score for relationshipStatus")
                 attributes["relationshipStatus"] = 1
         else:
                 attributes["relationshipStatus"] = 0
         if(not 'none' in str(attributes["interests"]).lower()):
                 score+= sc["interests"]
+                scored_attributes["interests"] = sc["interests"]
                 #print("adding score for interests")
                 attributes["interests"] = 1
         else:
                 attributes["interests"] = 0
         if(not 'none' in str(attributes["politicalViews"]).lower()):
                 score+= sc["politicalViews"]
+                scored_attributes["politicalViews"] = sc["politicalViews"]
                 #print("adding score for politicalViews")
                 attributes["politicalViews"] = 1
         else:
                 attributes["politicalViews"] = 0
         if(not 'none' in str(attributes["religiousViews"]).lower()):
                 score+= sc["religiousViews"]
+                scored_attributes["religiousViews"] = sc["religiousViews"]
                 #print("adding score for religiousViews")
                 attributes["religiousViews"] = 1
         else:
@@ -160,7 +172,7 @@ def calc_score(attributes):
 
     score = round(score,1)
     print("score is: "+str(score))
-    return score
+    return score, scored_attributes
 
 
 def combine(crawlerResponse, dbResponse):
