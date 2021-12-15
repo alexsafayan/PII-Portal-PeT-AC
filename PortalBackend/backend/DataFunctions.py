@@ -380,9 +380,12 @@ def clean_response(response):
         checkPhone(response)
         clean_address(response)
         delete_cols = []
+        db_attributes = []
         for each in response:
                 if('none' in str(response[each]).lower()):
                         delete_cols.append(each)
+                else:
+                        db_attributes.append(each)
         for col in delete_cols:
                 del response[col]
         try:
@@ -414,6 +417,6 @@ def clean_response(response):
                 attributes += "{0}: {1} | ".format(each,allAttributes[each])
 
         response['attributes'] = attributes[0:-2]
-
+        return db_attributes
 
         

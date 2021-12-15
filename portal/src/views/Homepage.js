@@ -6,7 +6,8 @@ import { GoArrowRight } from "react-icons/go";
 
 import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
-
+import '../home.css';
+import Boxplot from '../Components/Boxplot.js'
 // import '../App.css'
 import DisplayResults, { ResultsTable, DatabaseTable, DarkWebTable, SurfaceWebTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
@@ -25,6 +26,8 @@ class Homepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            db_attributes: ['name', 'zip', 'address', 'jobDetails'],
+            num_pse: 1,
           sample_cleanRecords: {
                 'address': "1234 Ma**********",
                 'age': 73,
@@ -44,8 +47,10 @@ class Homepage extends React.Component {
             },
           privacyAttributesDict: {"phoneNumber": "Phone Number", "email": "Email", "address": "Address", "birthdate": "Birthdate", 
           "hometown": "Hometown", "currentTown": "Current Town", "jobDetails": "Job Details", "relationshipStatus": "Relationship Status", 
-          "interests": "Interests", "religiousViews": "Religious Views", "politicalViews": "Political Views"},
+          "interests": "Interests", "religiousViews": "Religious Views", "politicalViews": "Political Views", 'name':'Name','phoneNum':'Phone Number', 
+          'birthday':'Birthdate', 'gender':'Gender'},
           surfaceWebResults: [],
+          db_breach: {'tormarket': ['December 2016', '100,000']},
           surfaceWebResponse_clean: [],
           surfaceWebAttributesLists: [],
           numBreaches: "",
@@ -69,7 +74,7 @@ class Homepage extends React.Component {
           entities: [],
           sources: [],
           datesCollected: [],
-          score: 0,
+          score: 1.6,
           amountBreached: 0,
           breaches: [],
           fieldName: 'Name + Zip',
@@ -92,7 +97,7 @@ class Homepage extends React.Component {
         //     'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
         //     },
             searchEngines: {
-                'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [
+                'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'birthday', 'email','phoneNum'], 'results': [
                 {
                 'surfaceWebResults': {
                 'address': "None",
@@ -129,7 +134,7 @@ class Homepage extends React.Component {
                     },
                     ]
                     }, 
-                'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [{
+                'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'birthday', 'phoneNum'], 'results': [{
                     'surfaceWebResults': {
                     'address': "None",
                     'birthday': "01/04/1968",
@@ -147,7 +152,7 @@ class Homepage extends React.Component {
                     'match':'yes'
                     },]}, 
                 'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': []}, 
-                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': []}, 
+                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'religiousViews', 'politicalViews','phoneNum'], 'results': []}, 
                 'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'results': []}
                 }
           
@@ -340,6 +345,7 @@ class Homepage extends React.Component {
                             cleanResponses: response.data.cleanResponses,
                             es: es,
                             showDbResponse: true,
+                            db_attributes: response.data.db_attributes,
                             // dbAmount: newDBResponse.length,
                             // dbResponse: newDBResponse,
                             // uneditedDbResponse: newUneditedDbResponse,
@@ -394,6 +400,7 @@ class Homepage extends React.Component {
         })
         EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho", this.state.surfaceWebResults, this.state.surfaceWebResponse_clean, this.state.surfaceWebAttributesLists)
         .then(response => {
+            var num_pse = 0
             console.log("response1: ")
             console.log(response)
             if(response.status === 202) {
@@ -403,6 +410,7 @@ class Homepage extends React.Component {
                 anywho_loader['color'] = this.state.green
                 anywho_loader['platform_attributes'] = anywho_loader['platform_attributes'].concat(response.data.platform_attributes);
                 var len = response.data.cleanResponses.length
+                if (len > 1) num_pse+=1
                 if (len === 1) {
                     anywho_loader['text'] = len + " record found"
                 } else {
@@ -434,6 +442,7 @@ class Homepage extends React.Component {
                     zabasearch_loader['platform_attributes'] = zabasearch_loader['platform_attributes'].concat(response2.data.platform_attributes);
                     if(response2.status === 202) {
                         len = response2.data.cleanResponses.length - response.data.cleanResponses.length
+                        if (len > 1) num_pse+=1
                         if (len === 1) {
                             zabasearch_loader['text'] = len + " record found"
                         } else {
@@ -470,6 +479,7 @@ class Homepage extends React.Component {
                         mylife_loader['platform_attributes'] = mylife_loader['platform_attributes'].concat(response3.data.platform_attributes);
                         if(response3.status === 202) {
                             len = response3.data.cleanResponses.length - response2.data.cleanResponses.length
+                            if (len > 1) num_pse+=1
                             if (len === 1) {
                                 mylife_loader['text'] = len + " record found"
                             } else {
@@ -505,6 +515,7 @@ class Homepage extends React.Component {
                             peekyou_loader['platform_attributes'] = peekyou_loader['platform_attributes'].concat(response4.data.platform_attributes);
                             if(response4.status === 202) {
                                 len = response4.data.cleanResponses.length - response3.data.cleanResponses.length
+                                if (len > 1) num_pse+=1
 
                                 if (len === 1) {
                                     peekyou_loader['text'] = len + " record found"
@@ -541,6 +552,7 @@ class Homepage extends React.Component {
                                 spokeo_loader['platform_attributes'] = spokeo_loader['platform_attributes'].concat(response5.data.platform_attributes);
                                 if(response5.status === 202) {
                                     len = response5.data.cleanResponses.length - response4.data.cleanResponses.length
+                                    if (len > 1) num_pse+=1
                                     if (len === 1) {
                                         spokeo_loader['text'] = len + " record found"
                                     } else {
@@ -556,7 +568,8 @@ class Homepage extends React.Component {
                                         showLoader: true,
                                         showLoaders: false,
                                         loaderMessage: "Resolving Your Identity",
-                                        showPSETable: false
+                                        showPSETable: false,
+                                        num_pse: num_pse,
                                     })
                                 } else {
                                     spokeo_loader['text'] = "0 records found"
@@ -821,6 +834,8 @@ class Homepage extends React.Component {
     }
 
     goBack(event){
+        console.log('current state:')
+        console.log(this.state)
         this.setState({
             showERResults: false,
             showScoreCalculation: false,
@@ -850,8 +865,8 @@ class Homepage extends React.Component {
             res['surfaceWebAttributesLists'] = this.state.surfaceWebAttributesLists[index]
             res['attributes'] = this.state.surfaceWebResponse_clean[index].attributes
 
-            console.log("res")
-            console.log(res)
+            // console.log("res")
+            // console.log(res)
 
             if(value > 0.5){ 
                 matches.push(res)
@@ -1112,9 +1127,9 @@ class Homepage extends React.Component {
                          </h4>
                          <div className="row justify-content-center text-center">
                              <div className="col-lg-8">
-                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white', fontSize:"x-large"}}>
+                                 {/* <Alert style={{backgroundColor:'#7C7C7C', color:'white', fontSize:"x-large"}}> */}
                                      What was compromised? {this.state.exposedAttributes}
-                                 </Alert>
+                                 {/* </Alert> */}
                              </div>
                          </div>
                          <div className="row justify-content-center text-center">
@@ -1248,9 +1263,104 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center">
                     {this.state.showProfile && 
                         <> 
-                            <u style={{cursor:"pointer"}} onClick={(e) => this.showER(e)}><h1>Click here to see entity resolution.</h1></u>
+                        
+                        <p style={{color:'white'}} class="pretext"><i>Your Information has been compromised in 1 breach and is published by {this.state.num_pse} people search engine{this.state.num_pse != 1 && 's'}</i></p>
+                        
+                        <div class="header">BREACHES YOUR INFORMATION WAS COMPROMISED IN</div>
+                        <table class="data_table">
+                        <thead>
+                            <tr>
+                            <th>Breaches</th>
+                            <th>Time</th>
+                            <th>Compromised Data</th>
+                            <th># of Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {Object.entries(this.state.db_breach).map( ([key, value]) => {
+                                    return <tr>
+                                    <td>{key}</td>
+                                    <td>{value[0]}</td>
+                                    <td>Email addresses, <span>passwords</span></td>
+                                    <td>{value[1]}</td>
+                                    </tr>
+                            })}
+                            
+                            
+                        </tbody>
+                        </table>
+                            
+                            
+                        {this.state.num_pse > 0 && 
+                            <div>
+                            <div class="header">AVAILABLE PII ON SEARCH ENGINES</div>
+                            <table class="data_table">
+                            <thead>
+                                <tr>
+                                <th>Information</th>
+                                <th>Sources</th>
+                                <th>Remove the attributes from the source</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.entries(this.state.searchEngines).map( ([key, value]) => {
+                                    if(value.platform_attributes.length > 1) {
+                                        return <>
+                                    <tr>
+                                        <td>{value.platform_attributes.map((value2, index) => {
+                                                return <>{value.platform_attributes.length === index+1 ? 
+                                                this.state.privacyAttributesDict[value2] 
+                                                : 
+                                                this.state.privacyAttributesDict[value2]+', '}
+                                                    
+                                                </>
+                                            })}</td>
+                                        
+                                        <td>{key}</td>
+                                        <td><a href="" onClick={(e) => this.showRemovalProcess(e)}>Click here to view the removal process</a></td>
+                                        </tr>
+                                        </>
+                                    }
+                                })}
+                                
+                            </tbody>
+                            </table>
+                            </div>
+                        }
+                        <div class="header2">YOUR PRIVACY RISK SCORE</div>
+                        <table class="data_table">
+                        <tbody class="right">
+                            <tr>
+                            <td rowspan="2">
+                                <GaugeChart 
+                                 id="gauge-chart2" 
+                                 nrOfLevels={3} 
+                                 percent={this.state.entity.score / 4.183}
+                                 // percent={.49}
+                                 textColor={"#000000"} 
+                                 arcsLength={[0.333, 0.334, 0.333]}
+                                 style={{width:'100%'}}
+                                 arcPadding={0}
+                                 cornerRadius={2}
+                                 hideText={true}
+                             />
+                            </td>
+                            <td>Your privacy risk score: {this.state.entity['score']}. <u onClick={(e) => this.showScoreCalculation(e)} style={{cursor:'pointer'}}>Click here to view how your score is calculated.</u></td>
+                            </tr>
+                            <tr style={{height: "74px"}}>
+                            <td>Your privacy risk score is low risk compared to others in your age group. <u onClick={(e) => this.showER(e)} style={{cursor:'pointer'}}>Click here to see how your profile was put together.</u></td>
+                            </tr>
+                        </tbody>
+                        </table>
+
+                        <div class="header">HOW YOUR SCORE COMPARES</div>
+                        <div style={{backgroundColor:'white', maxWidth: "600px", color:'black'}} className="col-lg-12">
+                        <Boxplot bottomColor="#00FF00" topColor="#FF0000" score={this.state.score}></Boxplot>
+                        </div>
+                            {/* <u style={{cursor:"pointer"}} onClick={(e) => this.showER(e)}><h1>Click here to see entity resolution.</h1></u>
                             <u style={{cursor:"pointer"}} onClick={(e) => this.showScoreCalculation(e)}><h1>Click here to view your score is calculated.</h1></u>
-                            <u style={{cursor:"pointer"}} onClick={(e) => this.showRemovalProcess(e)}><h1>Click here to view the removing process.</h1></u>
+                            <u style={{cursor:"pointer"}} onClick={(e) => this.showRemovalProcess(e)}><h1>Click here to view the removing process.</h1></u> */}
                         </>
                     }
                         </div>

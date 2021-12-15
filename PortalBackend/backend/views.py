@@ -165,6 +165,7 @@ def get_nameAndZip(request):
             dbResponses = []
             uneditedResponses = []
             cleanResponses = []
+            tryAgain = False
             items = EmailModel.objects.filter(name=name, zip=zip)
             for item in items:
                 email_serializer = EmailSerializer(item)
@@ -176,7 +177,7 @@ def get_nameAndZip(request):
                 temp = res.copy()
                 # make a copy of the dictionary, clean it so its safe to display on the frontend:
                 cleanResponse = temp.copy()
-                clean_response(cleanResponse)
+                db_attributes = clean_response(cleanResponse)
 
                 cleanResponses.append(cleanResponse)
                 uneditedResponses.append(temp)
@@ -185,11 +186,38 @@ def get_nameAndZip(request):
                 
                 dbResponses.append(res)
             if len(dbResponses) == 0:
-                return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+                tryAgain = True
+                name = name.replace(' ', '  ', 1)
+                # return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+
+            # if necessary try again with additional space 
+            if tryAgain:
+                items = EmailModel.objects.filter(name=name, zip=zip)
+                for item in items:
+                    email_serializer = EmailSerializer(item)
+                    res = email_serializer.data
+                    for key in res:
+                        val = res[key]
+                        if val == None:
+                            res[key] = str(val)
+                    temp = res.copy()
+                    # make a copy of the dictionary, clean it so its safe to display on the frontend:
+                    cleanResponse = temp.copy()
+                    db_attributes = clean_response(cleanResponse)
+
+                    cleanResponses.append(cleanResponse)
+                    uneditedResponses.append(temp)
+                    normalizeAge(res)
+                    checkPhone(res)
+                    
+                    dbResponses.append(res)
+                if len(dbResponses) == 0:
+                    return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
+
             logger.error("db response: {}".format(dbResponses))
             elapsed_time = time.time() - start_time
             logger.info("it took this long --- {}".format(elapsed_time))
-            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses, "cleanResponses": cleanResponses},status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"dbResponse":dbResponses, "uneditedResponses": uneditedResponses, "cleanResponses": cleanResponses, "db_attributes": db_attributes},status=status.HTTP_202_ACCEPTED)
 
 
         except Exception as e: 

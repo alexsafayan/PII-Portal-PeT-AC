@@ -5,6 +5,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import Homepage from './views/Homepage.js';
 import { ProtectYourself } from './views/protectyourself.js';
 import BreachList from './views/breachlist.js';
+import Test from './views/test.js';
 
 export const Routes = () => {
   return (
@@ -18,6 +19,7 @@ export const Routes = () => {
         <Route key="faq" exact path="/FAQ" component={Faq} />
         <Route key="protectyourself" exact path="/ProtectYourself" component={ProtectYourself} />
         <Route key="breachlist" exact path="/DataBreachList" component={BreachList} />
+        <Route key="test" exact path="/test" component={Test} />
       </Switch>
     </div>
   );
