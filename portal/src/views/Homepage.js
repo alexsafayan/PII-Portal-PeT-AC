@@ -83,9 +83,9 @@ class Homepage extends React.Component {
           red: "#ff9c9c",
           green: "#78ac44",
           initial_searchEngines: {
-            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.newreputation.com/anywho.com-opt-out-process'}, 
+            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
             'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
-            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://wiki.onerep.com/post/mylife.com'}, 
+            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.mylife.com/ccpa/index.pubview'}, 
             'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.peekyou.com/about/contact/ccpa_optout/right_to_know_and_delete/'}, 
             'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.spokeo.com/optout'}
         },
@@ -133,7 +133,7 @@ class Homepage extends React.Component {
                     'match':'no'
                     },
                     ]
-                    , 'removeDataURL': 'https://www.newreputation.com/anywho.com-opt-out-process'}, 
+                    , 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
                 'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'birthday', 'phoneNum'], 'results': [{
                     'surfaceWebResults': {
                     'address': "None",
@@ -151,7 +151,7 @@ class Homepage extends React.Component {
                     'state': "None"},
                     'match':'yes'
                     },], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
-                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [], 'removeDataURL': 'https://wiki.onerep.com/post/mylife.com'}, 
+                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [], 'removeDataURL': 'https://www.mylife.com/ccpa/index.pubview'}, 
                 'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'religiousViews', 'politicalViews','phoneNum'], 'results': [], 'removeDataURL': 'https://www.peekyou.com/about/contact/ccpa_optout/right_to_know_and_delete/'}, 
                 'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'results': [], 'removeDataURL': 'https://www.spokeo.com/optout'}
                 }

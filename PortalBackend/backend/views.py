@@ -234,7 +234,7 @@ def search_surfaceWeb_nameAndZip(request):
         search_engine = dic.get('search_engine')
         platforms = ["mylife", "peekyou", "spokeo", "zabasearch", "anywho"]
         if search_engine == 'spokeo':
-            time.sleep(200)
+            time.sleep(2)
         if search_engine not in platforms:
             print("invalid platform")
             return JsonResponse({"num_records":2},status=status.HTTP_202_ACCEPTED)
