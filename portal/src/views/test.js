@@ -19,7 +19,7 @@ class Test extends React.Component {
             <div className="row justify-content-center" style={{color:'white'}}>
             <h1>Coming soon.</h1>
             </div>
-            <Boxplot bottomColor="#00FF00" topColor="#FF0000" score={1.5}></Boxplot>
+            <Boxplot bottomColor="#00FF00" topColor="#FF0000" score={10}></Boxplot>
         </div>
 
     );

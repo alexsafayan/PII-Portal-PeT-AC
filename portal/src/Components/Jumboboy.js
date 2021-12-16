@@ -5,12 +5,12 @@ class Jumboboy extends React.Component {
 
     render() {
       return (
-        <div className="jumbotron bg-white text-center">
+        <div style={{padding:'0.5rem'}}className="jumbotron bg-white text-center">
           <div className="row justify-content-center">
-            <img style={{height:"100px"}} src='lock.svg' alt="AZSecure Lock"></img>
-            <h1 style={{fontSize:"80px", color: 'black'}}>AZSecure Privacy Portal</h1>
+            <img style={{height:"300px"}} src='logo_final.png' alt="AZSecure Lock"></img>
+            {/* <h1 style={{fontSize:"80px", color: 'black'}}>AZSecure Privacy Portal</h1> */}
           </div>
-          <p style={{fontSize:"x-large", color: 'black'}}>Search. Know. Act.</p>
+          {/* <p style={{fontSize:"x-large", color: 'black'}}>Search. Know. Act.</p> */}
         </div>
       )
     }

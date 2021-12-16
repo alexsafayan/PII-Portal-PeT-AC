@@ -83,11 +83,11 @@ class Homepage extends React.Component {
           red: "#ff9c9c",
           green: "#78ac44",
           initial_searchEngines: {
-            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
-            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name']}
+            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.newreputation.com/anywho.com-opt-out-process'}, 
+            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
+            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://wiki.onerep.com/post/mylife.com'}, 
+            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.peekyou.com/about/contact/ccpa_optout/right_to_know_and_delete/'}, 
+            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.spokeo.com/optout'}
         },
         //   searchEngines: {
         //     'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name']}, 
@@ -133,7 +133,7 @@ class Homepage extends React.Component {
                     'match':'no'
                     },
                     ]
-                    }, 
+                    , 'removeDataURL': 'https://www.newreputation.com/anywho.com-opt-out-process'}, 
                 'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'birthday', 'phoneNum'], 'results': [{
                     'surfaceWebResults': {
                     'address': "None",
@@ -150,10 +150,10 @@ class Homepage extends React.Component {
                     'religiousViews': "None",
                     'state': "None"},
                     'match':'yes'
-                    },]}, 
-                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': []}, 
-                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'religiousViews', 'politicalViews','phoneNum'], 'results': []}, 
-                'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'results': []}
+                    },], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
+                'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'results': [], 'removeDataURL': 'https://wiki.onerep.com/post/mylife.com'}, 
+                'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name', 'religiousViews', 'politicalViews','phoneNum'], 'results': [], 'removeDataURL': 'https://www.peekyou.com/about/contact/ccpa_optout/right_to_know_and_delete/'}, 
+                'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'results': [], 'removeDataURL': 'https://www.spokeo.com/optout'}
                 }
           
         };
@@ -877,30 +877,30 @@ class Homepage extends React.Component {
 
         matches.map((value, index) => {
             value['match'] = 'yes'
-            if(value.surfaceWebResults.platform=="Anywho" ){ 
+            if(value.surfaceWebResults.platform === "Anywho" ){ 
                 anywho_records.push(value)
-            } else if (value.surfaceWebResults.platform=="Zabasearch" ){
+            } else if (value.surfaceWebResults.platform==="Zabasearch" ){
                 zabasearch_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Mylife" ){
+            }else if (value.surfaceWebResults.platform==="Mylife" ){
                 mylife_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Peekyou" ){
+            }else if (value.surfaceWebResults.platform==="Peekyou" ){
                 peekyou_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Spokeo" ){
+            }else if (value.surfaceWebResults.platform==="Spokeo" ){
                 spokeo_records.push(value)
             }
         })
 
         nonmatches.map((value, index) => {
             value['match'] = 'no'
-            if(value.surfaceWebResults.platform=="Anywho" ){ 
+            if(value.surfaceWebResults.platform==="Anywho" ){ 
                 anywho_records.push(value)
-            } else if (value.surfaceWebResults.platform=="Zabasearch" ){
+            } else if (value.surfaceWebResults.platform==="Zabasearch" ){
                 zabasearch_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Mylife" ){
+            }else if (value.surfaceWebResults.platform==="Mylife" ){
                 mylife_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Peekyou" ){
+            }else if (value.surfaceWebResults.platform==="Peekyou" ){
                 peekyou_records.push(value)
-            }else if (value.surfaceWebResults.platform=="Spokeo" ){
+            }else if (value.surfaceWebResults.platform==="Spokeo" ){
                 spokeo_records.push(value)
             }
         })
@@ -1027,8 +1027,11 @@ class Homepage extends React.Component {
                         <h1 className="text-center">We found {this.state.dbResponse.length} record{this.state.es} in our collections.</h1>
                         <h1 className="text-center">Please select yours:</h1>
                         <div className="row">
+                            {this.state.dbResponse.length === 2 && <div className="col-2" style={{paddingBottom: "10px"}}></div>}
+                            {this.state.dbResponse.length === 1 && <div className="col-4" style={{paddingBottom: "10px"}}></div>}
                         {this.state.dbResponse.map((value, index) => {
-                            return <div className="col-4" style={{paddingBottom: "10px"}}>
+                            
+                            return  <div className="col-4" style={{paddingBottom: "10px"}}>
                                 <div className="card" onClick={(e) => this.chooseDbResponse(index, e)}
                                     style= {{paddingBottom: "2rem", paddingRight: "1rem", paddingLeft: "1rem", borderRadius: "2rem",
                                             backgroundColor:"#609cd4", cursor: 'pointer', height:'100%', width: '100%'}}
@@ -1165,7 +1168,7 @@ class Homepage extends React.Component {
                 <div className="row justify-content-center">
                     <div className="col-lg-12">
 
-                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="https://doi.org/10.1145/3366423.3380017" target="_blank" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
+                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="https://doi.org/10.1145/3366423.3380017" rel="noopener noreferrer" target="_blank" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
                         <div className="row" style={{marginBottom:'1rem'}}>
                             <DarkWebTable dbresponse={this.state.sample_cleanRecords}></DarkWebTable>
                         </div>
@@ -1224,22 +1227,25 @@ class Homepage extends React.Component {
                     {this.state.showPSETable && 
                         <> 
                             <h1>You can find your PII on the following platforms: </h1>
-                            <table width="100%" style={{border: "3px solid white"}}>
-                                <tbody>
-                                <tr style={{border: "3px solid white", backgroundColor: "#282c34"}}>
-                                    <th style={{border: "3px solid white", width:"15%", textAlign: 'center'}}>&nbsp;&nbsp;Platform</th>
-                                    <th style={{border: "3px solid white", width:"85%", textAlign: 'center'}}>&nbsp;&nbsp;Available PII</th>
+                            {/* <table width="100%" style={{border: "3px solid white"}}> */}
+                            <table width="100%" class="" style={{color: "white"}}>
+                                <thead>
+                                {/* <tr style={{border: "3px solid white", backgroundColor: "#282c34"}}> */}
+                                <tr style={{backgroundColor: "#609cd4", border: "1px solid #BBBBBB"}}>
+                                    <th style={{border: "", width:"30%", textAlign: 'center', color:"white", border: "1px solid #BBBBBB"}}>&nbsp;&nbsp;Platform</th>
+                                    <th style={{border: "", width:"70%", textAlign: 'center', color:"white", border: "1px solid #BBBBBB"}}>&nbsp;&nbsp;Available PII</th>
                                 </tr>
-                                
+                                </thead>
+                                <tbody>
                                 {Object.entries(this.state.searchEngines).map( ([key, value]) => {
                                     if(value.platform_attributes.length > 1) {
                                         return <>
-                                        <tr style={{border: "3px solid white", backgroundColor: "#283c64"}}>
+                                        <tr style={{border: "1px solid #BBBBBB", backgroundColor: "white"}}>
                                             
-                                            <td style={{border: "3px solid white", width:"15%"}}><img src={key+'.jpg'} style={{width:'273px'}} alt='nada'></img></td>
-                                            <td style={{border: "3px solid white", width:"85%"}}>&nbsp;&nbsp;
+                                            <td style={{width:"30%", color:"white", border:'1px solid rgb(187, 187, 187)'}}><img src={key+'.jpg'} style={{width:'273px'}} alt='nada'></img></td>
+                                            <td style={{width:"70%", color:"white", border:'1px solid rgb(187, 187, 187)'}}>&nbsp;&nbsp;
                                                 {value.platform_attributes.map((value, index) => {
-                                                    return <span style={{marginRight:'15px'}}className=""> <figure style={{display: "inline-block"}}> <img src={value+'.png'} style={{marginTop: '25px', width: '65px', height: '65px'}} alt='nada'></img> <figcaption> {value} </figcaption> </figure> </span>
+                                                    return <span style={{marginRight:'15px'}}className=""> <figure style={{display: "inline-block"}}> <img src={value+'.png'} style={{marginTop: '25px', width: '65px', height: '65px'}} alt='nada'></img> <figcaption style={{color:"black"}}className="text-center"> {value} </figcaption> </figure> </span>
                                                 })}
                                             </td>
                                             {/* <td style={{border: "3px solid white", width:"15%"}}>&nbsp;&nbsp;{key}</td> */}
@@ -1264,7 +1270,7 @@ class Homepage extends React.Component {
                     {this.state.showProfile && 
                         <> 
                         
-                        <p style={{color:'white'}} class="pretext"><i>Your Information has been compromised in 1 breach and is published by {this.state.num_pse} people search engine{this.state.num_pse != 1 && 's'}</i></p>
+                        <p style={{color:'white'}} class="pretext"><i>Your Information has been compromised in 1 breach and is published by {this.state.num_pse} people search engine{this.state.num_pse !== 1 && 's'}</i></p>
                         
                         <div class="header">BREACHES YOUR INFORMATION WAS COMPROMISED IN</div>
                         <table class="data_table">
@@ -1294,7 +1300,7 @@ class Homepage extends React.Component {
                             
                         {this.state.num_pse > 0 && 
                             <div>
-                            <div class="header">AVAILABLE PII ON SEARCH ENGINES</div>
+                            <div style={{width:'600px'}}class="header">AVAILABLE PII ON SEARCH ENGINES</div>
                             <table class="data_table">
                             <thead>
                                 <tr>
@@ -1318,7 +1324,7 @@ class Homepage extends React.Component {
                                             })}</td>
                                         
                                         <td>{key}</td>
-                                        <td><a href="" onClick={(e) => this.showRemovalProcess(e)}>Click here to view the removal process</a></td>
+                                        <td><a target="_blank" rel="noopener noreferrer" href={this.state.searchEngines[key]['removeDataURL']} >Click here to view the removal process</a></td>
                                         </tr>
                                         </>
                                     }
@@ -1374,8 +1380,8 @@ class Homepage extends React.Component {
                     {this.state.showScoreCalculation && 
                         <> 
                             <figure className="row justify-content-center">
-                                <img src='score_weights.png' style={{width:"75%"}} alt={"score_weights"}></img>
-                                <figcaption><a style={{color:"white"}} href="https://doi.org/10.1109/ICACCI.2013.6637504" target="_blank">(Srivastava, A., and Geethakumari, G. 2013. "Measuring Privacy Leaks in Online Social Networks")</a></figcaption>
+                                <img src='score_weights3.png' style={{width:"75%", backgroundColor:'white'}} alt={"score_weights"}></img>
+                                <figcaption><a style={{color:"white"}} href="https://doi.org/10.1109/ICACCI.2013.6637504" rel="noopener noreferrer" target="_blank">(Srivastava, A., and Geethakumari, G. 2013. "Measuring Privacy Leaks in Online Social Networks")</a></figcaption>
                             </figure>
                             <h2 className="text-center" style={{width:"100%"}}>Your privacy risk score is <b>{this.state.entity['score']}</b>. </h2>
                             <h2 className="text-center" style={{width:"100%"}}>The following attributes have been leaked:</h2>
@@ -1428,7 +1434,7 @@ class Homepage extends React.Component {
                     <div className='row justify-content-center'>
                         <div className="col-lg-2">
                             <div className="row justify-content-center"> 
-                                Our Collection:
+                                Our Collections:
                             </div>
                         </div> 
                         <div className="col-lg-2">

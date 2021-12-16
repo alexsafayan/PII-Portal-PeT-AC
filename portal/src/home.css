@@ -12,9 +12,10 @@
   }
   div.header {
     width: 100%; max-width: 600px; 
-    background: #283C64;
+    /* background: #283C64; */
+    background: #609cd4;
     box-sizing: border-box;
-    border: 2px #cc0200 solid; 
+    /* border: 2px #cc0200 solid;  */
     padding: 10px; 
     font-weight: 900; color: #fff; font-size: 14px;
     margin-top: 15px; 
@@ -58,9 +59,10 @@
   }
   div.header2 {
     width: 100%; max-width: 600px; 
-    background: #283C64;
+    /* background: #283C64; */
+    background: #609cd4;
     box-sizing: border-box;
-    border: 2px #cc0200 solid; 
+    /* border: 2px #cc0200 solid;  */
     padding: 10px; 
     font-weight: 900; color: #fff; font-size: 13px;
     margin-top: 15px; 
