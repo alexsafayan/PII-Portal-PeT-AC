@@ -28,6 +28,7 @@ class Homepage extends React.Component {
         this.state = {
             db_attributes: ['name', 'zip', 'address', 'jobDetails'],
             num_pse: 1,
+            showMCA: false,
           sample_cleanRecords: {
                 'address': "1234 Ma**********",
                 'age': 73,
@@ -51,6 +52,7 @@ class Homepage extends React.Component {
           'birthday':'Birthdate', 'gender':'Gender'},
           surfaceWebResults: [],
           db_breach: {'tormarket': ['December 2016', '100,000']},
+          email_breach: {'Collection #1': ['January 2019', '772,904,991']},
           surfaceWebResponse_clean: [],
           surfaceWebAttributesLists: [],
           numBreaches: "",
@@ -165,6 +167,7 @@ class Homepage extends React.Component {
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
         this.showER = this.showER.bind(this);
+        this.showMCA = this.showMCA.bind(this);
         this.showScoreCalculation = this.showScoreCalculation.bind(this);
         this.showRemovalProcess = this.showRemovalProcess.bind(this);
         this.organizePredictionTable = this.organizePredictionTable.bind(this);
@@ -256,7 +259,7 @@ class Homepage extends React.Component {
                                 this.setState({
                                     showLoader: false,
                                     dbComplete: false,
-                                    showBadNews: true,
+                                    showEmailProfile: true,
                                     showProtectYourself: true,
                                     showSearchAgain: true,
                                     searchAgainClass: "col-5"
@@ -765,7 +768,8 @@ class Homepage extends React.Component {
         } else if(this.state.searchState === 'Email')
         {
             this.setState({
-                showScoreEmail: true,
+                // showScoreEmail: true,
+                showEmailProfile: true,
                 entity: entity,
                 source: sources,
                 dates: datesCollected,
@@ -813,6 +817,16 @@ class Homepage extends React.Component {
         event.preventDefault();
     }
 
+    showMCA(event) {
+        console.log("in show MCA")
+        this.setState({
+
+            showERResults: !this.state.showERResults,
+            showMCA: !this.state.showMCA
+        })
+        event.preventDefault();
+    }
+
     showScoreCalculation(event) {
         console.log("in show score calculation")
         this.setState({
@@ -836,6 +850,24 @@ class Homepage extends React.Component {
     goBack(event){
         console.log('current state:')
         console.log(this.state)
+        if(this.state.searchState === 'Name + Zip') {
+            this.setState({
+                showERResults: false,
+                showScoreCalculation: false,
+                showRemovalProcess: false,
+                showProfile:true, 
+                showProtectYourself: true
+            })
+        } else if(this.state.searchState === 'Email')
+        {
+            this.setState({
+                showERResults: false,
+                showScoreCalculation: false,
+                showRemovalProcess: false,
+                showEmailProfile:true, 
+                showProtectYourself: true
+            })
+        }
         this.setState({
             showERResults: false,
             showScoreCalculation: false,
@@ -1168,7 +1200,7 @@ class Homepage extends React.Component {
                 <div className="row justify-content-center">
                     <div className="col-lg-12">
 
-                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a href="https://doi.org/10.1145/3366423.3380017" rel="noopener noreferrer" target="_blank" style={{float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
+                        <div className="text-right"><h2 className="text-left">Entity Resolution...<a onClick={(e) => this.showMCA(e)} style={{cursor: "pointer", float:'right',color:'white'}}> <u>Click here to learn more about entity resolution.</u></a></h2></div>
                         <div className="row" style={{marginBottom:'1rem'}}>
                             <DarkWebTable dbresponse={this.state.sample_cleanRecords}></DarkWebTable>
                         </div>
@@ -1263,6 +1295,76 @@ class Homepage extends React.Component {
                     </div>
                 </div>,
 
+                //show email profile
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showEmailProfile && 
+                        <> 
+                        
+                        <p style={{color:'white', fontSize: 'large'}} class="pretext"><i>Your Information has been compromised in 1 breach</i></p>
+                        
+                        <div class="header">BREACHES YOUR INFORMATION WAS COMPROMISED IN</div>
+                        <table class="data_table">
+                        <thead>
+                            <tr>
+                            <th>Breaches</th>
+                            <th>Time</th>
+                            <th>Compromised Data</th>
+                            <th># of Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {Object.entries(this.state.email_breach).map( ([key, value]) => {
+                                    return <tr>
+                                    <td>{key}</td>
+                                    <td>{value[0]}</td>
+                                    <td>Email address, passwords</td>
+                                    <td>{value[1]}</td>
+                                    </tr>
+                            })}
+                            
+                            
+                        </tbody>
+                        </table>
+
+                        <div class="header2">YOUR PRIVACY RISK SCORE</div>
+                        <table class="data_table">
+                        <tbody class="right">
+                            <tr>
+                            <td rowspan="2">
+                                <GaugeChart 
+                                 id="gauge-chart2" 
+                                 nrOfLevels={3} 
+                                 percent={.1833 / 4.183}
+                                 // percent={.49}
+                                 textColor={"#000000"} 
+                                 arcsLength={[0.333, 0.334, 0.333]}
+                                 style={{width:'100%'}}
+                                 arcPadding={0}
+                                 cornerRadius={2}
+                                 hideText={true}
+                             />
+                            </td>
+                            <td>Your privacy risk score: 0.18.</td>
+                            </tr>
+                            <tr style={{height: "74px"}}>
+                            <td>Your privacy risk score is low risk compared to others in your age group.</td>
+                            </tr>
+                        </tbody>
+                        </table>
+
+                        <div class="header">HOW YOUR SCORE COMPARES</div>
+                        <div style={{backgroundColor:'white', maxWidth: "600px", color:'black'}} className="col-lg-12">
+                        <Boxplot bottomColor="#00FF00" topColor="#FF0000" score={this.state.score}></Boxplot>
+                        </div>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
                 //show user profile
                 <div className="container d-flex justify-content-center">
                     <div className="col-lg-10">
@@ -1270,7 +1372,7 @@ class Homepage extends React.Component {
                     {this.state.showProfile && 
                         <> 
                         
-                        <p style={{color:'white'}} class="pretext"><i>Your Information has been compromised in 1 breach and is published by {this.state.num_pse} people search engine{this.state.num_pse !== 1 && 's'}</i></p>
+                        <p style={{color:'white', fontSize: 'large'}} class="pretext"><i>Your Information has been compromised in 1 breach and is published by {this.state.num_pse} people search engine{this.state.num_pse !== 1 && 's'}</i></p>
                         
                         <div class="header">BREACHES YOUR INFORMATION WAS COMPROMISED IN</div>
                         <table class="data_table">
@@ -1288,7 +1390,7 @@ class Homepage extends React.Component {
                                     return <tr>
                                     <td>{key}</td>
                                     <td>{value[0]}</td>
-                                    <td>Email addresses, <span>passwords</span></td>
+                                    <td>Email address, year of birth, city, address, zip</td>
                                     <td>{value[1]}</td>
                                     </tr>
                             })}
@@ -1415,6 +1517,53 @@ class Homepage extends React.Component {
                     </div>
                 </div>,
 
+                //show MAC
+                <div className="container d-flex justify-content-center">
+                    <div className="col-lg-10">
+                    <div className="row justify-content-center">
+                    {this.state.showMCA && 
+                        <> 
+                            <h1 className="text-center" style={{width:"100%"}}>Multi-Context Attention (MCA)</h1>
+                            <p>A deep learning-based entity resolution model, Multi-Context Attention (MCA), 
+                                is leveraged to link candidate records returned from PSEs to the user's input 
+                                and breached data collection. Figure 1 below illustrates the process of entity resolution.
+                            </p>
+                            <figure style={{display: "inline-block"}}> 
+                                <img src={'mca1.png'} style={{marginTop: '10px', width:"800px", backgroundColor:"white"}} alt='nada'></img> 
+                                <figcaption className="text-center">Figure 1. The process of entity resolution</figcaption> 
+                            </figure>
+
+                            <p>We adopt MCA due to its robustness in processing incomplete, inaccurate, 
+                                and redundant records from heterogeneous sources. MCA leverages three deep 
+                                learning-based attention mechanisms to focus on the most discriminative features:
+                                <ol>
+                                <li><b>Self-attention</b>: facilitates word disambiguation by capturing the relationship between a word and the record it belongs to. </li>
+                                <li><b>Pair-attention</b>: jointly learns from the record pair to automatically identify key words that are critical in determining a matched pair.</li>
+                                <li><b>Global-attention</b>: emphasizes highly discriminative words in the entire training dataset.</li>
+                                </ol>
+                            </p>
+                            <figure style={{display: "inline-block"}}> 
+                                <img src={'mca2.png'} style={{marginTop: '10px', width:"800px"}} alt='nada'></img> 
+                                <figcaption className="text-center">Figure 2. Multi-Context Attention (MCA) model</figcaption> 
+                            </figure>
+
+                            <h2 className="text-center" style={{width:"100%"}}>Comparison of MCA and TFIDF Models</h2>
+                            <p>We compared MCA against TFIDF to illustrate how MCA outperformed traditional ER techniques (Figure 11). TFIDF is a frequency-based 
+                                text embedding technique that learned the importance of each term based on term frequency divided by inverse document frequency.
+                            </p>
+
+                            <figure style={{display: "inline-block"}}> 
+                                <img src={'mca3.jpg'} style={{marginTop: '10px', width:"800px", backgroundColor:"white"}} alt='nada'></img> 
+                                <figcaption className="text-center">Figure 3. An example of predicting results from MCA method and TFIDF method.</figcaption> 
+                            </figure>
+
+                            <div style={{width:"100%"}}><u style={{cursor:"pointer"}} onClick={(e) => this.showMCA(e)}>Go back</u></div>
+                        </>
+                    }
+                        </div>
+                    </div>
+                </div>,
+
             //show one loader with customizable message
                 <div className="row justify-content-center">
                     {this.state.showLoader && 
@@ -1477,7 +1626,7 @@ class Homepage extends React.Component {
                 <div style={{fontSize: 'xx-large', fontWeight: 'bold'}}>
                 {this.state.showProtectYourself && 
                 <>
-                <div className='row justify-content-center'>
+                <div style={{paddingTop:'100px'}}className='row justify-content-center'>
                     How do I protect myself? Find out&nbsp;<a style={{color: "inherit"}}href="/ProtectYourself"><u>here</u></a>.
                 </div>
                 </>
