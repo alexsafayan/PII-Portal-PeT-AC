@@ -183,6 +183,12 @@ class Homepage extends React.Component {
     }
     
     handleSubmit(fieldName,searchValue,nameValue,zipValue, event) {
+        var initial_searchEngines = {
+            'anywho': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
+            'zabasearch': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.intelius.com/opt-out/submit/'}, 
+            'mylife': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.mylife.com/ccpa/index.pubview'}, 
+            'peekyou': {'color': "#ff9c9c", 'text': '', 'hasArrow': true, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.peekyou.com/about/contact/ccpa_optout/right_to_know_and_delete/'}, 
+            'spokeo': {'color': "#ff9c9c", 'text': '', 'hasArrow': false, 'platform_attributes': ['name'], 'removeDataURL': 'https://www.spokeo.com/optout'}}
         this.setState({
             errorMessage: "",
             line1: "",
@@ -198,11 +204,15 @@ class Homepage extends React.Component {
             searchValue: searchValue,
             nameValue:nameValue,
             zipValue: zipValue,
-            searchEngines: this.state.initial_searchEngines,
+            searchEngines: initial_searchEngines,
             showProfile: false,
+            showEmailProfile: false,
             showERResults: false,
             showRemovalProcess: false,
-            showRemovalProcess: false
+            showRemovalProcess: false,
+            surfaceWebResults: [],
+            surfaceWebResponse_clean: [],
+            surfaceWebAttributesLists: [],
         });
         //email search
         if(fieldName === 'Email') {
@@ -390,6 +400,8 @@ class Homepage extends React.Component {
 
     chooseDbResponse(id, event) {
         event.preventDefault();
+        console.log('search engines:')
+        console.log(this.state.searchEngines)
         var dbResponse = this.state.dbResponse[id]
         var uneditedDbResponse = this.state.uneditedDbResponse[id]
         var cleanResponse = this.state.cleanResponses[id]
@@ -413,6 +425,8 @@ class Homepage extends React.Component {
                 anywho_loader['color'] = this.state.green
                 anywho_loader['platform_attributes'] = anywho_loader['platform_attributes'].concat(response.data.platform_attributes);
                 var len = response.data.cleanResponses.length
+                console.log('anywho response: ')
+                console.log(response.data.cleanResponses)
                 if (len > 1) num_pse+=1
                 if (len === 1) {
                     anywho_loader['text'] = len + " record found"
