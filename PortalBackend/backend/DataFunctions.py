@@ -5,14 +5,9 @@ import json
 #use this guy
 def calc_score(attributes):
     score = 0 
-#     print("\ncalculating score of:")
-#     print(attributes)
     if not "zip" in attributes:
             print("setting zip")
             attributes['zip'] = "none"
-#     sc = {"phoneNumber": 1.434, "email": 0.438, "address": 2.032, "birthdate": 0.279, 
-#     "hometown": 0.359, "currentTown": 0.279, "jobDetails": 0.478, "relationshipStatus": 0.996, 
-#     "interests": 0.717, "religiousViews": 1.355, "politicalViews": 1.633}
 
     sc = {"phoneNumber": 0.6, "email": 0.1833, "address": 0.85, "birthdate": 0.1166, 
     "hometown": 0.15, "currentTown": 0.1166, "jobDetails": 0.2, "relationshipStatus": 0.4166, 
@@ -372,8 +367,6 @@ def clean_address(response):
                         response['city'] = city_clean
         except:
                 print('error cleaning home town')
-
-
 
 def clean_response(response):
         normalizeAge(response)

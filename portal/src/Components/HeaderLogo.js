@@ -1,7 +1,7 @@
 import React from 'react';
 import '../App.css'
 
-class Jumboboy extends React.Component {
+class HeaderLogo extends React.Component {
 
     render() {
       return (
@@ -16,4 +16,4 @@ class Jumboboy extends React.Component {
     }
 }
 
-export default Jumboboy;
+export default HeaderLogo;

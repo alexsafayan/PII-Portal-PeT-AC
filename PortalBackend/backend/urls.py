@@ -1,8 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
-
 from backend import views 
-#need to add the ability to return individual emails
+
 urlpatterns = [ 
     url(r'^api/emails$', views.get_email),
     url(r'^api/crawlEmail$', views.search_surfaceWeb_email),

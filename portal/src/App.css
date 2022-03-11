@@ -126,7 +126,7 @@
 }
 
 .about-page {
-  color: 'white';
+  color: white;
 }
 
 .learn-more {
@@ -140,4 +140,95 @@ div {
 }
 div::-webkit-scrollbar {
   display: none;
+}
+
+
+.searching-functionality{
+  background-color:#222A35;
+  padding-bottom:40px;
+  padding-top:40px;
+  margin-top: -30px;
+}
+
+.breach-stats {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+table.dbresponse-table td{
+  border: 3px solid black;
+}
+
+table.dbresponse-table th{
+  border: 3px solid black;
+  width: 50%;
+}
+
+#alert-norecordsfound{
+  background-color:#609cd4;
+  color:white;
+  cursor:pointer;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+#alert-whatwascompromised{
+  background-color:#7C7C7C;
+  color:white;
+  cursor:pointer;
+  font-size: x-large;
+}
+
+.xx {
+  font-size: xx-large;
+}
+
+.pse-loader {
+  padding-bottom: 2rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  border-radius: 1rem;
+  border-color: white;
+  height:5rem;
+  width: 7.5rem;
+  text-align:center;
+  align-items:center;
+  line-height:5rem;
+}
+
+.pse-loader-wrapper {
+  padding-bottom: 10px;
+  padding-left: 1rem;
+  padding-right:1rem;
+  align-items: center;
+}
+
+.pse-table {
+  color: white;
+}
+
+table.pse-table tr{
+  border: 1px solid #BBBBBB
+}
+
+table.pse-table th{
+  width:30%;
+  text-align: center;
+  color:white;
+  border: 1px solid #BBBBBB;
+}
+table.pse-table td{
+  width:30%;
+  color:white;
+  border: 1px solid rgb(187, 187, 187);
+}
+
+.mca-image {
+  margin-top: 10px;
+  width:800px, 
+}
+
+.learn-more-button {
+  background-color: #203864 !important;
+  border-color:#525252 !important;
 }

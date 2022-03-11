@@ -1,10 +1,10 @@
 import React from 'react';
-import { About } from './views/about.js';
+import { About } from './views/About.js';
 import { Faq } from './views/faq.js';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Homepage from './views/Homepage.js';
-import { ProtectYourself } from './views/protectyourself.js';
-import BreachList from './views/breachlist.js';
+import { ProtectYourself } from './views/Protectyourself.js';
+import BreachList from './views/Breachlist.js';
 import Test from './views/test.js';
 
 export const Routes = () => {

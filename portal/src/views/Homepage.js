@@ -8,14 +8,11 @@ import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 import '../home.css';
 import Boxplot from '../Components/Boxplot.js'
-// import '../App.css'
+import '../App.css'
 import DisplayResults, { ResultsTable, DatabaseTable, DarkWebTable, SurfaceWebTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
-// import SubscribeModal from '../Components/Sub.js';
 import Searchbar from "../Components/Searchbar";
-// import GoodNews from "../Components/GoodNews";
 import BadNewsEmail from "../Components/BadNewsEmail";
-// import DatabaseResponse from "../Components/DatabaseResponse";
 
 
 
@@ -161,9 +158,7 @@ class Homepage extends React.Component {
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleAgeCheck = this.handleAgeCheck.bind(this);
-        // this.handleChange = this.handleChange.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
-        // this.selectField = this.selectField.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
         this.showER = this.showER.bind(this);
@@ -339,17 +334,6 @@ class Homepage extends React.Component {
                         if(dbResponse.length !== 1) {
                             es = "s"
                         }
-                        // this.setState({
-                        //     showDbResponse: true,
-                        //     showLoader: false,
-                        //     loaderMessage: "Searching surfaceweb",
-                        //     dbAmount: 1,
-                        //     dbResponse: dbResponse,
-                        //     uneditedDbResponse: response.data.uneditedResponses,
-                        //     cleanResponses: response.data.cleanResponses,
-                        //     es: es,
-                        //     showSearchAgain: true
-                        // })
                         this.setState({
                             showLoader: false,
                             dbAmount: dbResponse.length,
@@ -1015,7 +999,7 @@ class Homepage extends React.Component {
     render() {
         return [
             //searching functionality
-                <div style={{backgroundColor:"#222A35", paddingBottom:"40px", paddingTop:"40px", marginTop:"-30px"}}>
+                <div className="searching-functionality">
                 {this.state.showSearch && 
                     <Searchbar 
                         handleSubmit={this.handleSubmit} searchValue={this.state.searchValue} 
@@ -1023,29 +1007,6 @@ class Homepage extends React.Component {
                         fieldName={this.state.fieldName} >
                     </Searchbar>}
                 </div>,
-
-            //birthyear check
-            <div className="container d-flex justify-content-center">
-                {this.state.showAgeCheck &&
-                    <Alert className="" style={{paddingBottom: "2rem", paddingRight: "3rem", paddingLeft: "3rem", backgroundColor: "#609cd4", borderRadius: "2rem"}}>
-                        <div className="row" style={{textAlign:"center", marginBottom:"1rem"}}>
-                        <h1>Please enter your <b>birth year</b> to verify your identity:</h1>
-                        </div>
-                        <div className="row justify-content-center" style={{}}>
-                            <input style={{height:'100%',  fontSize: 'xx-large', width:'20%', marginBottom: ".1rem"}} 
-                            id="agecheck" className="form-control" type="search" aria-label="Search" 
-                            value={this.state.birthyearInput || ''} onChange={(e) => this.handleChange('birthyearInput', e)} />
-                        </div> 
-                        <div className="row justify-content-center" style={{}}>
-                            <button 
-                                style={{backgroundColor: '#203864', color:'#B9BDC5', borderColor:'#656565', width: '20%', height:'60%', fontSize: 'x-large'}} 
-                                className="btn" onClick={(e) => this.handleAgeCheck(e)}>
-                                Submit
-                            </button>
-                        </div> 
-                    </Alert>
-                }
-            </div>,   
 
             //error message
                 <div className="container d-flex justify-content-center">
@@ -1059,7 +1020,6 @@ class Homepage extends React.Component {
                 </div>,   
 
             
-
             //show db Response
                 <>
                 <div className="row justify-content-center">
@@ -1085,19 +1045,19 @@ class Homepage extends React.Component {
                                     <div style={{marginBottom: "1rem"}} className="row justify-content-center">
                                         <img src='cardProfileImage.png' style={{height:'50px', width: '50px'}} alt={"card profile#" + index }></img>
                                     </div>
-                                    <table style={{border: "3px solid black"}}>
-                                        <tbody>
-                                        <tr style={{border: "3px solid black", backgroundColor: "#283c64"}}>
-                                            <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;Name</th>
-                                            <th style={{border: "3px solid black", width:"50%"}}>&nbsp;&nbsp;{value.name}</th>
+                                    <table className="dbresponse-table">
+                                        <tbody >
+                                        <tr style={{backgroundColor: "#283c64"}}>
+                                            <th>&nbsp;&nbsp;Name</th>
+                                            <th className="text-capitalize">&nbsp;&nbsp;{value.name}</th>
                                         </tr>
-                                        <tr style={{border: "3px solid black"}}>
-                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;Phone Number</td>
-                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;{value.phoneNumber}</td>
+                                        <tr>
+                                            <td>&nbsp;&nbsp;Phone Number</td>
+                                            <td>&nbsp;&nbsp;{value.phoneNumber}</td>
                                         </tr>
-                                        <tr style={{border: "3px solid black"}}>
-                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;Birth Year</td>
-                                            <td style={{border: "3px solid black"}}>&nbsp;&nbsp;{value.birthyear}</td>
+                                        <tr>
+                                            <td>&nbsp;&nbsp;Birth Year</td>
+                                            <td>&nbsp;&nbsp;{value.birthyear}</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -1107,7 +1067,7 @@ class Homepage extends React.Component {
                         </div>
                         <div className="row justify-content-center">
                         <div className="col-6">
-                            <Alert style={{backgroundColor:'#609cd4', color:'white', cursor:'pointer', textAlign: 'center', fontSize: "1.5rem"}} onClick={(e) => this.displayGoodNews(e)}>
+                            <Alert id="alert-norecordsfound" onClick={(e) => this.displayGoodNews(e)}>
                                 None of these records are mine.
                             </Alert>
                         </div>
@@ -1132,7 +1092,7 @@ class Homepage extends React.Component {
                          </h4>
                          <div className="row justify-content-center text-center">
                              <div className="col-lg-8">
-                                 <Alert style={{backgroundColor:'#7C7C7C', color:'white', cursor: 'pointer', fontSize:"x-large"}} onClick={(e) => this.showER(e)}>
+                                 <Alert id="alert-whatwascompromised" onClick={(e) => this.showER(e)}>
                                      What was compromised? {this.state.exposedAttributes}
                                  </Alert>
                              </div>
@@ -1152,8 +1112,8 @@ class Homepage extends React.Component {
                              />
                          </div>
                          </div>
-                         <h4 style={{fontSize: "xx-large"}}>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
-                         <h4 style={{fontSize: "xx-large"}}>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
+                         <h4 className="xx">Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
+                         <h4 className="xx">Your privacy risk score is <b>{this.state.entity.score}</b></h4>
                          <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showER(e)}>here.</u></p>
                          </Alert>
                      </div>
@@ -1168,8 +1128,8 @@ class Homepage extends React.Component {
                     <div className="row justify-content-center text-center">
                     <div className="col-lg-12">
                      <Alert variant={this.state.scoreAlertVariant}>
-                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
-                         <h4 style={{fontSize: "xx-large"}}>
+                         <h4 className="xx">Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
+                         <h4 className="xx">
                          {this.state.breaches.map((value, index) => {
                              return <p>{value}</p>
                          })}
@@ -1196,8 +1156,8 @@ class Homepage extends React.Component {
                              />
                          </div>
                          </div>
-                         <h4 style={{fontSize: "xx-large"}}>Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
-                         <h4 style={{fontSize: "xx-large"}}>Your privacy risk score is <b>{this.state.entity.score}</b></h4>
+                         <h4 className="xx">Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
+                         <h4 className="xx">Your privacy risk score is <b>{this.state.entity.score}</b></h4>
                          <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<a style={{color: "inherit", cursor: 'pointer'}} href="/about"><u>here.</u></a></p>
                          </Alert>
                      </div>
@@ -1247,10 +1207,9 @@ class Homepage extends React.Component {
                         <> 
                             {Object.entries(this.state.searchEngines).map(([key, value]) => {
                                 return <div className="">
-                                <div className="row" style={{paddingBottom: "10px", paddingLeft: "1rem", paddingRight:'1rem', alignItems:'center'}}>
-                                    <div className="card"
-                                        style= {{paddingBottom: "2rem", paddingRight: "1rem", paddingLeft: "1rem", borderRadius: "1rem", borderColor: 'white',
-                                                backgroundColor:value.color, height:'5rem', width: '7.5rem', textAlign:'center', alignItems:'center', lineHeight:'5rem'}}
+                                <div className="row pse-loader-wrapper">
+                                    <div className="card pse-loader"
+                                        style= {{backgroundColor:value.color}}
                                     >
                                         <p><b>{key}</b></p>
                                     </div>
@@ -1274,28 +1233,24 @@ class Homepage extends React.Component {
                         <> 
                             <h1>You can find your PII on the following platforms: </h1>
                             {/* <table width="100%" style={{border: "3px solid white"}}> */}
-                            <table width="100%" class="" style={{color: "white"}}>
+                            <table width="100%" className="pse-table">
                                 <thead>
-                                {/* <tr style={{border: "3px solid white", backgroundColor: "#282c34"}}> */}
-                                <tr style={{backgroundColor: "#609cd4", border: "1px solid #BBBBBB"}}>
-                                    <th style={{border: "", width:"30%", textAlign: 'center', color:"white", border: "1px solid #BBBBBB"}}>&nbsp;&nbsp;Platform</th>
-                                    <th style={{border: "", width:"70%", textAlign: 'center', color:"white", border: "1px solid #BBBBBB"}}>&nbsp;&nbsp;Available PII</th>
+                                <tr style={{backgroundColor: "#609cd4"}}>
+                                    <th>&nbsp;&nbsp;Platform</th>
+                                    <th>&nbsp;&nbsp;Available PII</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {Object.entries(this.state.searchEngines).map( ([key, value]) => {
                                     if(value.platform_attributes.length > 1) {
                                         return <>
-                                        <tr style={{border: "1px solid #BBBBBB", backgroundColor: "white"}}>
-                                            
-                                            <td style={{width:"30%", color:"white", border:'1px solid rgb(187, 187, 187)'}}><img src={key+'.jpg'} style={{width:'273px'}} alt='nada'></img></td>
-                                            <td style={{width:"70%", color:"white", border:'1px solid rgb(187, 187, 187)'}}>&nbsp;&nbsp;
+                                        <tr style={{backgroundColor: "white"}}>
+                                            <td><img src={key+'.jpg'} style={{width:'273px'}} alt='nada'></img></td>
+                                            <td>&nbsp;&nbsp;
                                                 {value.platform_attributes.map((value, index) => {
                                                     return <span style={{marginRight:'15px'}}className=""> <figure style={{display: "inline-block"}}> <img src={value+'.png'} style={{marginTop: '25px', width: '65px', height: '65px'}} alt='nada'></img> <figcaption style={{color:"black"}}className="text-center"> {value} </figcaption> </figure> </span>
                                                 })}
                                             </td>
-                                            {/* <td style={{border: "3px solid white", width:"15%"}}>&nbsp;&nbsp;{key}</td> */}
-                                            {/* <td style={{border: "3px solid white", width:"85%"}}>&nbsp;&nbsp;{value.platform_attributes}</td> */}
                                         </tr>
                                         </>
                                     }
@@ -1531,7 +1486,7 @@ class Homepage extends React.Component {
                     </div>
                 </div>,
 
-                //show MAC
+                //show MCA
                 <div className="container d-flex justify-content-center">
                     <div className="col-lg-10">
                     <div className="row justify-content-center">
@@ -1543,7 +1498,7 @@ class Homepage extends React.Component {
                                 and breached data collection. Figure 1 below illustrates the process of entity resolution.
                             </p>
                             <figure style={{display: "inline-block"}}> 
-                                <img src={'mca1.png'} style={{marginTop: '10px', width:"800px", backgroundColor:"white"}} alt='nada'></img> 
+                                <img className="mca-image" src={'mca1.png'} style={{backgroundColor:"white"}} alt='nada'></img> 
                                 <figcaption className="text-center">Figure 1. The process of entity resolution</figcaption> 
                             </figure>
 
@@ -1557,7 +1512,7 @@ class Homepage extends React.Component {
                                 </ol>
                             </p>
                             <figure style={{display: "inline-block"}}> 
-                                <img src={'mca2.png'} style={{marginTop: '10px', width:"800px"}} alt='nada'></img> 
+                                <img className="mca-image" src={'mca2.png'} alt='nada'></img> 
                                 <figcaption className="text-center">Figure 2. Multi-Context Attention (MCA) model</figcaption> 
                             </figure>
 
@@ -1567,7 +1522,7 @@ class Homepage extends React.Component {
                             </p>
 
                             <figure style={{display: "inline-block"}}> 
-                                <img src={'mca3.jpg'} style={{marginTop: '10px', width:"800px", backgroundColor:"white"}} alt='nada'></img> 
+                                <img className="mca-image" src={'mca3.jpg'} style={{backgroundColor:"white"}} alt='nada'></img> 
                                 <figcaption className="text-center">Figure 3. An example of predicting results from MCA method and TFIDF method.</figcaption> 
                             </figure>
 
@@ -1591,7 +1546,7 @@ class Homepage extends React.Component {
                 </div>,
 
             //show breach stats
-                <div style={{fontSize: 'xx-large', fontWeight: 'bold'}}>
+                <div className="breach-stats" >
                     {this.state.showBreachTotals && 
                     <>
                     <div className='row justify-content-center'>

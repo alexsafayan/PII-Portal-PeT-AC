@@ -246,14 +246,11 @@ def search_surfaceWeb_nameAndZip(request):
         zip = dic.get('zip')
         applicable_attributes = ['phoneNumber', 'phone number', 'email', 'gender', 'name', 'birthday', 'city']
         try: 
-            # item = EmailModel.objects.get(name=name, zip=zip)
-            
             data = {"name": name, "zip": zip, "platform":search_engine}
             print('searching with data: {}'.format(data))
             response = requests.post("http://127.0.0.1:5000/users", data)
             
             res = response.json()
-            # print('views received response: {}\n\n\n'.format(res))
             all_vals = []
             
             if res['info']:
@@ -264,8 +261,6 @@ def search_surfaceWeb_nameAndZip(request):
                     else:
                         if not "none" in str(values['name']).lower():
                             all_vals.append(values)
-                # print("crawlers response: ")
-                # print(all_vals)
                 
                 # for each in all_vals:
                 temp_surfaceWebResponse = surfaceWebResponse.copy()

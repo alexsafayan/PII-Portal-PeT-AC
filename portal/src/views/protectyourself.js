@@ -26,7 +26,7 @@ export const ProtectYourself = props => {
               <h3>Use Account Authentication</h3>
             </div>
             <div className="row justify-content-center">
-              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+              <Button className="learn-more-button" size='lg'>Learn More</Button>
             </div>
         </div>
         <div className="col-lg-3">
@@ -37,7 +37,7 @@ export const ProtectYourself = props => {
               <h3>Use Strong Passwords</h3>
             </div>
             <div className="row justify-content-center">
-              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+              <Button className="learn-more-button" size='lg'>Learn More</Button>
             </div>
         </div>
         <div className="col-lg-3">
@@ -48,7 +48,7 @@ export const ProtectYourself = props => {
               <h3>Keep Software Updated</h3>
             </div>
             <div className="row justify-content-center">
-              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+              <Button className="learn-more-button" size='lg'>Learn More</Button>
             </div>
         </div>
         <div className="col-lg-3">
@@ -59,7 +59,7 @@ export const ProtectYourself = props => {
               <h3>Stay Educated on Phishing</h3>
             </div>
             <div className="row justify-content-center">
-              <Button style={{backgroundColor: "#203864", borderColor:"#525252"}} size='lg'>Learn More</Button>
+              <Button className="learn-more-button" size='lg'>Learn More</Button>
             </div>
         </div>
         </div>
