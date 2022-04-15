@@ -1,0 +1,1189 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>AZSecure Privacy Portal Documentation</title>
+  <meta name="author" content="MichaelPesce">
+
+  <meta property="og:title" content="AZSecure Privacy Portal Documentation">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="AZSecure Privacy Portal Documentation.">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+    .row.content {height: 1500px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      background-color: #f1f1f1;
+      height: 100%;
+      position: sticky;
+      top: 0;
+    }
+ 
+   
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height: auto;} 
+    }
+
+    .view_function {
+      text-decoration-line: underline
+    }
+
+    .wrapper p {
+      text-indent: 25px;
+    }
+
+
+    .example_json {
+      -webkit-text-size-adjust: 100%;
+    --feather-border-radius-none-experimental: 0px;
+    --feather-border-radius-xsmall-experimental: 2px;
+    --feather-border-radius-small-experimental: 4px;
+    --feather-border-radius-medium-experimental: 8px;
+    --feather-border-radius-large-experimental: 12px;
+    --feather-border-radius-xlarge-experimental: 16px;
+    --feather-border-radius-infinite-experimental: 9999px;
+    --feather-border-width-none-experimental: 0px;
+    --feather-border-width-small-experimental: 1px;
+    --feather-border-width-medium-experimental: 2px;
+    --feather-border-width-large-experimental: 4px;
+    --feather-breakpoint-xsmall-experimental: 0px;
+    --feather-breakpoint-small-experimental: 600px;
+    --feather-breakpoint-medium-experimental: 1024px;
+    --feather-breakpoint-large-experimental: 1280px;
+    --feather-breakpoint-xlarge-experimental: 1920px;
+    --tw-color-gray-deep: #536471;
+    --tw-color-gray-medium: #b9cad3;
+    --tw-color-gray-light: #cfd9de;
+    --tw-color-gray-faded: #eff3f4;
+    --tw-color-gray-faint: #f7f9f9;
+    --tw-color-red-deep: #d11a28;
+    --tw-color-red-medium: #f4212e;
+    --tw-color-red-light: #f87580;
+    --tw-color-red-faded: #fb9fa8;
+    --tw-color-orange-deep: #d86000;
+    --tw-color-orange-medium: #ff7a00;
+    --tw-color-orange-light: #ffad61;
+    --tw-color-orange-faded: #ffc692;
+    --tw-color-yellow-deep: #dcab00;
+    --tw-color-yellow-medium: #ffd400;
+    --tw-color-yellow-light: #ffeb6b;
+    --tw-color-yellow-faded: #fff595;
+    --tw-color-green-deep: #009c64;
+    --tw-color-green-medium: #00ba7c;
+    --tw-color-green-light: #61d6a3;
+    --tw-color-green-faded: #92e3bf;
+    --tw-color-blue-deep: #0083eb;
+    --tw-color-blue-medium: #1d9bf0;
+    --tw-color-blue-light: #6bc9fb;
+    --tw-color-blue-faded: #97e3ff;
+    --tw-color-blue-faint: #eafaff;
+    --tw-color-purple-deep: #6545db;
+    --tw-color-purple-medium: #7856ff;
+    --tw-color-purple-light: #ac97ff;
+    --tw-color-purple-faded: #c5b7ff;
+    --tw-color-blue-0: #eafaff;
+    --tw-color-blue-50: #d7f6ff;
+    --tw-color-blue-100: #bff2ff;
+    --tw-color-blue-200: #97e3ff;
+    --tw-color-blue-300: #6bc9fb;
+    --tw-color-blue-500: #1d9bf0;
+    --tw-color-blue-600: #0083eb;
+    --tw-color-blue-900: #003886;
+    --tw-color-gray-0: #f7f9f9;
+    --tw-color-gray-50: #eff3f4;
+    --tw-color-gray-100: #e5eaec;
+    --tw-color-gray-200: #cfd9de;
+    --tw-color-gray-300: #b9cad3;
+    --tw-color-gray-500: #829aab;
+    --tw-color-gray-700: #536471;
+    --tw-color-gray-900: #37434d;
+    --tw-color-gray-1100: #0f1419;
+    --tw-color-green-0: #edfff9;
+    --tw-color-green-50: #dbf8eb;
+    --tw-color-green-100: #c2f1dc;
+    --tw-color-green-200: #92e3bf;
+    --tw-color-green-300: #61d6a3;
+    --tw-color-green-500: #00ba7c;
+    --tw-color-green-600: #009c64;
+    --tw-color-green-900: #004329;
+    --tw-color-magenta-0: #fff1f8;
+    --tw-color-magenta-50: #ffdded;
+    --tw-color-magenta-100: #fec7e1;
+    --tw-color-magenta-200: #fd9bc9;
+    --tw-color-magenta-300: #fb70b0;
+    --tw-color-magenta-500: #f91880;
+    --tw-color-magenta-600: #d4136d;
+    --tw-color-magenta-900: #640533;
+    --tw-color-orange-0: #fef5ec;
+    --tw-color-orange-50: #ffeddb;
+    --tw-color-orange-100: #ffe0c2;
+    --tw-color-orange-200: #ffc692;
+    --tw-color-orange-300: #ffad61;
+    --tw-color-orange-500: #ff7a00;
+    --tw-color-orange-600: #d86000;
+    --tw-color-orange-900: #692100;
+    --tw-color-plum-0: #ffefff;
+    --tw-color-plum-50: #fae0fa;
+    --tw-color-plum-100: #f4cdf5;
+    --tw-color-plum-200: #e9a7eb;
+    --tw-color-plum-300: #df82e0;
+    --tw-color-plum-500: #c936cc;
+    --tw-color-plum-600: #ab2bae;
+    --tw-color-plum-900: #520b53;
+    --tw-color-purple-0: #f5f3ff;
+    --tw-color-purple-50: #ece8ff;
+    --tw-color-purple-100: #dfd8ff;
+    --tw-color-purple-200: #c5b7ff;
+    --tw-color-purple-300: #ac97ff;
+    --tw-color-purple-500: #7856ff;
+    --tw-color-purple-600: #6545db;
+    --tw-color-purple-900: #2c116e;
+    --tw-color-red-0: #fff0f1;
+    --tw-color-red-50: #fedee3;
+    --tw-color-red-100: #fdc9ce;
+    --tw-color-red-200: #fb9fa8;
+    --tw-color-red-300: #f87580;
+    --tw-color-red-500: #f4212e;
+    --tw-color-red-600: #d11a28;
+    --tw-color-red-900: #67070f;
+    --tw-color-teal-0: #e9feff;
+    --tw-color-teal-50: #d1f8fa;
+    --tw-color-teal-100: #b3f1f4;
+    --tw-color-teal-200: #78e4e8;
+    --tw-color-teal-300: #3cd6dd;
+    --tw-color-teal-500: #00afb6;
+    --tw-color-teal-600: #009399;
+    --tw-color-teal-900: #003e42;
+    --tw-color-yellow-0: #fffdea;
+    --tw-color-yellow-50: #fffed7;
+    --tw-color-yellow-100: #fffec0;
+    --tw-color-yellow-200: #fff595;
+    --tw-color-yellow-300: #ffeb6b;
+    --tw-color-yellow-500: #ffd400;
+    --tw-color-yellow-600: #dcab00;
+    --tw-color-yellow-900: #6f3e00;
+    --tw-color-blue-primary: #1d9bf0;
+    --tw-color-text-primary: #0f1419;
+    --tw-color-text-link: #0083eb;
+    --feather-form-control-xsmall-font-size: 0.65rem;
+    --feather-form-control-xsmall-height: 1.2rem;
+    --feather-form-control-xsmall-border-radius: 8px;
+    --feather-form-control-xsmall-padding-x: 0.4rem;
+    --feather-form-control-xsmall-adornment-margin: 0.2rem;
+    --feather-form-control-small-font-size: 0.65rem;
+    --feather-form-control-small-height: 1.6rem;
+    --feather-form-control-small-border-radius: 8px;
+    --feather-form-control-small-padding-x: 0.6rem;
+    --feather-form-control-small-adornment-margin: 0.2rem;
+    --feather-form-control-default-font-size: 0.75rem;
+    --feather-form-control-default-height: 1.8rem;
+    --feather-form-control-default-border-radius: 8px;
+    --feather-form-control-default-padding-x: 0.6rem;
+    --feather-form-control-default-adornment-margin: 0.4rem;
+    --feather-form-control-large-font-size: 0.85rem;
+    --feather-form-control-large-height: 2.2rem;
+    --feather-form-control-large-border-radius: 8px;
+    --feather-form-control-large-padding-x: 0.6rem;
+    --feather-form-control-large-adornment-margin: 0.4rem;
+    --feather-grid-micro: 0.2rem;
+    --feather-grid-xxsmall: 0.4rem;
+    --feather-grid-xsmall: 0.6rem;
+    --feather-grid-small: 0.8rem;
+    --feather-grid-medium: 1rem;
+    --feather-grid-large: 1.2rem;
+    --feather-grid-mega: 2rem;
+    --feather-grid-baseline-gap: 8px;
+    --feather-grid-column-gap: 20px;
+    --feather-grid-column-width: 78px;
+    --feather-grid-page-width: 1156px;
+    --feather-layout-container-padding-x: 1.2rem;
+    --feather-layout-navigation-bar-height-experimental: 2.8rem;
+    --feather-layout-navigation-sidebar-width-experimental: 14rem;
+    --feather-space-1: 1px;
+    --feather-space-2: 0.1rem;
+    --feather-space-4: 0.2rem;
+    --feather-space-6: 0.3rem;
+    --feather-space-8: 0.4rem;
+    --feather-space-12: 0.6rem;
+    --feather-space-16: 0.8rem;
+    --feather-space-20: 1rem;
+    --feather-space-24: 1.2rem;
+    --feather-space-28: 1.4rem;
+    --feather-space-32: 1.6rem;
+    --feather-space-36: 1.8rem;
+    --feather-space-40: 2rem;
+    --feather-space-48: 2.4rem;
+    --feather-space-64: 3.2rem;
+    --feather-space-80: 4rem;
+    --feather-font-family-base: TwitterChirp,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    --feather-font-family-monospace: Menlo,Monaco,Consolas,"Courier New",monospace;
+    --feather-font-size-root: 20px;
+    --feather-font-size-title-3: 1.3rem;
+    --feather-line-height-title-3: 1.6rem;
+    --feather-font-size-title-4: 1.15rem;
+    --feather-line-height-title-4: 1.4rem;
+    --feather-font-size-headline-1: 1rem;
+    --feather-line-height-headline-1: 1.2rem;
+    --feather-font-size-headline-2: 0.85rem;
+    --feather-line-height-headline-2: 1rem;
+    --feather-font-size-body: 0.75rem;
+    --feather-line-height-body: 1rem;
+    --feather-font-size-subtext-1: 0.7rem;
+    --feather-line-height-subtext-1: 0.8rem;
+    --feather-font-size-subtext-2: 0.65rem;
+    --feather-line-height-subtext-2: 0.8rem;
+    --feather-font-size-subtext-3: 0.55rem;
+    --feather-line-height-subtext-3: 0.6rem;
+    --feather-font-weight-normal: 400;
+    --feather-font-weight-medium: 500;
+    --feather-font-weight-bold: 700;
+    --feather-font-weight-heavy-experimental: 800;
+    --feather-font-size-jumbo: var(--feather-font-size-title-3);
+    --feather-font-size-large: var(--feather-font-size-headline-1);
+    --feather-font-size-normal: var(--feather-font-size-body);
+    --feather-font-size-small: var(--feather-font-size-subtext-2);
+    --feather-font-size-xlarge: var(--feather-font-size-title-4);
+    --feather-line-height-jumbo: var(--feather-line-height-title-3);
+    --feather-line-height-large: var(--feather-line-height-headline-1);
+    --feather-line-height-normal: var(--feather-line-height-body);
+    --feather-line-height-small: var(--feather-line-height-subtext-2);
+    --feather-line-height-xlarge: var(--feather-line-height-title-4);
+    --navbar-short: 48px;
+    --navbar-tall: 96px;
+    --black-neutral: #14171a;
+    --dark-gray-neutral: #657786;
+    --light-gray-neutral: #aab8c2;
+    --extra-light-gray-neutral: #ccd6dd;
+    --extra-extra-light-gray-neutral: #f5f8fa;
+    --white-neutral: #fff;
+    --orange-extra-light: #ffbe78;
+    --yellow-extra-light: #ffe76e;
+    --green-extra-light: #a5f2aa;
+    --blue-extra-light: #97e3ff;
+    --purple-extra-light: #c7b4fa;
+    --pink-extra-light: #ffb8c2;
+    --orange-light: #ff8d57;
+    --yellow-light: #ffd03f;
+    --green-light: #68e090;
+    --blue-light: #71c9f8;
+    --purple-light: #a37ced;
+    --pink-light: #f6809a;
+    --orange-dark: #f45d22;
+    --yellow-dark: #ffad1f;
+    --green-dark: #1fb650;
+    --blue-dark: #067acc;
+    --purple-dark: #794bc4;
+    --pink-dark: #e0245e;
+    --orange-extra-dark: #d82e18;
+    --yellow-extra-dark: #f98e00;
+    --green-extra-dark: #008951;
+    --blue-extra-dark: #005fd1;
+    --purple-extra-dark: #4f0299;
+    --pink-extra-dark: #a01744;
+    --feather-label-height: var(--feather-space-16);
+    --feather-label-large-height: var(--feather-space-20);
+    --feather-label-font-size-experimental: var(--feather-font-size-subtext-3);
+    --feather-label-line-height-experimental: var(--feather-line-height-subtext-3);
+    --feather-label-padding-vertical-experimental: var(--feather-space-2);
+    --feather-label-padding-horizontal-experimental: var(--feather-space-4);
+    --feather-label-padding-top-offset-experimental: 2px;
+    --feather-label-border-radius-experimental: 3px;
+    --feather-label-gray-color-experimental: var(--tw-color-gray-900);
+    --feather-label-gray-background-color-experimental: var(--tw-color-gray-100);
+    --feather-label-blue-color-experimental: var(--tw-color-blue-900);
+    --feather-label-blue-background-color-experimental: var(--tw-color-blue-100);
+    --feather-label-green-color-experimental: var(--tw-color-green-900);
+    --feather-label-green-background-color-experimental: var(--tw-color-green-100);
+    --feather-label-orange-color-experimental: var(--tw-color-orange-900);
+    --feather-label-orange-background-color-experimental: var(--tw-color-orange-100);
+    --feather-label-red-color-experimental: var(--tw-color-red-900);
+    --feather-label-red-background-color-experimental: var(--tw-color-red-100);
+    --feather-label-light-orange-color-experimental: var(--tw-color-orange-500);
+    --feather-label-status-dot-font-size-experimental: var(--feather-font-size-subtext-2);
+    --feather-label-status-dot-line-height-experimental: var(--feather-line-height-subtext-2);
+    --feather-label-status-dot-large-font-size-experimental: var(--feather-font-size-body);
+    --feather-label-status-dot-large-line-height-experimental: var(--feather-line-height-body);
+    --feather-label-status-dot-gray-background-color-experimental: var(--tw-color-gray-500);
+    --feather-label-status-dot-orange-background-color-experimental: var(--tw-color-orange-500);
+    --feather-label-status-dot-size-experimental: 0.25rem;
+    --feather-dropdown-background-color-experimental: #fff;
+    --feather-dropdown-border-experimental: var(--feather-border-width-small-experimental) solid var(--tw-color-gray-100);
+    --feather-dropdown-border-radius-experimental: var(--feather-border-radius-medium-experimental);
+    --feather-dropdown-detail-panel-background-color-experimental: #fff;
+    --feather-dropdown-detail-panel-border-color-experimental: var(--tw-color-gray-100);
+    --feather-dropdown-divider-margin-x-experimental: 0;
+    --feather-dropdown-icon-check-color-experimental: var(--tw-color-text-primary);
+    --feather-dropdown-menu-item-padding-y-experimental: var(--feather-space-8);
+    --feather-dropdown-selected-background-color-experimental: var(--tw-color-gray-50);
+    --feather-form-input-adornment-icon-color-experimental: var(--tw-color-gray-700);
+    --feather-form-input-adornment-text-color-experimental: var(--tw-color-gray-700);
+    --feather-form-input-disabled-background-color-experimental: var(--tw-color-gray-50);
+    --feather-form-input-disabled-placeholder-color-experimental: var(--tw-color-gray-700);
+    --feather-form-input-disabled-text-color-experimental: var(--tw-color-text-primary);
+    --feather-form-input-disabled-opacity-experimental: 0.5;
+    --feather-form-input-placeholder-color-experimental: var(--tw-color-gray-500);
+    --feather-form-input-readonly-background-color-experimental: var(--tw-color-gray-50);
+    --feather-button-background-color-active-experimental: var(--tw-color-gray-200);
+    --feather-button-background-color-experimental: #fff;
+    --feather-button-background-color-hover-experimental: var(--tw-color-gray-100);
+    --feather-button-border-color-active-experimental: var(--feather-button-background-color-active-experimental);
+    --feather-button-border-color-experimental: var(--tw-color-gray-200);
+    --feather-button-border-color-hover-experimental: var(--feather-button-border-color-experimental);
+    --feather-button-color-experimental: var(--tw-color-text-primary);
+    --feather-button-outline-color-focus-experimental: rgba(29,155,240,0.5);
+    --feather-button-primary-background-color-active-experimental: #3f4347;
+    --feather-button-primary-background-color-experimental: var(--tw-color-gray-1100);
+    --feather-button-primary-background-color-hover-experimental: #272b30;
+    --feather-button-primary-border-color-active-experimental: var(--feather-button-primary-background-color-active-experimental);
+    --feather-button-primary-border-color-experimental: var(--feather-button-primary-background-color-experimental);
+    --feather-button-primary-border-color-hover-experimental: var(--feather-button-primary-background-color-hover-experimental);
+    --feather-button-primary-color-experimental: #fff;
+    --feather-button-primary-outline-color-focus-experimental: var(--feather-button-outline-color-focus-experimental);
+    --feather-button-danger-primary-background-color-active-experimental: #c31a25;
+    --feather-button-danger-primary-background-color-experimental: var(--tw-color-red-500);
+    --feather-button-danger-primary-background-color-hover-experimental: #dc1e29;
+    --feather-button-danger-primary-border-color-experimental: var(--feather-button-danger-primary-background-color-experimental);
+    --feather-button-danger-primary-color-experimental: #fff;
+    --feather-button-danger-primary-outline-color-focus-experimental: var(--tw-color-red-500);
+    --feather-button-link-color-experimental: var(--tw-color-text-primary);
+    --feather-button-link-font-weight-experimental: var(--feather-font-weight-medium);
+    --feather-button-danger-link-color-experimental: var(--tw-color-red-500);
+    --feather-button-group-selected-background-color-active-experimental: var(--feather-button-primary-background-color-active-experimental);
+    --feather-button-group-selected-background-color-experimental: var(--feather-button-primary-background-color-experimental);
+    --feather-button-group-selected-background-color-hover-experimental: var(--feather-button-primary-background-color-hover-experimental);
+    --feather-button-group-selected-border-color-active-experimental: var(--feather-button-primary-border-color-active-experimental);
+    --feather-button-group-selected-border-color-experimental: var(--feather-button-primary-border-color-experimental);
+    --feather-button-group-selected-border-color-hover-experimental: var(--feather-button-primary-border-color-hover-experimental);
+    --feather-button-group-selected-color-experimental: var(--feather-button-primary-color-experimental);
+    --feather-button-group-selected-outline-color-focus-experimental: var(--feather-button-primary-outline-color-focus-experimental);
+    --feather-callout-border-radius-experimental: var(--feather-border-radius-medium-experimental);
+    --feather-callout-closable-padding-end-experimental: calc(var(--feather-callout-close-width-experimental) + var(--feather-callout-close-margin-x-experimental)*2);
+    --feather-callout-close-color-experimental: var(--tw-color-text-primary);
+    --feather-callout-close-icon-width-experimental: var(--feather-space-16);
+    --feather-callout-close-padding-experimental: var(--feather-space-4);
+    --feather-callout-close-width-experimental: calc(var(--feather-callout-close-icon-width-experimental) + var(--feather-callout-close-padding-experimental)*2);
+    --feather-callout-global-padding-x-experimental: var(--feather-space-40);
+    --feather-callout-global-padding-y-experimental: var(--feather-space-20);
+    --feather-callout-padding-x-experimental: var(--feather-space-16);
+    --feather-callout-padding-y-experimental: var(--feather-space-16);
+    --feather-callout-title-font-size-experimental: var(--feather-font-size-body);
+    --feather-callout-title-line-height-experimental: var(--feather-line-height-body);
+    --feather-callout-with-title-padding-x-experimental: var(--feather-space-16);
+    --feather-callout-with-title-padding-y-experimental: var(--feather-space-16);
+    --feather-callout-icon-color-experimental: var(--tw-color-text-primary);
+    --feather-callout-icon-font-size-experimental: var(--feather-callout-icon-size-experimental);
+    --feather-callout-icon-line-height-experimental: var(--feather-callout-icon-size-experimental);
+    --feather-callout-icon-margin-experimental: var(--feather-space-8);
+    --feather-callout-icon-size-experimental: var(--feather-space-24);
+    --feather-callout-with-title-icon-font-size-experimental: var(--feather-callout-icon-size-experimental);
+    --feather-callout-with-title-icon-line-height-experimental: var(--feather-callout-icon-size-experimental);
+    --feather-callout-with-title-icon-size-experimental: var(--feather-space-24);
+    --feather-callout-close-margin-x-experimental: calc(var(--feather-callout-padding-x-experimental) - var(--feather-callout-close-padding-experimental));
+    --feather-callout-close-margin-y-experimental: calc(var(--feather-callout-padding-y-experimental) - var(--feather-callout-close-padding-experimental));
+    --feather-callout-blue-background-color-experimental: var(--tw-color-blue-0);
+    --feather-callout-green-background-color-experimental: var(--tw-color-green-0);
+    --feather-callout-orange-background-color-experimental: var(--tw-color-orange-0);
+    --feather-callout-red-background-color-experimental: var(--tw-color-red-0);
+    direction: ltr;
+    --theme-color: var(--blue-dark);
+    --nav-height: var(--navbar-short);
+    word-spacing: normal;
+    box-sizing: inherit;
+    background-repeat: no-repeat;
+    margin: 0;
+    font-weight: 400;
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    letter-spacing: normal;
+    font-family: Courier New,Courier,monospace!important;
+    color: #e0245e;
+    background-color: #f3f7fa;
+    padding: 0 .5em;
+    border-radius: 4px;
+    width: 100%;
+    overflow: auto;
+    tab-size: 26px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    }
+
+    hr {
+       display: block;
+       position: relative;
+       padding: 0;
+       margin: 8px auto;
+       height: 0;
+       width: 100%;
+       max-height: 0;
+       font-size: 1px;
+       line-height: 0;
+       clear: both;
+       border: none;
+       border-top: 1px solid #aaaaaa;
+       border-bottom: 1px solid #ffffff;
+    }
+
+  </style>
+</head>
+
+<body>
+
+    <div class="wrapper container-fluid">
+        <div class="row content">
+          <div class="col-sm-2 sidenav">
+            <div class="col-sm-2" style="position: fixed">
+            <h4>AZSecure Privacy Portal API Documentation</h4>
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#section1">Home</a></li>
+                <li><a href="#apiendpoints">API Endpoints</a></li>
+                <!-- <li><a href="#views">Views</a></li> -->
+                <li><a href="#models">Models</a></li>
+            </ul><br>
+            </div>
+          </div>
+          
+          <div class="col-sm-10">
+            <h1 id="apiendpoints">API Endpoints</h1>
+            <hr>
+            <p>
+                <h2 class="view_function">query_email()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/emails</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>email</td>
+                    <td>required</td>
+                    <td>String containing a valid email address</td>
+                    <td>lebron@gmail.com</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                {
+                  "data": {
+                      "dbResponse": {
+                          "id": "None",
+                          "email": "lebron@gmail.com",
+                          "name": "",
+                          "zip": "None",
+                          "phoneNum": "None",
+                          "address": "None",
+                          "ssn": "None",
+                          "birthday": "None",
+                          "hometown": "None",
+                          "currentTown": "None",
+                          "jobDetails": "None",
+                          "relationshipStatus": "None",
+                          "interests": "None",
+                          "politicalViews": "None",
+                          "religiousViews": "None",
+                          "platform": "None",
+                          "dateCollected": "None"
+                      }
+                  },
+                  "status": 202,
+                  "statusText": "Accepted",
+                  "headers": {
+                      "content-length": "373",
+                      "content-type": "application/json"
+                  },
+                  "config": {
+                      "url": "/emails",
+                      "method": "post",
+                      "data": "{\"email\":\"lebron@gmail.com\"}",
+                      "headers": {
+                          "Accept": "application/json, text/plain, */*",
+                          "Content-Type": "application/json"
+                      },
+                      "baseURL": "http://localhost:8000/api",
+                      "transformRequest": [
+                          null
+                      ],
+                      "transformResponse": [
+                          null
+                      ],
+                      "timeout": 0,
+                      "xsrfCookieName": "XSRF-TOKEN",
+                      "xsrfHeaderName": "X-XSRF-TOKEN",
+                      "maxContentLength": -1,
+                      "maxBodyLength": -1
+                  },
+                  "request": {}
+              }
+            </div>
+
+                <h2 class="view_function">query_nameAndZip()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/names</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>name</td>
+                    <td>required</td>
+                    <td>String containing a first and last name</td>
+                    <td>lee katchen</td>
+                  </tr>
+                  <tr>
+                    <td>zip</td>
+                    <td>required</td>
+                    <td>String containing a valid US zip code</td>
+                    <td>16512</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                  {
+                    "data": {
+                        "dbResponse": [
+                            {
+                                "id": "None",
+                                "email": "none",
+                                "name": "kenneth hall",
+                                "zip": "33610",
+                                "phoneNum": 0,
+                                "address": "none",
+                                "ssn": "None",
+                                "birthday": "1949",
+                                "hometown": "none",
+                                "currentTown": "tampa",
+                                "jobDetails": "none",
+                                "relationshipStatus": "none",
+                                "interests": "none",
+                                "politicalViews": "none",
+                                "religiousViews": "none",
+                                "platform": "BuySSN",
+                                "dateCollected": "2017-07-07 17:56:15",
+                                "birthyear": "1949",
+                                "age": 73,
+                                "phoneNumber": "unknown"
+                            }
+                        ],
+                        "uneditedResponses": [
+                            {
+                                "id": "None",
+                                "email": "none",
+                                "name": "kenneth hall",
+                                "zip": "33610",
+                                "phoneNum": "none",
+                                "address": "none",
+                                "ssn": "None",
+                                "birthday": "1949",
+                                "hometown": "none",
+                                "currentTown": "tampa",
+                                "jobDetails": "none",
+                                "relationshipStatus": "none",
+                                "interests": "none",
+                                "politicalViews": "none",
+                                "religiousViews": "none",
+                                "platform": "BuySSN",
+                                "dateCollected": "2017-07-07 17:56:15"
+                            }
+                        ],
+                        "cleanResponses": [
+                            {
+                                "name": "kenneth hall",
+                                "zip": "33***",
+                                "phoneNum": 0,
+                                "platform": "BuySSN",
+                                "dateCollected": "2017-07-07 17:56:15",
+                                "birthyear": "1949",
+                                "age": 73,
+                                "phoneNumber": "unknown",
+                                "city": "ta******",
+                                "attributes": "name: kenneth hall | zip: 33*** | birthyear: 1949 | phoneNumber: unknown | city: ta****** "
+                            }
+                        ],
+                        "db_attributes": [
+                            "name",
+                            "zip",
+                            "phoneNum",
+                            "birthday",
+                            "platform",
+                            "dateCollected",
+                            "birthyear",
+                            "age",
+                            "phoneNumber",
+                            "city"
+                        ]
+                    },
+                    "status": 202,
+                    "statusText": "Accepted",
+                    "headers": {
+                        "content-length": "1303",
+                        "content-type": "application/json"
+                    },
+                    "config": {
+                        "url": "/names",
+                        "method": "post",
+                        "data": "{\"name\":\"kenneth hall\",\"zip\":\"33610\"}",
+                        "headers": {
+                            "Accept": "application/json, text/plain, */*",
+                            "Content-Type": "application/json"
+                        },
+                        "baseURL": "http://localhost:8000/api",
+                        "transformRequest": [
+                            null
+                        ],
+                        "transformResponse": [
+                            null
+                        ],
+                        "timeout": 0,
+                        "xsrfCookieName": "XSRF-TOKEN",
+                        "xsrfHeaderName": "X-XSRF-TOKEN",
+                        "maxContentLength": -1,
+                        "maxBodyLength": -1
+                    },
+                    "request": {}
+                }
+                </div>
+
+                <h2 class="view_function">crawl_pse_email()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/crawlEmail</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>email</td>
+                    <td>required</td>
+                    <td>String containing a valid email address</td>
+                    <td>lebron@gmail.com</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                  {
+                    "data": "",
+                    "status": 204,
+                    "statusText": "No Content",
+                    "headers": {
+                        "content-length": "373",
+                        "content-type": "application/json"
+                    },
+                    "config": {
+                        "url": "/crawlEmail",
+                        "method": "post",
+                        "data": "{\"email\":\"lebron@gmail.com\",\"dbResponse\":{\"id\":\"None\",\"email\":\"lebron@gmail.com\",\"name\":\"\",\"zip\":\"None\",\"phoneNum\":\"None\",\"address\":\"None\",\"ssn\":\"None\",\"birthday\":\"None\",\"hometown\":\"None\",\"currentTown\":\"None\",\"jobDetails\":\"None\",\"relationshipStatus\":\"None\",\"interests\":\"None\",\"politicalViews\":\"None\",\"religiousViews\":\"None\",\"platform\":\"None\",\"dateCollected\":\"None\"}}",
+                        "headers": {
+                            "Accept": "application/json, text/plain, */*",
+                            "Content-Type": "application/json"
+                        },
+                        "baseURL": "http://localhost:8000/api",
+                        "transformRequest": [
+                            null
+                        ],
+                        "transformResponse": [
+                            null
+                        ],
+                        "timeout": 0,
+                        "xsrfCookieName": "XSRF-TOKEN",
+                        "xsrfHeaderName": "X-XSRF-TOKEN",
+                        "maxContentLength": -1,
+                        "maxBodyLength": -1
+                    },
+                    "request": {}
+                }
+                </div>
+
+
+                <h2 class="view_function">crawl_pse_nameAndZip()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/crawl</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>name</td>
+                    <td>required</td>
+                    <td>String containing a first and last name</td>
+                    <td>lee katchen</td>
+                  </tr>
+                  <tr>
+                    <td>zip</td>
+                    <td>required</td>
+                    <td>String containing a valid US zip code</td>
+                    <td>16512</td>
+                  </tr>
+                  <tr>
+                    <td>platform</td>
+                    <td>required</td>
+                    <td>String containing a PSE platform</td>
+                    <td>peekyou</td>
+                  </tr>
+                  <tr>
+                    <td>surfaceWebResponse</td>
+                    <td>required</td>
+                    <td>List to be populated with PSE search results</td>
+                    <td>[]</td>
+                  </tr>
+                  <tr>
+                    <td>cleanResponses</td>
+                    <td>required</td>
+                    <td>List to be populated with PSE search results in a clean, presentable manner</td>
+                    <td>[]</td>
+                  </tr>
+                  <tr>
+                    <td>surfaceWebAttributesLists</td>
+                    <td>required</td>
+                    <td>List to be populated with sets of attributes found on PSE search</td>
+                    <td>[]</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                  {
+                    "data": {
+                        "surfaceWebResponse": [
+                            {
+                                "name": "Lee Katchen",
+                                "platform": "Mylife",
+                                "birthday": 1,
+                                "currentTown": 0,
+                                "gender": "Male",
+                                "state": "None",
+                                "address": 0,
+                                "phoneNum": 1,
+                                "Relatives": [
+                                    "LEE KATCHEN",
+                                    "JOANNE KATCHEN"
+                                ],
+                                "email": 1,
+                                "jobDetails": 0,
+                                "Alias": [
+                                    "Lee R Katchen",
+                                    "Lee R Katchen"
+                                ],
+                                "politicalViews": 0,
+                                "Ethnicity": "None",
+                                "religiousViews": 0,
+                                "relationshipStatus": 0,
+                                "AnnualIncome": "None",
+                                "NetWorth": "$10,000 - $24,999",
+                                "hometown": 0,
+                                "interests": 0,
+                                "zip": 0,
+                                "agebucket": "generation x",
+                                "medianscore": 3.3,
+                                "phoneNumber": "814-***-****",
+                                "birthyear": "1968",
+                                "age": 54,
+                                "score": 0.9,
+                                "scored_attributes": {
+                                    "email": 0.1833,
+                                    "phoneNumber": 0.6,
+                                    "birthdate": 0.1166
+                                }
+                            },
+                        ],
+                        "return": [
+                            {
+                                "name": "Lee Katchen",
+                                "platform": "Mylife",
+                                "birthday": "01/04/1968",
+                                "currentTown": "None",
+                                "gender": "Male",
+                                "state": "None",
+                                "address": "None",
+                                "phoneNum": [
+                                    "814-***-****",
+                                    "814-***-****"
+                                ],
+                                "Relatives": [
+                                    "LEE KATCHEN",
+                                    "JOANNE KATCHEN"
+                                ],
+                                "email": [
+                                    "****@gmail.com",
+                                    "****@neo.rr.com",
+                                    "****@neo.rr.com",
+                                    "****@gmail.com"
+                                ],
+                                "jobDetails": "None",
+                                "Alias": [
+                                    "Lee R Katchen",
+                                    "Lee R Katchen"
+                                ],
+                                "politicalViews": "none",
+                                "Ethnicity": "None",
+                                "religiousViews": "None",
+                                "relationshipStatus": "none",
+                                "AnnualIncome": "None",
+                                "NetWorth": "$10,000 - $24,999",
+                                "hometown": "none",
+                                "interests": "none",
+                                "zip": "None"
+                            },
+                        ],
+                        "cleanResponses": [
+                            {
+                                "name": "Lee Katchen",
+                                "platform": "Mylife",
+                                "gender": "Male",
+                                "phoneNum": 1,
+                                "Relatives": [
+                                    "LEE KATCHEN",
+                                    "JOANNE KATCHEN"
+                                ],
+                                "email": [
+                                    "****@gmail.com",
+                                    "****@neo.rr.com",
+                                    "****@neo.rr.com",
+                                    "****@gmail.com"
+                                ],
+                                "Alias": [
+                                    "Lee R Katchen",
+                                    "Lee R Katchen"
+                                ],
+                                "NetWorth": "$10,000 - $24,999",
+                                "birthyear": "1968",
+                                "age": 54,
+                                "phoneNumber": "814-***-****",
+                                "attributes": "name: Lee Katchen | gender: Male | Relatives: ['LEE KATCHEN', 'JOANNE KATCHEN'] | email: ['****@gmail.com', '****@neo.rr.com', '****@neo.rr.com', '****@gmail.com'] | Alias: ['Lee R Katchen', 'Lee R Katchen'] | NetWorth: $10,000 - $24,999 | birthyear: 1968 | phoneNumber: 814-***-**** "
+                            },
+                        ],
+                        "surfaceWebAttributesLists": [
+                            "birthday, phone number, email",
+                        ],
+                        "platform_attributes": [
+                            "phone",
+                        ]
+                    },
+                    "status": 202,
+                    "statusText": "Accepted",
+                    "headers": {
+                        "content-length": "7503",
+                        "content-type": "application/json"
+                    },
+                    "config": {
+                        "url": "/crawl",
+                        "method": "post",
+                        "data": "{\"name\":\"Lee Katchen\",\"zip\":\"16510\",\"search_engine\":\"mylife\",\"surfaceWebResponse\":[],\"cleanResponses\":[],\"surfaceWebAttributesLists\":[]}",
+                        "headers": {
+                            "Accept": "application/json, text/plain, */*",
+                            "Content-Type": "application/json"
+                        },
+                        "baseURL": "http://localhost:8000/api",
+                        "transformRequest": [
+                            null
+                        ],
+                        "transformResponse": [
+                            null
+                        ],
+                        "timeout": 0,
+                        "xsrfCookieName": "XSRF-TOKEN",
+                        "xsrfHeaderName": "X-XSRF-TOKEN",
+                        "maxContentLength": -1,
+                        "maxBodyLength": -1
+                    },
+                    "request": {}
+                }
+                </div>
+
+                <h2 class="view_function">resolve_entities()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/resolve</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>dbResponse</td>
+                    <td>required</td>
+                    <td>JSON containing database entry</td>
+                    <td>lee katchen</td>
+                  </tr>
+                  <tr>
+                    <td>surfaceWebResponse</td>
+                    <td>required</td>
+                    <td>String containing PSE crawl results</td>
+                    <td>16512</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                  {
+                    "data": {
+                        "entities": [
+                            {
+                                "email": 1,
+                                "id": "None",
+                                "name": "Lee Katchen",
+                                "zip": "16***",
+                                "phoneNum": 1,
+                                "address": 1,
+                                "ssn": "None",
+                                "birthday": 1,
+                                "hometown": 1,
+                                "currentTown": 1,
+                                "jobDetails": 1,
+                                "relationshipStatus": 1,
+                                "interests": 0,
+                                "politicalViews": 1,
+                                "religiousViews": 1,
+                                "platform": "Mylife",
+                                "dateCollected": "2018-07-07 17:56:15",
+                                "agebucket": "the silent generation",
+                                "medianscore": 3.6,
+                                "phoneNumber": "619-***-****",
+                                "birthyear": "1939",
+                                "age": 83,
+                                "score": 3.9,
+                                "scored_attributes": {
+                                    "email": 0.1833,
+                                    "address": 0.85,
+                                    "phoneNumber": 0.6,
+                                    "birthdate": 0.1166,
+                                    "hometown": 0.15,
+                                    "currentTown": 0.1166,
+                                    "jobDetails": 0.2,
+                                    "relationshipStatus": 0.4166,
+                                    "politicalViews": 0.6833,
+                                    "religiousViews": 0.5666
+                                }
+                            }
+                        ],
+                        "sources": [
+                            {
+                                "id": "",
+                                "email": "Mylife",
+                                "name": "TorMarket, Mylife",
+                                "zip": "TorMarket",
+                                "phoneNum": "TorMarket, Mylife",
+                                "address": "TorMarket",
+                                "ssn": "",
+                                "birthday": "TorMarket, Mylife",
+                                "hometown": "TorMarket",
+                                "currentTown": "TorMarket",
+                                "jobDetails": "TorMarket",
+                                "relationshipStatus": "TorMarket",
+                                "interests": "",
+                                "politicalViews": "TorMarket",
+                                "religiousViews": "TorMarket",
+                                "platform": "TorMarket, Mylife",
+                                "dateCollected": "TorMarket"
+                            }
+                        ],
+                        "dates": [
+                            {
+                                "name": "2022-04-15",
+                                "zip": "2018-07-07",
+                                "phoneNum": "2022-04-15",
+                                "address": "2018-07-07",
+                                "birthday": "2022-04-15",
+                                "hometown": "2018-07-07",
+                                "currentTown": "2018-07-07",
+                                "jobDetails": "2018-07-07",
+                                "relationshipStatus": "2018-07-07",
+                                "politicalViews": "2018-07-07",
+                                "religiousViews": "2018-07-07",
+                                "platform": "2022-04-15",
+                                "dateCollected": "2018-07-07",
+                                "email": "2022-04-15"
+                            }
+                        ],
+                        "exposedAttributesList": [
+                            "email, phone number, address, birthday, home town, current town, job details, relationship status, political views, religious views"
+                        ],
+                        "exposedAttributesVals": [
+                            {
+                                "email": [
+                                    "****@hotmail.com",
+                                    "****@aol.com",
+                                    "****@yahoo.com"
+                                ],
+                                "phoneNum": [
+                                    "619-***-****"
+                                ],
+                                "address": "1234 Marcus St",
+                                "birthday": "10/03/1939",
+                                "hometown": "erie",
+                                "currentTown": "erie",
+                                "jobDetails": "carpenter",
+                                "relationshipStatus": "married",
+                                "politicalViews": "moderate",
+                                "religiousViews": "buddhist"
+                            }
+                        ],
+                        "predictions": [
+                            0.9306796789169312,
+                            0.9268316626548767,
+                            0.8577371835708618,
+                        ],
+                        "tfidf_predictions": [
+                            0.27735009811261463,
+                            0.27735009811261463,
+                            0.27735009811261463,
+                        ]
+                    },
+                    "status": 202,
+                    "statusText": "Accepted",
+                    "headers": {
+                        "content-length": "2478",
+                        "content-type": "application/json"
+                    },
+                    "config": {
+                        "url": "/resolve",
+                        "method": "post",
+                        "data": "{}",
+                        "headers": {
+                            "Accept": "application/json, text/plain, */*",
+                            "Content-Type": "application/json"
+                        },
+                        "baseURL": "http://localhost:8000/api",
+                        "transformRequest": [
+                            null
+                        ],
+                        "transformResponse": [
+                            null
+                        ],
+                        "timeout": 0,
+                        "xsrfCookieName": "XSRF-TOKEN",
+                        "xsrfHeaderName": "X-XSRF-TOKEN",
+                        "maxContentLength": -1,
+                        "maxBodyLength": -1
+                    },
+                    "request": {}
+                }
+                </div>
+
+                <h2 class="view_function">email_subscribe()</h2>
+                <h3>Resource URL</h3>
+                <p>POST api/subscribe</p>
+                <h3>Parameters</h3>
+                <table class="table"> 
+                  <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                  </tr>
+                  <tr>
+                    <td>email</td>
+                    <td>required</td>
+                    <td>String containing a valid email address</td>
+                    <td>lebron@gmail.com</td>
+                  </tr>
+                </table>
+                <h3>Example Response</h3>
+                <div class="example_json">
+                  {
+                    "data": {
+                        "message": "success"
+                          }
+                    "status": 202,
+                    "statusText": "Accepted",
+                    "headers": {
+                        "content-length": "2478",
+                        "content-type": "application/json"
+                    },
+                    "config": {
+                        "url": "/resolve",
+                        "method": "post",
+                        "data": "{}",
+                        "headers": {
+                            "Accept": "application/json, text/plain, */*",
+                            "Content-Type": "application/json"
+                        },
+                        "baseURL": "http://localhost:8000/api",
+                        "transformRequest": [
+                            null
+                        ],
+                        "transformResponse": [
+                            null
+                        ],
+                        "timeout": 0,
+                        "xsrfCookieName": "XSRF-TOKEN",
+                        "xsrfHeaderName": "X-XSRF-TOKEN",
+                        "maxContentLength": -1,
+                        "maxBodyLength": -1
+                    },
+                    "request": {}
+                }
+              </div>
+            </p>
+            <br><br>
+
+            <!-- <h1 id="views">Views</h1>
+            <p class="wrapper">
+                <h3 class="view_function">views.query_email(request)</h3>
+                <p>Query database for email address<br><b>Request Parameters:</b> email<br><b>Return:</b> JSON object containing dbResponse</p>
+                <h3 class="view_function">views.query_nameAndZip(request)</h3>
+                <p>Query database for name & zip combo<br><b>Request Parameters:</b> name, zip<br><b>Return:</b> JSON object containing dbResponse</p>
+                <h3 class="view_function">views.crawl_pse_email(request)</h3>
+                <p>Trigger people search engine crawler<br><b>Request Parameters:</b> email<br><b>Return:</b> JSON object containing entities, sources, datesCollected</p>
+                <h3 class="view_function">views.crawl_pse_nameAndZip(request)</h3>
+                <p>Trigger people search engine crawlers<br><b>Request Parameters:</b> name, zip<br><b>Return:</b> JSON object containing surfaceWebResponse</p>
+                <h3 class="view_function">views.resolve_entities(request)</h3>
+                <p>Run entity resolution model<br><b>Request Parameters:</b> dbResponse, surfaceWebResponse <br><b>Return:</b> JSON object containing dbResponse</p>
+                <h3 class="view_function">views.email_subscribe(request)</h3>
+                <p>Add email to subscribe table<br><b>Request Parameters:</b> email</p>
+            </p>
+            <br><br> -->
+
+            <h1 id="models">Models</h1>
+            <p>
+                <h3>Email</h3>
+                <h3>Subscription</h3>
+            </p>
+            <br><br>
+            
+            <div class="row">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="container-fluid">
+        <p>Footer Text</p>
+      </footer>
+</body>
+</html>

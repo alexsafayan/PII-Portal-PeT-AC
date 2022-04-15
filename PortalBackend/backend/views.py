@@ -41,7 +41,7 @@ attributeKey = {"phoneNumber": "phone number", "phoneNum": "phone number", "emai
 
 # Create your views here.
 @api_view(['GET', 'POST'])
-def get_email(request):
+def query_email(request):
     #first call on email search
     if request.method == 'POST':
         start_time = time.time()
@@ -75,7 +75,7 @@ def get_email(request):
             return JsonResponse({"dbResponse":dbResponse},status=status.HTTP_202_ACCEPTED)
                 
 @api_view(['GET', 'POST'])
-def search_surfaceWeb_email(request):
+def crawl_pse_email(request):
     if request.method == 'POST':
         start_time = time.time()
         req = request.body.decode()
@@ -149,7 +149,7 @@ def search_surfaceWeb_email(request):
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
 
 @api_view(['GET', 'POST'])
-def get_nameAndZip(request):
+def query_nameAndZip(request):
     
     if request.method == 'POST':
         start_time = time.time()
@@ -225,7 +225,7 @@ def get_nameAndZip(request):
             return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT) 
 
 @api_view(['GET', 'POST'])
-def search_surfaceWeb_nameAndZip(request):
+def crawl_pse_nameAndZip(request):
     start_time = time.time()
     if request.method == 'POST':
         req = request.body.decode()
@@ -435,78 +435,7 @@ def email_subscribe(request):
             return JsonResponse({'message': 'There was an error'}, status=status.HTTP_204_NO_CONTENT) 
         return JsonResponse({'message': 'Success'})
 
-#not used currently. we do not resolve entities on email searches
-@api_view(['GET', 'POST'])
-def resolve_entitiesEmail(request):
-    print("in resolve_entities")
-    start_time = time.time()
-    if request.method == 'POST':
-        req = request.body.decode()
-        dic = eval(req)
-        name = dic.get('name')
-        zip = dic.get('zip')
-        surfaceWebVals = dic.get("surfaceWebResponse")
-        for each in surfaceWebVals:
-            normalizeAge(each)
-        entities = []
-        sourceList = []
-        datesCollected = []
-        try: 
-            dbResponses = []
-            items = EmailModel.objects.filter(name=name, zip=zip)
-            for item in items:
-                email_serializer = EmailSerializer(item)
-                res = email_serializer.data
-                normalizeAge(res)
-                dbResponses.append(res)
-            right_input = []
-            left_input = dbResponses
-            right_input.append(surfaceWebVals)
-            # print("running ER on \n left \n{0} \n and \nright \n{1}".format(left_input, right_input))
-            predictions = runEntityResolution(left_input, right_input) 
-            print("predictions")
-            print(predictions)
-            # for each in all_vals:
-            ind = 0
-            for dbResponse in left_input:
-                nonMatches = []
-                matches = []
-                for each in surfaceWebVals:
-                    
-                    prediction = predictions[ind][1]
-                    #print("comparing db guy {0} with surface web guy {1}. prediction says {2}".format(dbResponse,each,prediction))
-                    if (prediction) > 0.01:
-                        matches.append(each)
-                    else:
-                        nonMatches.append(each)
 
-                    ind+=1
-                if(len(matches)>0):
-                    comboResponse, sources, dateCollected = combineMultiple(matches,dbResponse)
-                else:
-                    comboResponse = dbResponse
-                    sources, dateCollected = getSources(dbResponse)
-                score, scored_attributes = calc_score(comboResponse)
-                comboResponse["score"] = score
-                comboResponse["scored_attributes"] = scored_attributes
-                entities.append(comboResponse)
-                sourceList.append(sources)
-                datesCollected.append(dateCollected)
-
-                
-            # for each in nonMatches:
-            #     sources, dateCollected = getSources(each)
-            #     score = calc_score(each)
-            #     each["score"] = score
-            #     entities.append(each)
-            #     sourceList.append(sources)
-            #     datesCollected.append(dateCollected)
-
-            elapsed_time = time.time() - start_time
-            print("it took this long --- " + str(elapsed_time))
-            return JsonResponse({"entities":entities, "sources": sourceList, "dates":datesCollected},status=status.HTTP_202_ACCEPTED)
-
-
-        except Exception as e: 
-            print("error occurred : {0}".format(str(e)))
-            return JsonResponse({'message': 'This name and zip does not exist'}, status=status.HTTP_204_NO_CONTENT)
+def WrappedAPIView(request):
+    raise Http404("Question does not exist")
+    return HttpResponse("made it into wrapped api view")

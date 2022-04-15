@@ -2,7 +2,7 @@ import http from "../http-common";
 
 class EmailDataService {
   //search #1 in email db search
-  getByEmail(email) {
+  queryEmail(email) {
     return http.post('/emails', {
       email: email
     })
@@ -10,7 +10,7 @@ class EmailDataService {
 
   //search #2 for email
   //calls surface web email crawler api
-  searchSurfaceWebEmail(email, dbResponse) {
+  crawlPSEEmail(email, dbResponse) {
     return http.post('/crawlEmail', {
       email: email,
       dbResponse: dbResponse
@@ -18,7 +18,7 @@ class EmailDataService {
   }
 
   //search #1 in name+zip db search
-  getByName(name, other) {
+  queryName(name, other) {
     return http.post('/names', {
       name: name,
       zip: other
@@ -27,7 +27,7 @@ class EmailDataService {
 
   //search #2 in name+zip db search
   //calls surface web crawlers api
-  searchSurfaceWeb(name, other, search_engine, surfaceWebResults, surfaceWebResponse_clean, surfaceWebAttributesLists) {
+  crawlPSE(name, other, search_engine, surfaceWebResults, surfaceWebResponse_clean, surfaceWebAttributesLists) {
     return http.post('/crawl', {
       name: name,
       zip: other,

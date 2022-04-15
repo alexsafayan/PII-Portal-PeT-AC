@@ -221,7 +221,7 @@ class Homepage extends React.Component {
                     showBreachTotals: false,
                     showProtectYourself: false,
                 })
-                EmailDataService.getByEmail(searchValue)
+                EmailDataService.queryEmail(searchValue)
                 .then(response => {
                     if(response.status === 202) {
                         console.log("response:")
@@ -232,7 +232,7 @@ class Homepage extends React.Component {
                             dbResponse: response.data.dbResponse,
                             
                         })
-                        EmailDataService.searchSurfaceWebEmail(searchValue, response.data.dbResponse)
+                        EmailDataService.crawlPSEEmail(searchValue, response.data.dbResponse)
                         .then(response2 => {
                             console.log("response2: ")
                             console.log(response2)
@@ -324,7 +324,7 @@ class Homepage extends React.Component {
                     loaderMessage: "Searching breached records ",
                     showSearchByEmail: false,
                 })
-                EmailDataService.getByName(nameValue, zipValue)
+                EmailDataService.queryName(nameValue, zipValue)
                 .then(response => {
                     console.log("db search response.data:");
                     console.log(response.data);
@@ -397,7 +397,7 @@ class Homepage extends React.Component {
             dbResponse: dbResponse,
             cleanResponse: cleanResponse,
         })
-        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "anywho", this.state.surfaceWebResults, this.state.surfaceWebResponse_clean, this.state.surfaceWebAttributesLists)
+        EmailDataService.crawlPSE(this.state.nameValue, this.state.zipValue, "anywho", this.state.surfaceWebResults, this.state.surfaceWebResponse_clean, this.state.surfaceWebAttributesLists)
         .then(response => {
             var num_pse = 0
             console.log("response1: ")
@@ -433,7 +433,7 @@ class Homepage extends React.Component {
                     // showLoaders: false,
                     // loaderMessage: "Resolving Your Identity",
                 })
-                EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "zabasearch", response.data.return, response.data.cleanResponses, response.data.surfaceWebAttributesLists)
+                EmailDataService.crawlPSE(this.state.nameValue, this.state.zipValue, "zabasearch", response.data.return, response.data.cleanResponses, response.data.surfaceWebAttributesLists)
                 .then(response2 => {
                     console.log("response2: ")
                     console.log(response2)
@@ -471,7 +471,7 @@ class Homepage extends React.Component {
                     // console.log(response2.data.return.length)
                     // console.log(response2.data.cleanResponses.length)
                     // console.log(response2.data.surfaceWebAttributesLists.length)
-                    EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "mylife", response2.data.return, response2.data.cleanResponses, response2.data.surfaceWebAttributesLists)
+                    EmailDataService.crawlPSE(this.state.nameValue, this.state.zipValue, "mylife", response2.data.return, response2.data.cleanResponses, response2.data.surfaceWebAttributesLists)
                     .then(response3 => {
                         console.log("response3: ")
                         console.log(response3)
@@ -507,7 +507,7 @@ class Homepage extends React.Component {
                         // console.log(response3.data.return.length)
                         // console.log(response3.data.cleanResponses.length)
                         // console.log(response3.data.surfaceWebAttributesLists.length)
-                        EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "peekyou", response3.data.return, response3.data.cleanResponses, response3.data.surfaceWebAttributesLists)
+                        EmailDataService.crawlPSE(this.state.nameValue, this.state.zipValue, "peekyou", response3.data.return, response3.data.cleanResponses, response3.data.surfaceWebAttributesLists)
                         .then(response4 => {
                             console.log("response4: ")
                             console.log(response4)
@@ -544,7 +544,7 @@ class Homepage extends React.Component {
                             // console.log(response4.data.return.length)
                             // console.log(response4.data.cleanResponses.length)
                             // console.log(response4.data.surfaceWebAttributesLists.length)
-                            EmailDataService.searchSurfaceWeb(this.state.nameValue, this.state.zipValue, "spokeo", response4.data.return, response4.data.cleanResponses, response4.data.surfaceWebAttributesLists)
+                            EmailDataService.crawlPSE(this.state.nameValue, this.state.zipValue, "spokeo", response4.data.return, response4.data.cleanResponses, response4.data.surfaceWebAttributesLists)
                             .then(response5 => {
                                 console.log("response5: ")
                                 console.log(response5)
@@ -586,8 +586,8 @@ class Homepage extends React.Component {
 
                 EmailDataService.resolve(this.state.uneditedDbResponse, response5.data.return)
                 .then(finalResponse => {
-                    console.log("db response: ")
-                    console.log(this.state.uneditedDbResponse)
+                    console.log("finalResponse: ")
+                    console.log(finalResponse)
                     var entities = []
                     var sources = []
                     var dates = []
