@@ -22,6 +22,6 @@ urlpatterns = [
 
     url(r'^', include('backend.urls')),
     path('admin/documentation/', TemplateView.as_view(template_name='documentation.html')),    
-    #path('admin/doc/', include('django.contrib.admindocs.urls')),
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
 ]

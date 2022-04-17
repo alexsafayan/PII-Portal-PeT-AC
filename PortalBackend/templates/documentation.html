@@ -444,6 +444,10 @@
        border-bottom: 1px solid #ffffff;
     }
 
+    .parameters {
+      width:80%;
+    }
+
   </style>
 </head>
 
@@ -471,12 +475,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/emails</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>email</td>
@@ -544,12 +548,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/names</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>name</td>
@@ -675,12 +679,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/crawlEmail</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>email</td>
@@ -729,12 +733,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/crawl</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>name</td>
@@ -927,12 +931,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/resolve</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>dbResponse</td>
@@ -1098,12 +1102,12 @@
                 <h3>Resource URL</h3>
                 <p>POST api/subscribe</p>
                 <h3>Parameters</h3>
-                <table class="table"> 
+                <table class="table parameters"> 
                   <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Description</th>
-                    <th>Example</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Required</th>
+                    <th style="width: 25%">Description</th>
+                    <th style="width: 25%">Example</th>
                   </tr>
                   <tr>
                     <td>email</td>
@@ -1151,27 +1155,157 @@
             </p>
             <br><br>
 
-            <!-- <h1 id="views">Views</h1>
-            <p class="wrapper">
-                <h3 class="view_function">views.query_email(request)</h3>
-                <p>Query database for email address<br><b>Request Parameters:</b> email<br><b>Return:</b> JSON object containing dbResponse</p>
-                <h3 class="view_function">views.query_nameAndZip(request)</h3>
-                <p>Query database for name & zip combo<br><b>Request Parameters:</b> name, zip<br><b>Return:</b> JSON object containing dbResponse</p>
-                <h3 class="view_function">views.crawl_pse_email(request)</h3>
-                <p>Trigger people search engine crawler<br><b>Request Parameters:</b> email<br><b>Return:</b> JSON object containing entities, sources, datesCollected</p>
-                <h3 class="view_function">views.crawl_pse_nameAndZip(request)</h3>
-                <p>Trigger people search engine crawlers<br><b>Request Parameters:</b> name, zip<br><b>Return:</b> JSON object containing surfaceWebResponse</p>
-                <h3 class="view_function">views.resolve_entities(request)</h3>
-                <p>Run entity resolution model<br><b>Request Parameters:</b> dbResponse, surfaceWebResponse <br><b>Return:</b> JSON object containing dbResponse</p>
-                <h3 class="view_function">views.email_subscribe(request)</h3>
-                <p>Add email to subscribe table<br><b>Request Parameters:</b> email</p>
-            </p>
-            <br><br> -->
-
             <h1 id="models">Models</h1>
             <p>
-                <h3>Email</h3>
-                <h3>Subscription</h3>
+                <h2>Email</h2>
+                <table class="table">
+                  <thead>
+                  <tr>
+                      <th style="width: 33%">Field</th>
+                      <th style="width: 34%">Type</th>
+                      <th style="width: 33%">Description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  
+                  <tr>
+                      <td>address</td>
+                      <td>String (up to 255)</td>
+                      <td>address</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>birthday</td>
+                      <td>String (up to 255)</td>
+                      <td>birthday</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>currentTown</td>
+                      <td>String (up to 255)</td>
+                      <td>current town</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>dateCollected</td>
+                      <td>String (up to 255)</td>
+                      <td>data date collected</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>email</td>
+                      <td>String (up to 255)</td>
+                      <td>email</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>hometown</td>
+                      <td>String (up to 255)</td>
+                      <td>hometown</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>id</td>
+                      <td>Integer</td>
+                      <td>ID</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>interests</td>
+                      <td>String (up to 255)</td>
+                      <td>personal interests</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>jobDetails</td>
+                      <td>String (up to 255)</td>
+                      <td>job details</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>name</td>
+                      <td>String (up to 255)</td>
+                      <td>full name</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>password</td>
+                      <td>String (up to 255)</td>
+                      <td>email password</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>phoneNum</td>
+                      <td>String (up to 15)</td>
+                      <td>phone number</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>platform</td>
+                      <td>String (up to 255)</td>
+                      <td>data origin platform</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>politicalViews</td>
+                      <td>String (up to 255)</td>
+                      <td>political views</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>relationshipStatus</td>
+                      <td>String (up to 255)</td>
+                      <td>relationship status</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>religiousViews</td>
+                      <td>String (up to 255)</td>
+                      <td>religious views</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>ssn</td>
+                      <td>String (up to 255)</td>
+                      <td>ssn</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>zip</td>
+                      <td>String (up to 255)</td>
+                      <td>zip code</td>
+                  </tr>
+                  
+                  </tbody>
+                  </table>
+
+
+                <h2>Subscription</h2>
+
+                <table class="table">
+                  <thead>
+                  <tr>
+                      <th style="width: 33%">Field</th>
+                      <th style="width: 34%">Type</th>
+                      <th style="width: 33%">Description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  
+                  <tr>
+                      <td>email</td>
+                      <td>String (up to 255)</td>
+                      <td>email</td>
+                  </tr>
+                  
+                  <tr>
+                      <td>id</td>
+                      <td>Integer</td>
+                      <td>ID</td>
+                  </tr>
+                  
+                  </tbody>
+                  </table>
             </p>
             <br><br>
             
