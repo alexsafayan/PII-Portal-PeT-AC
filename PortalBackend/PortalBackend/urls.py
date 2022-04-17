@@ -16,9 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url, include 
 from django.urls import path
+from django.views.generic.base import TemplateView
 
 urlpatterns = [
+
     url(r'^', include('backend.urls')),
-    path('admin/doc/', include('django.contrib.admindocs.urls')),
+    path('admin/documentation/', TemplateView.as_view(template_name='documentation.html')),    
+    #path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
 ]
