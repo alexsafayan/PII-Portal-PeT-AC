@@ -19,18 +19,6 @@ class Boxplot extends React.Component {
               }
             ]
           },
-          // {
-          //   name: 'you',
-          //   type: 'line',
-          //   data: [
-          //     {
-          //       x: 0,
-          //       y: this.props.score
-          //       // y: this.props.score
-          //     },
-          //   ]
-          // },
-          
           
         ],
         options: {

@@ -1,18 +1,14 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { GoArrowRight } from "react-icons/go";
-// import { BsFillFilePersonFill } from "react-icons/bs";
-
 import Alert from 'react-bootstrap/Alert';
 import ReactLoading from 'react-loading';
 import '../home.css';
 import Boxplot from '../Components/Boxplot.js'
 import '../App.css'
-import DisplayResults, { ResultsTable, DatabaseTable, DarkWebTable, SurfaceWebTable } from '../Components/DisplayResults.js';
+import { DarkWebTable, SurfaceWebTable } from '../Components/DisplayResults.js';
 import EmailDataService from "../services/email.service";
 import Searchbar from "../Components/Searchbar";
-import BadNewsEmail from "../Components/BadNewsEmail";
 
 
 
