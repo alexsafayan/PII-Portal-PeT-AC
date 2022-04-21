@@ -157,7 +157,6 @@ class Homepage extends React.Component {
           
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleAgeCheck = this.handleAgeCheck.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.displayGoodNews = this.displayGoodNews.bind(this);
@@ -187,17 +186,14 @@ class Homepage extends React.Component {
         this.setState({
             errorMessage: "",
             line1: "",
-            showScore: false,
-            showScoreEmail: false,
             score: 0,
             showGoodNews: false,
-            showBadNews: false,
             showER: false,
             showEmail: false,
             searchState: fieldName,
             fieldName: fieldName,
             searchValue: searchValue,
-            nameValue:nameValue,
+            nameValue: nameValue,
             zipValue: zipValue,
             searchEngines: initial_searchEngines,
             showProfile: false,
@@ -208,6 +204,14 @@ class Homepage extends React.Component {
             surfaceWebResults: [],
             surfaceWebResponse_clean: [],
             surfaceWebAttributesLists: [],
+            showLoader: false,
+            dbAmount: 0,
+            dbResponse: {},
+            uneditedDbResponse: {},
+            cleanResponses: {},
+            es: '',
+            showDbResponse: false,
+            db_attributes: {},
         });
         //email search
         if(fieldName === 'Email') {
@@ -766,7 +770,6 @@ class Homepage extends React.Component {
         } else if(this.state.searchState === 'Email')
         {
             this.setState({
-                // showScoreEmail: true,
                 showEmailProfile: true,
                 entity: entity,
                 source: sources,
@@ -808,7 +811,6 @@ class Homepage extends React.Component {
         // console.log(this.state.cleanResponse)
         this.setState({
             showERResults: true,
-            showScore: false,
             showProtectYourself: false,
             showProfile: false
         })
@@ -966,36 +968,6 @@ class Homepage extends React.Component {
         }
     }
 
-    handleAgeCheck(event) {
-        var newDBResponse = [];
-        var newUneditedDbResponse = [];
-        var newCleanResponses = [];
-        for(var i = 0; i < this.state.dbResponse.length; i++) {
-            var curr = this.state.dbResponse[i]
-            if (curr["birthyear"] === this.state.birthyearInput) {
-                newDBResponse.push(curr)
-                newUneditedDbResponse.push(this.state.uneditedDbResponse[i])
-                newCleanResponses.push(this.state.cleanResponses[i])
-            }
-        }
-        if(newDBResponse.length > 0) {
-            this.setState({
-                showDbResponse: true,
-                dbAmount: newDBResponse.length,
-                dbResponse: newDBResponse,
-                uneditedDbResponse: newUneditedDbResponse,
-                cleanResponses: newCleanResponses,
-                showSearchAgain: true,
-                showAgeCheck: false
-            })
-        }else {
-            console.log("that aint it")
-        }
-        
-        event.preventDefault();
-
-    }
-
     render() {
         return [
             //searching functionality
@@ -1077,94 +1049,6 @@ class Homepage extends React.Component {
                 </div>
                 </div>
                 </>,
-
-            //show score
-                <div className="container">
-                    {this.state.showScore && 
-                    <div className="row justify-content-center text-center">
-                    <div className="col-lg-12">
-                     <Alert variant={this.state.scoreAlertVariant}>
-                         <h4 style={{fontSize: "xx-large"}}>Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
-                         <h4 style={{fontSize: "xx-large"}}>
-                         {this.state.breaches.map((value, index) => {
-                             return <p>{value}</p>
-                         })}
-                         </h4>
-                         <div className="row justify-content-center text-center">
-                             <div className="col-lg-8">
-                                 <Alert id="alert-whatwascompromised" onClick={(e) => this.showER(e)}>
-                                     What was compromised? {this.state.exposedAttributes}
-                                 </Alert>
-                             </div>
-                         </div>
-                         <div className="row justify-content-center text-center">
-                         <div className="col-lg-6">
-                             <GaugeChart 
-                                 id="gauge-chart2" 
-                                 nrOfLevels={3} 
-                                 percent={this.state.entity.score / 10}
-                                 // percent={.49}
-                                 textColor={"#000000"} 
-                                 arcsLength={[0.159, 0.682, 0.159]}
-                                 style={{width:'100%'}}
-                                 arcPadding={0}
-                                 cornerRadius={2}
-                             />
-                         </div>
-                         </div>
-                         <h4 className="xx">Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
-                         <h4 className="xx">Your privacy risk score is <b>{this.state.entity.score}</b></h4>
-                         <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<u style={{color: "inherit", cursor: 'pointer'}} onClick={(e) => this.showER(e)}>here.</u></p>
-                         </Alert>
-                     </div>
-                     
-                 </div>
-                 }
-                </div>,
-
-            //show score email
-                <div className="container">
-                    {this.state.showScoreEmail && 
-                    <div className="row justify-content-center text-center">
-                    <div className="col-lg-12">
-                     <Alert variant={this.state.scoreAlertVariant}>
-                         <h4 className="xx">Your information has been <b>compromised</b> in {this.state.amountBreached} breach{this.state.amountBreached === 1 ? null : <>es</>}:</h4>
-                         <h4 className="xx">
-                         {this.state.breaches.map((value, index) => {
-                             return <p>{value}</p>
-                         })}
-                         </h4>
-                         <div className="row justify-content-center text-center">
-                             <div className="col-lg-8">
-                                 {/* <Alert style={{backgroundColor:'#7C7C7C', color:'white', fontSize:"x-large"}}> */}
-                                     What was compromised? {this.state.exposedAttributes}
-                                 {/* </Alert> */}
-                             </div>
-                         </div>
-                         <div className="row justify-content-center text-center">
-                         <div className="col-lg-6">
-                             <GaugeChart 
-                                 id="gauge-chart2" 
-                                 nrOfLevels={3} 
-                                 percent={this.state.entity.score / 10}
-                                 // percent={.49}
-                                 textColor={"#000000"} 
-                                 arcsLength={[0.159, 0.682, 0.159]}
-                                 style={{width:'100%'}}
-                                 arcPadding={0}
-                                 cornerRadius={2}
-                             />
-                         </div>
-                         </div>
-                         <h4 className="xx">Your privacy is at <b>{this.state.privacyRisk}</b> risk compared to others in your age group.</h4>
-                         <h4 className="xx">Your privacy risk score is <b>{this.state.entity.score}</b></h4>
-                         <p style={{fontSize: "large"}}>Find out what this score means&nbsp;<a style={{color: "inherit", cursor: 'pointer'}} href="/about"><u>here.</u></a></p>
-                         </Alert>
-                     </div>
-                     
-                 </div>
-                 }
-                </div>,
 
                 //show entity resolution results
                 <div className="container">
@@ -1434,9 +1318,6 @@ class Homepage extends React.Component {
                         <div style={{backgroundColor:'white', maxWidth: "600px", color:'black'}} className="col-lg-12">
                         <Boxplot bottomColor="#00FF00" topColor="#FF0000" score={this.state.score}></Boxplot>
                         </div>
-                            {/* <u style={{cursor:"pointer"}} onClick={(e) => this.showER(e)}><h1>Click here to see entity resolution.</h1></u>
-                            <u style={{cursor:"pointer"}} onClick={(e) => this.showScoreCalculation(e)}><h1>Click here to view your score is calculated.</h1></u>
-                            <u style={{cursor:"pointer"}} onClick={(e) => this.showRemovalProcess(e)}><h1>Click here to view the removing process.</h1></u> */}
                         </>
                     }
                         </div>
@@ -1573,14 +1454,6 @@ class Homepage extends React.Component {
                     </div>
                     </>
                     }
-                </div>,
-
-            //show bad news, email breached but no surface web response
-                <div>
-                    {this.state.showBadNews && 
-                    <BadNewsEmail breaches={this.state.breaches}></BadNewsEmail>
-                    }
-
                 </div>,
 
             //show good news, no breached data
