@@ -1251,12 +1251,13 @@ class Homepage extends React.Component {
                         {this.state.num_pse > 0 && 
                             <div>
                             <div style={{width:'600px'}}class="header">AVAILABLE PII ON SEARCH ENGINES</div>
+                            <div style={{width:'600px'}}class="header2">You can remove your personal information from these people search engines.</div>
                             <table class="data_table">
                             <thead>
                                 <tr>
                                 <th>Information</th>
                                 <th>Sources</th>
-                                <th>Remove the attributes from the source</th>
+                                {/* <th>Remove the attributes from the source</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -1274,7 +1275,7 @@ class Homepage extends React.Component {
                                             })}</td>
                                         
                                         <td>{key}</td>
-                                        <td><a target="_blank" rel="noopener noreferrer" href={this.state.searchEngines[key]['removeDataURL']} >Click here to view the removal process</a></td>
+                                        {/* <td><a target="_blank" rel="noopener noreferrer" href={this.state.searchEngines[key]['removeDataURL']} >Click here to view the removal process</a></td> */}
                                         </tr>
                                         </>
                                     }
