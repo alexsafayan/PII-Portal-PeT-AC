@@ -1251,7 +1251,6 @@ class Homepage extends React.Component {
                         {this.state.num_pse > 0 && 
                             <div>
                             <div style={{width:'600px'}}class="header">AVAILABLE PII ON SEARCH ENGINES</div>
-                            <div style={{width:'600px'}}class="header2">You can remove your personal information from these people search engines.</div>
                             <table class="data_table">
                             <thead>
                                 <tr>
@@ -1349,19 +1348,19 @@ class Homepage extends React.Component {
                     </div>
                 </div>,
 
-                //show removal process
-                <div className="container d-flex justify-content-center">
-                    <div className="col-lg-10">
-                    <div className="row justify-content-center">
-                    {this.state.showRemovalProcess && 
-                        <> 
-                            <h1 className="text-center" style={{width:"100%"}}>How to remove your data from PSEs:</h1>
-                            <div style={{width:"100%"}}><u style={{cursor:"pointer"}} onClick={(e) => this.goBack(e)}>Go back</u></div>
-                        </>
-                    }
-                        </div>
-                    </div>
-                </div>,
+                // //show removal process
+                // <div className="container d-flex justify-content-center">
+                //     <div className="col-lg-10">
+                //     <div className="row justify-content-center">
+                //     {this.state.showRemovalProcess && 
+                //         <> 
+                //             <h1 className="text-center" style={{width:"100%"}}>How to remove your data from PSEs:</h1>
+                //             <div style={{width:"100%"}}><u style={{cursor:"pointer"}} onClick={(e) => this.goBack(e)}>Go back</u></div>
+                //         </>
+                //     }
+                //         </div>
+                //     </div>
+                // </div>,
 
                 //show MCA
                 <div className="container d-flex justify-content-center">
